@@ -41,7 +41,7 @@ function RoutedApp() {
 
   return (
     <Routes>
-      <Route path="/" element={<PreparationPage />} />
+      <Route path="/" element={<Navigate to="/500-extra" replace />} />
       <Route path={adsRoutePrefix} element={<PreparationPage />} />
       <Route path="/500-extra" element={<CreativeToysWeekLanding />} />
       <Route path={`${adsRoutePrefix}/500-extra`} element={<CreativeToysWeekLanding />} />

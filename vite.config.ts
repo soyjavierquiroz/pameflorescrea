@@ -24,16 +24,26 @@ function htmlEnvPlugin(mode: string) {
   };
 }
 
-function injectRouteMetadata(html: string, title: string, description: string): string {
+function injectRouteMetadata(
+  html: string,
+  title: string,
+  description: string,
+  assetCheck?: string,
+): string {
   const metadata = [
     `    <title>${title}</title>`,
     `    <meta name="description" content="${description}" />`,
     `    <meta name="x-route-content-check" content="${description}" />`,
-  ].join('\n');
+    assetCheck ? `    <meta name="x-route-asset-check" content="${assetCheck}" />` : '',
+  ]
+    .filter(Boolean)
+    .join('\n');
 
   return html
     .replace(/ {4}<title>.*<\/title>\n?/g, '')
     .replace(/ {4}<meta name="description" content="[^"]*" \/>\n?/g, '')
+    .replace(/ {4}<meta name="x-route-content-check" content="[^"]*" \/>\n?/g, '')
+    .replace(/ {4}<meta name="x-route-asset-check" content="[^"]*" \/>\n?/g, '')
     .replace('</head>', `${metadata}\n  </head>`);
 }
 
@@ -49,14 +59,19 @@ function staticAdsEntryPlugin(mode: string) {
       const baseHtml = readFileSync(sourcePath, 'utf8');
       const landingTitle = 'Semana del Emprendimiento con Juguetes Creativos';
       const landingDescription =
-        'SEMANA DEL EMPRENDIMIENTO CON JUGUETES CREATIVOS - Descubre cómo generar desde 500 dólares extras al mes con Juguetes Creativos. QUIERO REGISTRARME GRATIS.';
+        'SEMANA DEL EMPRENDIMIENTO CON JUGUETES CREATIVOS - Descubre cómo generar desde 500 dólares extras al mes con Juguetes Creativos. Es tu momento de construir un proyecto propio que transforme tu amor por los niños y tu creatividad en una fuente de ingresos real haciendo algo que disfrutas. ¡Hola, soy Pame Flores! Academia de Juguetería Creativa. QUIERO REGISTRARME GRATIS.';
+      const landingAssetCheck = '/assets/pame-flores-crea/500-extra/hero-pame-creativa.webp';
       const confirmationTitle = 'Registro recibido - Juguetes Creativos';
       const confirmationDescription =
         'Registro recibido para la Semana del Emprendimiento con Juguetes Creativos por WhatsApp. Te llevaremos automáticamente al grupo de WhatsApp en 5 segundos.';
+      writeFileSync(
+        sourcePath,
+        injectRouteMetadata(baseHtml, landingTitle, landingDescription, landingAssetCheck),
+      );
       const staticEntries = [
         {
           path: '500-extra',
-          html: injectRouteMetadata(baseHtml, landingTitle, landingDescription),
+          html: injectRouteMetadata(baseHtml, landingTitle, landingDescription, landingAssetCheck),
         },
         {
           path: 'confirmacion/500-extra',
@@ -72,7 +87,12 @@ function staticAdsEntryPlugin(mode: string) {
           },
           {
             path: `${adsPrefix}/500-extra`,
-            html: injectRouteMetadata(baseHtml, landingTitle, landingDescription),
+            html: injectRouteMetadata(
+              baseHtml,
+              landingTitle,
+              landingDescription,
+              landingAssetCheck,
+            ),
           },
           {
             path: `${adsPrefix}/confirmacion/500-extra`,

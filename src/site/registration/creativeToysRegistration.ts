@@ -14,8 +14,7 @@ export const CREATIVE_TOYS_ORGANIC_CONFIRMATION_PATH = '/confirmacion/500-extra'
 export const CREATIVE_TOYS_WHATSAPP_REDIRECT_DELAY_MS = 5000;
 
 export const CREATIVE_TOYS_ASSETS = {
-  banner: '/assets/pame-flores-crea/500-extra/banner-500-extra.jpg',
-  hero: '/assets/pame-flores-crea/500-extra/pame-juguetes-vertical.webp',
+  hero: '/assets/pame-flores-crea/500-extra/hero-pame-creativa.webp',
   heroFallback: '/assets/pame-flores-crea/500-extra/hero-pame-juguete.webp',
   toys: '/assets/pame-flores-crea/500-extra/pame-vip-creativa.webp',
   portrait: '/assets/pame-flores-crea/500-extra/familia-pame.jpg',

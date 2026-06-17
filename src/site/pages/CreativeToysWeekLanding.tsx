@@ -160,13 +160,13 @@ export function CreativeToysWeekLanding() {
             <p className="mt-4 text-lg font-black leading-7 text-white sm:mt-5 sm:text-2xl sm:leading-8">
               Sin descuidar a tu familia y aun si empiezas de cero.
             </p>
+            <p className="mt-4 max-w-2xl text-base font-bold leading-7 text-white/86 sm:text-lg sm:leading-8">
+              Es tu momento de construir un proyecto propio que transforme tu amor por los niños y
+              tu creatividad en una fuente de ingresos real haciendo algo que disfrutas
+            </p>
             <div className="mt-5 rounded-lg border-2 border-dashed border-white/26 bg-[#2b1163]/72 p-4 shadow-[0_20px_54px_rgba(36,16,78,0.35)] backdrop-blur sm:mt-7 sm:max-w-xl sm:p-5">
               <CreativeToysForm id="creative-toys-hero-form" />
             </div>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-white/82 sm:mt-4 sm:text-lg sm:leading-7">
-              Construye un proyecto propio transformando tu amor por los niños y tu creatividad en
-              una fuente de ingresos real haciendo algo que disfrutas.
-            </p>
           </div>
 
           <div className="relative flex min-h-[420px] items-end justify-center lg:items-center">
@@ -220,13 +220,6 @@ export function CreativeToysWeekLanding() {
               <p className="text-sm font-bold leading-6 text-[#342052] sm:text-base">{bullet}</p>
             </div>
           ))}
-        </div>
-        <div className="mt-8 overflow-hidden rounded-lg border-2 border-dashed border-[#d9b3ff] bg-[#f8f1ff]">
-          <SafeImage
-            alt="Semana del Emprendimiento con Juguetes Creativos"
-            className="h-full max-h-[360px] w-full object-cover"
-            src={CREATIVE_TOYS_ASSETS.banner}
-          />
         </div>
       </CreativeToysSection>
 
@@ -291,10 +284,24 @@ export function CreativeToysWeekLanding() {
               <Images aria-hidden="true" className="h-4 w-4" />
               Creatividad con propósito
             </p>
-            <p className="mt-5 text-xl font-bold leading-9 text-white/88 sm:text-2xl">
-              Pame Flores acompaña a mujeres creativas que quieren transformar sus habilidades
-              manuales en proyectos propios, útiles y con propósito.
-            </p>
+            <div className="mt-5 space-y-5 text-lg font-bold leading-8 text-white/88 sm:text-xl sm:leading-9">
+              <p>
+                ¡Hola, soy Pame Flores! Soy psicóloga, juguetera creativa profesional y una mamá
+                empresaria. Fundadora de la primera Academia de Juguetería Creativa en habla
+                hispana y ganadora al mejor microemprendimiento del año en la categoría de
+                Juguetes Didácticos.
+              </p>
+              <p>
+                Hace 9 años di un salto para empezar un negocio con juguetes creativos, motivada
+                por tener la flexibilidad de compartir más tiempo con mi bebé. Ahora ayudo a otras
+                mujeres a crecer junto a sus marcas infantiles mientras comparten tiempo con sus
+                familias.
+              </p>
+              <p>
+                Mi motivación son mi hijo Ariel y mi esposo Dario. Soy una mamá con ganas de ver
+                crecer a otras mujeres junto a sus proyectos y sus familias.
+              </p>
+            </div>
           </div>
         </div>
       </CreativeToysSection>

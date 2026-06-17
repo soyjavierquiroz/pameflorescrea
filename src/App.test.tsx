@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { renderToString } from 'react-dom/server';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -19,8 +21,11 @@ afterEach(() => {
 });
 
 describe('App routes', () => {
-  it('keeps the preparation page at /', () => {
-    expect(renderRoute('/')).toContain('Sitio en preparacion');
+  it('redirects / to the organic creative toys landing', () => {
+    const appSource = readFileSync(join(process.cwd(), 'src/App.tsx'), 'utf8');
+
+    expect(appSource).toContain('<Route path="/" element={<Navigate to="/500-extra" replace />} />');
+    expect(renderRoute('/')).not.toContain('Sitio en preparacion');
   });
 
   it('keeps the preparation page at /x9m', () => {
@@ -31,7 +36,12 @@ describe('App routes', () => {
     const html = renderRoute('/500-extra');
 
     expect(html).toContain('Descubre cómo generar desde');
+    expect(html).toContain(
+      'Es tu momento de construir un proyecto propio que transforme tu amor por los niños',
+    );
     expect(html).toContain('Una experiencia creativa para empezar con ilusión');
+    expect(html).toContain('¡Hola, soy Pame Flores!');
+    expect(html).toContain('Academia de Juguetería Creativa');
   });
 
   it('renders the creative toys landing at /x9m/500-extra', () => {

@@ -256,7 +256,6 @@ describe('creative toys registration helpers', () => {
   it('references local assets that exist', () => {
     const publicDir = join(process.cwd(), 'public');
     const assetPaths = [
-      CREATIVE_TOYS_ASSETS.banner,
       CREATIVE_TOYS_ASSETS.hero,
       CREATIVE_TOYS_ASSETS.heroFallback,
       CREATIVE_TOYS_ASSETS.toys,
@@ -276,9 +275,12 @@ describe('creative toys registration helpers', () => {
     }
   });
 
-  it('uses the approved VIP image and removes the sensitive creative toys image', () => {
+  it('uses approved images and removes forbidden creative toys images', () => {
     const publicDir = join(process.cwd(), 'public');
-    const sensitiveImageName = ['juguetes', 'creativos'].join('-');
+    const forbiddenImageNames = [
+      ['juguetes', 'creativos'].join('-'),
+      ['banner', '500', 'extra'].join('-'),
+    ];
     const sourceFiles = [
       'src/site/registration/creativeToysRegistration.ts',
       'src/site/pages/CreativeToysWeekConfirmation.tsx',
@@ -286,17 +288,26 @@ describe('creative toys registration helpers', () => {
       'src/site/registration/creativeToysRegistration.test.ts',
     ];
 
+    expect(CREATIVE_TOYS_ASSETS.hero).toBe(
+      '/assets/pame-flores-crea/500-extra/hero-pame-creativa.webp',
+    );
     expect(CREATIVE_TOYS_ASSETS.toys).toBe(
       '/assets/pame-flores-crea/500-extra/pame-vip-creativa.webp',
     );
+    expect(existsSync(join(publicDir, CREATIVE_TOYS_ASSETS.hero))).toBe(true);
     expect(existsSync(join(publicDir, CREATIVE_TOYS_ASSETS.toys))).toBe(true);
-    expect(
-      existsSync(join(publicDir, `assets/pame-flores-crea/500-extra/${sensitiveImageName}.webp`)),
-    ).toBe(false);
-    for (const sourceFile of sourceFiles) {
-      expect(readFileSync(join(process.cwd(), sourceFile), 'utf8')).not.toContain(
-        sensitiveImageName,
-      );
+    for (const forbiddenImageName of forbiddenImageNames) {
+      expect(
+        existsSync(join(publicDir, `assets/pame-flores-crea/500-extra/${forbiddenImageName}.webp`)),
+      ).toBe(false);
+      expect(
+        existsSync(join(publicDir, `assets/pame-flores-crea/500-extra/${forbiddenImageName}.jpg`)),
+      ).toBe(false);
+      for (const sourceFile of sourceFiles) {
+        expect(readFileSync(join(process.cwd(), sourceFile), 'utf8')).not.toContain(
+          forbiddenImageName,
+        );
+      }
     }
   });
 
