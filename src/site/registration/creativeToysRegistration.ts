@@ -14,10 +14,32 @@ export const CREATIVE_TOYS_ORGANIC_CONFIRMATION_PATH = '/confirmacion/500-extra'
 export const CREATIVE_TOYS_WHATSAPP_REDIRECT_DELAY_MS = 4000;
 
 export const CREATIVE_TOYS_ASSETS = {
-  hero: '/assets/pame-flores-crea/500-extra/hero-pame-juguete.webp',
+  banner: '/assets/pame-flores-crea/500-extra/banner-500-extra.jpg',
+  hero: '/assets/pame-flores-crea/500-extra/pame-juguetes-vertical.webp',
+  heroFallback: '/assets/pame-flores-crea/500-extra/hero-pame-juguete.webp',
   toys: '/assets/pame-flores-crea/500-extra/juguetes-creativos.webp',
-  portrait: '/assets/pame-flores-crea/500-extra/pame-flores.webp',
-  logo: '/assets/pame-flores-crea/500-extra/logo-pame-flores-crea.webp',
+  portrait: '/assets/pame-flores-crea/500-extra/familia-pame.jpg',
+  portraitFallback: '/assets/pame-flores-crea/500-extra/pame-flores.webp',
+  logo: '/assets/pame-flores-crea/500-extra/logo-pame-flores-crea.png',
+  legacyLogo: '/assets/pame-flores-crea/500-extra/logo-pame-flores-crea.webp',
+  classImages: [
+    '/assets/pame-flores-crea/500-extra/classes/class-1.webp',
+    '/assets/pame-flores-crea/500-extra/classes/class-2.webp',
+    '/assets/pame-flores-crea/500-extra/classes/class-3.webp',
+    '/assets/pame-flores-crea/500-extra/classes/class-4.webp',
+  ],
+  galleryImages: [
+    '/assets/pame-flores-crea/500-extra/gallery/gallery-01.jpg',
+    '/assets/pame-flores-crea/500-extra/gallery/gallery-02.jpg',
+    '/assets/pame-flores-crea/500-extra/gallery/gallery-03.jpg',
+    '/assets/pame-flores-crea/500-extra/gallery/gallery-04.jpg',
+    '/assets/pame-flores-crea/500-extra/gallery/gallery-05.jpg',
+    '/assets/pame-flores-crea/500-extra/gallery/gallery-06.jpg',
+    '/assets/pame-flores-crea/500-extra/gallery/gallery-07.jpg',
+    '/assets/pame-flores-crea/500-extra/gallery/gallery-08.jpg',
+    '/assets/pame-flores-crea/500-extra/gallery/gallery-09.jpg',
+    '/assets/pame-flores-crea/500-extra/gallery/gallery-10.jpg',
+  ],
 } as const;
 
 export interface CreativeToysFormValues {

@@ -216,11 +216,40 @@ describe('creative toys registration helpers', () => {
 
   it('references local assets that exist', () => {
     const publicDir = join(process.cwd(), 'public');
+    const assetPaths = [
+      CREATIVE_TOYS_ASSETS.banner,
+      CREATIVE_TOYS_ASSETS.hero,
+      CREATIVE_TOYS_ASSETS.heroFallback,
+      CREATIVE_TOYS_ASSETS.toys,
+      CREATIVE_TOYS_ASSETS.portrait,
+      CREATIVE_TOYS_ASSETS.portraitFallback,
+      CREATIVE_TOYS_ASSETS.logo,
+      CREATIVE_TOYS_ASSETS.legacyLogo,
+      ...CREATIVE_TOYS_ASSETS.classImages,
+      ...CREATIVE_TOYS_ASSETS.galleryImages,
+    ];
 
-    expect(Object.values(CREATIVE_TOYS_ASSETS)).toHaveLength(4);
-    for (const assetPath of Object.values(CREATIVE_TOYS_ASSETS)) {
+    expect(CREATIVE_TOYS_ASSETS.classImages).toHaveLength(4);
+    expect(CREATIVE_TOYS_ASSETS.galleryImages).toHaveLength(10);
+    for (const assetPath of assetPaths) {
       expect(assetPath.startsWith('/assets/pame-flores-crea/500-extra/')).toBe(true);
       expect(existsSync(join(publicDir, assetPath))).toBe(true);
     }
+  });
+
+  it('references class and gallery assets with the expected filenames', () => {
+    expect(CREATIVE_TOYS_ASSETS.classImages).toEqual([
+      '/assets/pame-flores-crea/500-extra/classes/class-1.webp',
+      '/assets/pame-flores-crea/500-extra/classes/class-2.webp',
+      '/assets/pame-flores-crea/500-extra/classes/class-3.webp',
+      '/assets/pame-flores-crea/500-extra/classes/class-4.webp',
+    ]);
+
+    expect(CREATIVE_TOYS_ASSETS.galleryImages[0]).toBe(
+      '/assets/pame-flores-crea/500-extra/gallery/gallery-01.jpg',
+    );
+    expect(CREATIVE_TOYS_ASSETS.galleryImages[9]).toBe(
+      '/assets/pame-flores-crea/500-extra/gallery/gallery-10.jpg',
+    );
   });
 });

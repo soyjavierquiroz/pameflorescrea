@@ -28,9 +28,10 @@ describe('App routes', () => {
   });
 
   it('renders the creative toys landing at /500-extra', () => {
-    expect(renderRoute('/500-extra')).toContain(
-      'Descubre cómo generar desde',
-    );
+    const html = renderRoute('/500-extra');
+
+    expect(html).toContain('Descubre cómo generar desde');
+    expect(html).toContain('Una experiencia creativa para empezar con ilusión');
   });
 
   it('renders the creative toys landing at /x9m/500-extra', () => {
