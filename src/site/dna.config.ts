@@ -659,12 +659,12 @@ function toRgbTriplet(value: string) {
   return triplet.trim();
 }
 
-const productName = 'Example Funnel';
-const eventName = 'Example Event';
-const eventCaptureSource = 'example-event';
-const domain = readEnv('VITE_DOMAIN', 'example.com');
-const siteId = readEnv('VITE_SITE_ID', 'EXAMPLE_SITE');
-const checkoutUrl = readEnv('VITE_CHECKOUT_URL', 'https://example.com/replace-with-checkout-url');
+const productName = 'Pame Flores Crea';
+const eventName = 'Pame Flores Crea';
+const eventCaptureSource = 'pame-flores-crea';
+const domain = readEnv('VITE_DOMAIN', 'https://pameflorescrea.com');
+const siteId = readEnv('VITE_SITE_ID', 'PAME_FLORES_CREA');
+const checkoutUrl = readEnv('VITE_CHECKOUT_URL', 'https://pameflorescrea.com');
 const offerCheckoutUrl = readEnv('VITE_OFFER_CHECKOUT_URL', checkoutUrl);
 const vslVideoId = readEnv('VITE_VSL_VIDEO_ID', 'REPLACE_WITH_VSL_VIDEO_ID');
 const offerVideoUrl = readEnv('VITE_OFFER_VIDEO_URL', 'https://example.com/replace-with-offer-video.m3u8');
@@ -686,7 +686,7 @@ const eventAssets = {
 export const DNA = {
   theme: 'expert',
   funnelType: 'event',
-  landingSlug: readEnv('VITE_LANDING_SLUG', 'example-event'),
+  landingSlug: readEnv('VITE_LANDING_SLUG', 'pame-flores-crea'),
   productName,
   domain,
   siteId,
@@ -1124,9 +1124,9 @@ export const DNA = {
     tiktokPixelScriptBaseUrl: readEnv('VITE_TIKTOK_PIXEL_SCRIPT_BASE_URL', 'https://analytics.tiktok.com/i18n/pixel/events.js'),
   },
   seo: {
-    title: readEnv('VITE_SITE_TITLE', productName + ' | ' + eventName),
-    description: readEnv('VITE_SITE_DESCRIPTION', 'Neutral example funnel for cloning and customization.'),
-    socialImage: readEnv('VITE_SOCIAL_IMAGE', 'https://' + domain + '/assets/funnel-placeholder.svg'),
+    title: readEnv('VITE_SITE_TITLE', 'Pame Flores Crea - Sitio en preparacion'),
+    description: readEnv('VITE_SITE_DESCRIPTION', 'Sitio oficial de Pame Flores Crea en preparacion.'),
+    socialImage: readEnv('VITE_SOCIAL_IMAGE', domain + '/assets/funnel-placeholder.svg'),
   },
   colors: {
     primary: '13 59 102',

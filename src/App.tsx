@@ -1,61 +1,46 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import { DNA, resolveDnaDocumentTheme } from './site/current';
-import analytics from './core/services/analytics';
-import { resolveCurrentAttribution } from './core/attribution';
-import { getAdsRoutePrefix, withAdsRoutePrefix } from './core/routing/adsRoute';
-import { ExpertTheme } from './components/themes/expert/ExpertTheme';
-import { ExpertEventTheme } from './components/themes/expert/event/ExpertEventTheme';
-import { ExpertOfferPage } from './components/themes/expert/offer/ExpertOfferPage';
-import { Success } from './pages/Success';
+import { getAdsRoutePrefix } from './core/routing/adsRoute';
 
+const siteId = 'PAME_FLORES_CREA';
+const siteTitle = 'Pame Flores Crea - Sitio en preparacion';
 const adsRoutePrefix = getAdsRoutePrefix();
-const adsOfferPath = withAdsRoutePrefix('/oferta', adsRoutePrefix);
-const adsConfirmationPath = withAdsRoutePrefix('/confirmacion', adsRoutePrefix);
 
-function resolveHomeTheme() {
-  if (DNA.theme === 'expert' && DNA.funnelType === 'event') {
-    return <ExpertEventTheme />;
-  }
-
-  return <ExpertTheme />;
+function PreparationPage() {
+  return (
+    <main className="min-h-screen bg-[#f7f2ec] text-[#1f252c]">
+      <section className="mx-auto flex min-h-screen w-full max-w-5xl flex-col justify-center px-6 py-16 sm:px-10">
+        <div className="max-w-2xl">
+          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-[#2f6f73]">
+            {siteId}
+          </p>
+          <h1 className="font-sans text-4xl font-black leading-tight text-[#1f252c] sm:text-6xl">
+            Pame Flores Crea
+          </h1>
+          <p className="mt-5 text-xl font-semibold text-[#d66540] sm:text-2xl">
+            Sitio en preparacion
+          </p>
+          <p className="mt-6 max-w-xl text-base leading-7 text-[#56606a] sm:text-lg">
+            Estamos preparando una experiencia clara, cuidada y propia para este dominio.
+          </p>
+        </div>
+      </section>
+    </main>
+  );
 }
 
 function RoutedApp() {
   const location = useLocation();
-  const attribution = useMemo(() => resolveCurrentAttribution(location), [location]);
-  const trafficChannel = attribution.channel;
-  const isSuccessRoute =
-    location.pathname === '/confirmacion' || location.pathname === adsConfirmationPath;
 
   useEffect(() => {
-    const documentTheme = resolveDnaDocumentTheme();
-    const nextTitle = isSuccessRoute
-      ? `${DNA.copy.productName} - ${DNA.copy.successPage.eyebrow}`
-      : DNA.seo.title;
-
-    document.documentElement.setAttribute('data-theme', documentTheme);
-    document.title = nextTitle;
-
-    if (attribution.shouldTrackAds) {
-      void analytics.trackEvent('PageView', {
-        source: 'AppLoad',
-        theme: DNA.theme,
-        funnel_type: DNA.funnelType,
-        traffic_channel: trafficChannel,
-        attribution,
-      });
-    }
-  }, [attribution, attribution.shouldTrackAds, isSuccessRoute, location.pathname, location.search, trafficChannel]);
+    document.documentElement.setAttribute('data-theme', 'theme-expert');
+    document.title = siteTitle;
+  }, [location.pathname]);
 
   return (
     <Routes>
-      <Route path="/" element={resolveHomeTheme()} />
-      <Route path={adsRoutePrefix} element={resolveHomeTheme()} />
-      <Route path="/oferta" element={<ExpertOfferPage />} />
-      <Route path={adsOfferPath} element={<ExpertOfferPage />} />
-      <Route path="/confirmacion" element={<Success />} />
-      <Route path={adsConfirmationPath} element={<Success />} />
+      <Route path="/" element={<PreparationPage />} />
+      <Route path={adsRoutePrefix} element={<PreparationPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
