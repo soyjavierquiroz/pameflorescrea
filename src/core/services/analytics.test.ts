@@ -50,15 +50,17 @@ function installBrowserMocks(pathWithSearch: string) {
   return { appendChild, fetchMock, scripts, windowMock };
 }
 
-async function loadAnalytics() {
+async function loadAnalytics(
+  integrations = {
+    capiWebhookUrl: 'https://relay.example/v1/events',
+    metaPixelId: '123456789',
+    siteId: 'EXAMPLE_SITE',
+    tiktokPixelId: 'TEST_TIKTOK_PIXEL',
+  },
+) {
   vi.doMock('../config/funnel.config', () => ({
     default: {
-      integrations: {
-        capiWebhookUrl: 'https://relay.example/v1/events',
-        metaPixelId: '123456789',
-        siteId: 'EXAMPLE_SITE',
-        tiktokPixelId: 'TEST_TIKTOK_PIXEL',
-      },
+      integrations,
     },
   }));
   vi.doMock('../../site/current', () => ({
@@ -128,6 +130,27 @@ describe('ads tracking route gate', () => {
       'https://analytics.tiktok.com/i18n/pixel/events.js?sdkid=TEST_TIKTOK_PIXEL',
     );
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not load pixels or call CAPI under the ads prefix when env values are empty', async () => {
+    const { appendChild, fetchMock, scripts, windowMock } =
+      installBrowserMocks('/x9m/500-extra?fbclid=test');
+    const { trackEvent } = await loadAnalytics({
+      capiWebhookUrl: '',
+      metaPixelId: '',
+      siteId: 'PAME_FLORES_CREA',
+      tiktokPixelId: '',
+    });
+
+    await expect(trackEvent('Lead')).resolves.toMatchObject({
+      capiSent: false,
+      metaBrowserSent: false,
+      tiktokBrowserSent: false,
+    });
+    expect(scripts.size).toBe(0);
+    expect(appendChild).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(windowMock).not.toHaveProperty('fbq');
   });
 
   it('deduplicates events by sharing one event id across Meta Pixel and CAPI', async () => {

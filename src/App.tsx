@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { getAdsRoutePrefix } from './core/routing/adsRoute';
+import { CreativeToysWeekConfirmation } from './site/pages/CreativeToysWeekConfirmation';
+import { CreativeToysWeekLanding } from './site/pages/CreativeToysWeekLanding';
 
 const siteId = 'PAME_FLORES_CREA';
 const siteTitle = 'Pame Flores Crea - Sitio en preparacion';
@@ -41,6 +43,13 @@ function RoutedApp() {
     <Routes>
       <Route path="/" element={<PreparationPage />} />
       <Route path={adsRoutePrefix} element={<PreparationPage />} />
+      <Route path="/500-extra" element={<CreativeToysWeekLanding />} />
+      <Route path={`${adsRoutePrefix}/500-extra`} element={<CreativeToysWeekLanding />} />
+      <Route path="/confirmacion/500-extra" element={<CreativeToysWeekConfirmation />} />
+      <Route
+        path={`${adsRoutePrefix}/confirmacion/500-extra`}
+        element={<CreativeToysWeekConfirmation />}
+      />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

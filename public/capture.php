@@ -9,6 +9,64 @@ const CAPTURE_DEFAULT_ALLOWED_CHANNELS = 'ads,organic';
 const CAPTURE_DEFAULT_TIMEOUT_SECONDS = 10;
 const CAPTURE_DEFAULT_MAX_BODY_BYTES = 32768;
 
+function capture_load_external_env_file(): void
+{
+    $envFile = '/home/pameflorescrea.com/.capture.env';
+
+    if (!is_readable($envFile)) {
+        return;
+    }
+
+    $lines = file($envFile, FILE_IGNORE_NEW_LINES);
+
+    if ($lines === false) {
+        return;
+    }
+
+    foreach ($lines as $line) {
+        $trimmedLine = trim($line);
+
+        if ($trimmedLine === '' || str_starts_with($trimmedLine, '#')) {
+            continue;
+        }
+
+        $separatorPosition = strpos($trimmedLine, '=');
+
+        if ($separatorPosition === false) {
+            continue;
+        }
+
+        $key = trim(substr($trimmedLine, 0, $separatorPosition));
+
+        if (preg_match('/^CAPTURE_[A-Z0-9_]+$/', $key) !== 1) {
+            continue;
+        }
+
+        $existingValue = getenv($key);
+
+        if ($existingValue !== false && trim($existingValue) !== '') {
+            continue;
+        }
+
+        $value = trim(substr($trimmedLine, $separatorPosition + 1));
+
+        if (strlen($value) >= 2) {
+            $firstCharacter = $value[0];
+            $lastCharacter = $value[strlen($value) - 1];
+
+            if (($firstCharacter === '"' && $lastCharacter === '"') || ($firstCharacter === "'" && $lastCharacter === "'")) {
+                $value = substr($value, 1, -1);
+            }
+        }
+
+        putenv($key . '=' . $value);
+        $_ENV[$key] = $value;
+        $_SERVER[$key] = $value;
+    }
+}
+
+capture_load_external_env_file();
+
 header('Content-Type: application/json');
 
 function capture_env(string $key, string $default = ''): string
