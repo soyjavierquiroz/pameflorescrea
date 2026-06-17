@@ -52,7 +52,7 @@ function staticAdsEntryPlugin(mode: string) {
         'SEMANA DEL EMPRENDIMIENTO CON JUGUETES CREATIVOS - Descubre cómo generar desde 500 dólares extras al mes con Juguetes Creativos. QUIERO REGISTRARME GRATIS.';
       const confirmationTitle = 'Registro recibido - Juguetes Creativos';
       const confirmationDescription =
-        'Registro recibido para la Semana del Emprendimiento con Juguetes Creativos por WhatsApp. El enlace al grupo estará disponible pronto.';
+        'Registro recibido para la Semana del Emprendimiento con Juguetes Creativos por WhatsApp. Te llevaremos automáticamente al grupo de WhatsApp en 5 segundos.';
       const staticEntries = [
         {
           path: '500-extra',

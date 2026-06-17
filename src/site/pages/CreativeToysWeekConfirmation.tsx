@@ -4,8 +4,8 @@ import { useLocation } from 'react-router-dom';
 import {
   CREATIVE_TOYS_ASSETS,
   CREATIVE_TOYS_REGISTRATION_KEY,
-  CREATIVE_TOYS_WHATSAPP_REDIRECT_DELAY_MS,
   getCreativeToysWhatsAppUrl,
+  scheduleCreativeToysWhatsAppRedirect,
   shouldAutoRedirectToCreativeToysWhatsApp,
   type CreativeToysRegistrationSnapshot,
 } from '../registration/creativeToysRegistration';
@@ -40,11 +40,7 @@ export function CreativeToysWeekConfirmation() {
       return undefined;
     }
 
-    const redirectTimer = window.setTimeout(() => {
-      window.location.assign(whatsappGroupUrl);
-    }, CREATIVE_TOYS_WHATSAPP_REDIRECT_DELAY_MS);
-
-    return () => window.clearTimeout(redirectTimer);
+    return scheduleCreativeToysWhatsAppRedirect(window, whatsappGroupUrl);
   }, [shouldAutoRedirect, whatsappGroupUrl]);
 
   return (
@@ -74,16 +70,15 @@ export function CreativeToysWeekConfirmation() {
             {whatsappGroupUrl ? (
               <>
                 <p className="text-base font-bold leading-7 text-white">
-                  Te llevaremos al grupo de WhatsApp en unos segundos. También puedes entrar ahora:
+                  Te llevaremos automáticamente al grupo de WhatsApp en 5 segundos.
                 </p>
                 <a
                   className="mt-5 inline-flex min-h-[54px] w-full items-center justify-center gap-2 rounded-md bg-[#23d7df] px-5 py-3 text-center text-sm font-black uppercase text-[#24104e] shadow-[0_14px_32px_rgba(35,215,223,0.26)] transition duration-200 hover:bg-[#68f1ee] focus:outline-none focus:ring-2 focus:ring-[#f4c54f] focus:ring-offset-2 focus:ring-offset-[#2b1163] sm:w-auto"
                   href={whatsappGroupUrl}
-                  rel="noreferrer"
-                  target="_blank"
+                  target="_self"
                 >
                   <MessageCircle aria-hidden="true" className="h-5 w-5" />
-                  Entrar al grupo de WhatsApp
+                  UNIRME AL GRUPO DE WHATSAPP
                 </a>
               </>
             ) : (

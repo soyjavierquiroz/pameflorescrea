@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { resolveAttribution } from '../../core/attribution';
@@ -8,10 +8,12 @@ import {
   CREATIVE_TOYS_ASSETS,
   CREATIVE_TOYS_EVENT_NAME,
   CREATIVE_TOYS_LEAD_EVENT_NAME,
+  CREATIVE_TOYS_WHATSAPP_REDIRECT_DELAY_MS,
   getCreativeToysWhatsAppUrl,
   getCreativeToysNavigationTargetAfterCapture,
   getCreativeToysConfirmationPath,
   isCreativeToysCaptureOk,
+  scheduleCreativeToysWhatsAppRedirect,
   shouldAutoRedirectToCreativeToysWhatsApp,
   shouldTrackCreativeToysLead,
   validateCreativeToysForm,
@@ -24,6 +26,7 @@ const trackingConfigured = {
 };
 
 afterEach(() => {
+  vi.useRealTimers();
   vi.unstubAllEnvs();
 });
 
@@ -164,7 +167,7 @@ describe('creative toys registration helpers', () => {
   });
 
   it('uses the organic WhatsApp URL on the organic confirmation route', () => {
-    vi.stubEnv('VITE_WHATSAPP_GROUP_URL_ORGANIC', 'https://wa.local/organic');
+    vi.stubEnv('VITE_WHATSAPP_GROUP_URL_ORGANIC', '  https://wa.local/organic  ');
     vi.stubEnv('VITE_WHATSAPP_GROUP_URL_ADS', 'https://wa.local/ads');
     vi.stubEnv('VITE_WHATSAPP_GROUP_URL', 'https://wa.local/fallback');
 
@@ -207,6 +210,42 @@ describe('creative toys registration helpers', () => {
     expect(shouldAutoRedirectToCreativeToysWhatsApp(whatsappUrl)).toBe(false);
   });
 
+  it('schedules the WhatsApp redirect at 5000ms and not before', () => {
+    vi.useFakeTimers();
+    const assign = vi.fn();
+    const browserWindow = {
+      clearTimeout: globalThis.clearTimeout,
+      location: { assign },
+      setTimeout: globalThis.setTimeout,
+    } as unknown as Window;
+
+    const cleanup = scheduleCreativeToysWhatsAppRedirect(browserWindow, 'https://wa.local/organic');
+
+    expect(CREATIVE_TOYS_WHATSAPP_REDIRECT_DELAY_MS).toBe(5000);
+    vi.advanceTimersByTime(4999);
+    expect(assign).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1);
+    expect(assign).toHaveBeenCalledWith('https://wa.local/organic');
+
+    cleanup();
+  });
+
+  it('cleans up the pending WhatsApp redirect timer', () => {
+    vi.useFakeTimers();
+    const assign = vi.fn();
+    const browserWindow = {
+      clearTimeout: globalThis.clearTimeout,
+      location: { assign },
+      setTimeout: globalThis.setTimeout,
+    } as unknown as Window;
+
+    const cleanup = scheduleCreativeToysWhatsAppRedirect(browserWindow, 'https://wa.local/organic');
+    cleanup();
+    vi.advanceTimersByTime(CREATIVE_TOYS_WHATSAPP_REDIRECT_DELAY_MS);
+
+    expect(assign).not.toHaveBeenCalled();
+  });
+
   it('does not define checkout or purchase conversion events', () => {
     expect(CREATIVE_TOYS_LEAD_EVENT_NAME).toBe('Lead');
     expect(CREATIVE_TOYS_LEAD_EVENT_NAME).not.toBe('InitiateCheckout');
@@ -234,6 +273,30 @@ describe('creative toys registration helpers', () => {
     for (const assetPath of assetPaths) {
       expect(assetPath.startsWith('/assets/pame-flores-crea/500-extra/')).toBe(true);
       expect(existsSync(join(publicDir, assetPath))).toBe(true);
+    }
+  });
+
+  it('uses the approved VIP image and removes the sensitive creative toys image', () => {
+    const publicDir = join(process.cwd(), 'public');
+    const sensitiveImageName = ['juguetes', 'creativos'].join('-');
+    const sourceFiles = [
+      'src/site/registration/creativeToysRegistration.ts',
+      'src/site/pages/CreativeToysWeekConfirmation.tsx',
+      'src/site/pages/CreativeToysWeekLanding.tsx',
+      'src/site/registration/creativeToysRegistration.test.ts',
+    ];
+
+    expect(CREATIVE_TOYS_ASSETS.toys).toBe(
+      '/assets/pame-flores-crea/500-extra/pame-vip-creativa.webp',
+    );
+    expect(existsSync(join(publicDir, CREATIVE_TOYS_ASSETS.toys))).toBe(true);
+    expect(
+      existsSync(join(publicDir, `assets/pame-flores-crea/500-extra/${sensitiveImageName}.webp`)),
+    ).toBe(false);
+    for (const sourceFile of sourceFiles) {
+      expect(readFileSync(join(process.cwd(), sourceFile), 'utf8')).not.toContain(
+        sensitiveImageName,
+      );
     }
   });
 

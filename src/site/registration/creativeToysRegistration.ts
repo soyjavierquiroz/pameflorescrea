@@ -11,13 +11,13 @@ export const CREATIVE_TOYS_EVENT_NAME = 'SEMANA DEL EMPRENDIMIENTO CON JUGUETES 
 export const CREATIVE_TOYS_SOURCE = 'pameflorescrea.com';
 export const CREATIVE_TOYS_ORGANIC_LANDING_PATH = '/500-extra';
 export const CREATIVE_TOYS_ORGANIC_CONFIRMATION_PATH = '/confirmacion/500-extra';
-export const CREATIVE_TOYS_WHATSAPP_REDIRECT_DELAY_MS = 4000;
+export const CREATIVE_TOYS_WHATSAPP_REDIRECT_DELAY_MS = 5000;
 
 export const CREATIVE_TOYS_ASSETS = {
   banner: '/assets/pame-flores-crea/500-extra/banner-500-extra.jpg',
   hero: '/assets/pame-flores-crea/500-extra/pame-juguetes-vertical.webp',
   heroFallback: '/assets/pame-flores-crea/500-extra/hero-pame-juguete.webp',
-  toys: '/assets/pame-flores-crea/500-extra/juguetes-creativos.webp',
+  toys: '/assets/pame-flores-crea/500-extra/pame-vip-creativa.webp',
   portrait: '/assets/pame-flores-crea/500-extra/familia-pame.jpg',
   portraitFallback: '/assets/pame-flores-crea/500-extra/pame-flores.webp',
   logo: '/assets/pame-flores-crea/500-extra/logo-pame-flores-crea.png',
@@ -158,6 +158,19 @@ export function getCreativeToysWhatsAppUrl(pathname: string): string {
 
 export function shouldAutoRedirectToCreativeToysWhatsApp(whatsappUrl: string): boolean {
   return whatsappUrl.trim().length > 0;
+}
+
+export function scheduleCreativeToysWhatsAppRedirect(
+  browserWindow: Pick<Window, 'clearTimeout' | 'setTimeout'> & {
+    location: Pick<Location, 'assign'>;
+  },
+  whatsappUrl: string,
+): () => void {
+  const redirectTimer = browserWindow.setTimeout(() => {
+    browserWindow.location.assign(whatsappUrl);
+  }, CREATIVE_TOYS_WHATSAPP_REDIRECT_DELAY_MS);
+
+  return () => browserWindow.clearTimeout(redirectTimer);
 }
 
 export function isCreativeToysCaptureOk(
