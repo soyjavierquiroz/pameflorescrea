@@ -60,7 +60,8 @@ function staticAdsEntryPlugin(mode: string) {
       const landingTitle = 'Semana del Emprendimiento con Juguetes Creativos';
       const landingDescription =
         'SEMANA DEL EMPRENDIMIENTO CON JUGUETES CREATIVOS - Descubre cómo generar desde 500 dólares extras al mes con Juguetes Creativos. Es tu momento de construir un proyecto propio que transforme tu amor por los niños y tu creatividad en una fuente de ingresos real haciendo algo que disfrutas. ¡Hola, soy Pame Flores! Academia de Juguetería Creativa. QUIERO REGISTRARME GRATIS.';
-      const landingAssetCheck = '/assets/pame-flores-crea/500-extra/hero-pame-creativa.webp';
+      const landingAssetCheck =
+        '/assets/pame-flores-crea/500-extra/hero-pame-creativa.webp?v=20260617-hero2';
       const confirmationTitle = 'Registro recibido - Juguetes Creativos';
       const confirmationDescription =
         'Registro recibido para la Semana del Emprendimiento con Juguetes Creativos por WhatsApp. Te llevaremos automáticamente al grupo de WhatsApp en 5 segundos.';

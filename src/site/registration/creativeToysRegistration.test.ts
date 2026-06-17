@@ -271,7 +271,7 @@ describe('creative toys registration helpers', () => {
     expect(CREATIVE_TOYS_ASSETS.galleryImages).toHaveLength(10);
     for (const assetPath of assetPaths) {
       expect(assetPath.startsWith('/assets/pame-flores-crea/500-extra/')).toBe(true);
-      expect(existsSync(join(publicDir, assetPath))).toBe(true);
+      expect(existsSync(join(publicDir, assetPath.split('?')[0]))).toBe(true);
     }
   });
 
@@ -289,12 +289,12 @@ describe('creative toys registration helpers', () => {
     ];
 
     expect(CREATIVE_TOYS_ASSETS.hero).toBe(
-      '/assets/pame-flores-crea/500-extra/hero-pame-creativa.webp',
+      '/assets/pame-flores-crea/500-extra/hero-pame-creativa.webp?v=20260617-hero2',
     );
     expect(CREATIVE_TOYS_ASSETS.toys).toBe(
       '/assets/pame-flores-crea/500-extra/pame-vip-creativa.webp',
     );
-    expect(existsSync(join(publicDir, CREATIVE_TOYS_ASSETS.hero))).toBe(true);
+    expect(existsSync(join(publicDir, CREATIVE_TOYS_ASSETS.hero.split('?')[0]))).toBe(true);
     expect(existsSync(join(publicDir, CREATIVE_TOYS_ASSETS.toys))).toBe(true);
     for (const forbiddenImageName of forbiddenImageNames) {
       expect(

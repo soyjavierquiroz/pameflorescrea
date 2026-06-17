@@ -17,7 +17,6 @@ const identityBullets = [
   'Quieres generar ingresos desde casa',
   'Amas las manualidades o trabajar con niños',
   'Quieres algo propio pero no sabes por dónde empezar',
-  'No tienes experiencia previa',
   'Quieres sentirte orgullosa de construir algo tuyo',
 ];
 
@@ -316,7 +315,7 @@ export function CreativeToysWeekLanding() {
             </h2>
             <p className="mt-4 max-w-2xl text-base leading-7 text-white/82 sm:text-lg">
               Si sientes que tienes creatividad, amor por los niños y ganas de construir algo
-              propio, esta semana puede ayudarte a ver el primer camino con claridad.
+              propio, esta semana puede ayudarte a ver el camino con claridad.
             </p>
           </div>
           <div className="rounded-lg border-2 border-dashed border-white/26 bg-[#2b1163]/72 p-4 shadow-[0_20px_54px_rgba(36,16,78,0.35)] backdrop-blur sm:p-5">
