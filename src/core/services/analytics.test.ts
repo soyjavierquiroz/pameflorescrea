@@ -229,3 +229,98 @@ describe('ads tracking route gate', () => {
     expect(Object.values(fields)).not.toContain('CompleteRegistration');
   });
 });
+
+describe('Meta ads PageView bootstrap', () => {
+  it('initializes Meta Pixel and sends PageView under /x9m/500-extra', async () => {
+    const { fetchMock, scripts, windowMock } = installBrowserMocks(
+      '/x9m/500-extra?fbclid=test',
+    );
+    const { trackMetaPageView } = await loadAnalytics({
+      capiWebhookUrl: 'https://relay.example/v1/events',
+      metaPixelId: '123456789',
+      siteId: 'PAME_FLORES_CREA',
+      tiktokPixelId: '',
+    });
+
+    await expect(trackMetaPageView()).resolves.toBe(true);
+
+    expect(scripts.get('boilerplate-meta-pixel-script')?.src).toBe(
+      'https://connect.facebook.net/en_US/fbevents.js',
+    );
+    expect(scripts.has('boilerplate-tiktok-pixel-script')).toBe(false);
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect((windowMock as { fbq?: { queue?: unknown[] } }).fbq?.queue).toEqual([
+      ['init', '123456789'],
+      ['track', 'PageView'],
+    ]);
+  });
+
+  it('does not initialize Meta Pixel outside /x9m even with paid query params', async () => {
+    const { appendChild, fetchMock, scripts, windowMock } = installBrowserMocks(
+      '/500-extra?fbclid=test&utm_medium=paid',
+    );
+    const { trackMetaPageView } = await loadAnalytics();
+
+    await expect(trackMetaPageView()).resolves.toBe(false);
+
+    expect(scripts.size).toBe(0);
+    expect(appendChild).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(windowMock).not.toHaveProperty('fbq');
+  });
+
+  it('allows Meta PageView on ads confirmation routes', async () => {
+    const { scripts, windowMock } = installBrowserMocks('/x9m/confirmacion/500-extra');
+    const { trackMetaPageView } = await loadAnalytics({
+      capiWebhookUrl: '',
+      metaPixelId: '123456789',
+      siteId: 'PAME_FLORES_CREA',
+      tiktokPixelId: '',
+    });
+
+    await expect(trackMetaPageView()).resolves.toBe(true);
+
+    expect(scripts.has('boilerplate-meta-pixel-script')).toBe(true);
+    expect((windowMock as { fbq?: { queue?: unknown[] } }).fbq?.queue).toContainEqual([
+      'track',
+      'PageView',
+    ]);
+  });
+
+  it('does not initialize Meta Pixel on ads routes when the Pixel ID is empty', async () => {
+    const { appendChild, fetchMock, scripts, windowMock } =
+      installBrowserMocks('/x9m/500-extra');
+    const { trackMetaPageView } = await loadAnalytics({
+      capiWebhookUrl: 'https://relay.example/v1/events',
+      metaPixelId: '',
+      siteId: 'PAME_FLORES_CREA',
+      tiktokPixelId: '',
+    });
+
+    await expect(trackMetaPageView()).resolves.toBe(false);
+
+    expect(scripts.size).toBe(0);
+    expect(appendChild).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(windowMock).not.toHaveProperty('fbq');
+  });
+
+  it('does not emit conversion events during the Meta PageView bootstrap', async () => {
+    const { fetchMock, windowMock } = installBrowserMocks('/x9m/500-extra');
+    const { trackMetaPageView } = await loadAnalytics({
+      capiWebhookUrl: 'https://relay.example/v1/events',
+      metaPixelId: '123456789',
+      siteId: 'PAME_FLORES_CREA',
+      tiktokPixelId: '',
+    });
+
+    await trackMetaPageView();
+
+    const fbqQueue = (windowMock as { fbq?: { queue?: unknown[] } }).fbq?.queue ?? [];
+    expect(fbqQueue).not.toContainEqual(expect.arrayContaining(['Lead']));
+    expect(fbqQueue).not.toContainEqual(expect.arrayContaining(['InitiateCheckout']));
+    expect(fbqQueue).not.toContainEqual(expect.arrayContaining(['Purchase']));
+    expect(fbqQueue).not.toContainEqual(expect.arrayContaining(['CompleteRegistration']));
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+});

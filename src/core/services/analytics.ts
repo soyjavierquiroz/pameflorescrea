@@ -765,9 +765,38 @@ const trackEvent = async (
   }
 };
 
+const trackMetaPageView = async (pathname?: string): Promise<boolean> => {
+  const currentPath = pathname ?? (isBrowserEnvironment() ? window.location.pathname : '');
+
+  if (!isAdsRoutePath(currentPath)) {
+    return false;
+  }
+
+  const metaPixelId = normalizePixelId(funnelConfig.integrations.metaPixelId);
+
+  if (!metaPixelId || !isBrowserEnvironment()) {
+    return false;
+  }
+
+  try {
+    await ensureMetaReady(metaPixelId);
+    const fbq = window.fbq;
+
+    if (typeof fbq !== 'function') {
+      return false;
+    }
+
+    fbq('track', 'PageView');
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 const analytics = {
+  trackMetaPageView,
   trackEvent,
 };
 
-export { trackEvent, analytics };
+export { trackMetaPageView, trackEvent, analytics };
 export default analytics;

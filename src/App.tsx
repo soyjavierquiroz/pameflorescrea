@@ -3,6 +3,7 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { getAdsRoutePrefix } from './core/routing/adsRoute';
 import { CreativeToysWeekConfirmation } from './site/pages/CreativeToysWeekConfirmation';
 import { CreativeToysWeekLanding } from './site/pages/CreativeToysWeekLanding';
+import { AdsTrackingBootstrap } from './site/tracking/AdsTrackingBootstrap';
 
 const siteId = 'PAME_FLORES_CREA';
 const siteTitle = 'Pame Flores Crea - Sitio en preparacion';
@@ -56,7 +57,12 @@ function RoutedApp() {
 }
 
 function App() {
-  return <RoutedApp />;
+  return (
+    <>
+      <AdsTrackingBootstrap />
+      <RoutedApp />
+    </>
+  );
 }
 
 export default App;
