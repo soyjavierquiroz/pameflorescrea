@@ -255,8 +255,20 @@ describe('ads tracking route gate', () => {
     expect(capiPayload).toMatchObject({
       event_name: 'CompleteRegistration',
       event_id: 'pame_500_extra_stable_event',
+      event_source_url:
+        'https://example.com/x9m/confirmacion/500-extra?fbclid=TEST_REGISTRATION_001',
+      action_source: 'website',
       data: expect.objectContaining({
         confirmation_path: '/x9m/confirmacion/500-extra',
+        current_path: '/x9m/confirmacion/500-extra',
+        traffic_channel: 'ads',
+      }),
+      user_data: expect.objectContaining({
+        client_user_agent: 'vitest',
+        fbp: expect.stringMatching(/^fb\.1\.\d+\.\d+$/),
+        fbc: expect.stringContaining('TEST_REGISTRATION_001'),
+        em: expect.stringMatching(/^[a-f0-9]{64}$/),
+        fn: expect.stringMatching(/^[a-f0-9]{64}$/),
       }),
     });
     expect(capiPayload.data).not.toHaveProperty('event_id');
