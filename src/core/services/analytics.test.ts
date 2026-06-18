@@ -92,7 +92,7 @@ describe('ads tracking route gate', () => {
     expect(result).toMatchObject({
       capiSent: false,
       metaBrowserSent: false,
-      tiktokBrowserSent: false,
+      tiktokSent: false,
     });
     expect(scripts.has('boilerplate-meta-pixel-script')).toBe(false);
     expect(scripts.has('boilerplate-tiktok-pixel-script')).toBe(false);
@@ -108,10 +108,35 @@ describe('ads tracking route gate', () => {
     await expect(trackEvent('PageView')).resolves.toMatchObject({
       capiSent: false,
       metaBrowserSent: false,
-      tiktokBrowserSent: false,
+      tiktokSent: false,
     });
     expect(scripts.size).toBe(0);
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('does not send organic CompleteRegistration even with fbclid and paid UTMs', async () => {
+    const { appendChild, fetchMock, scripts, windowMock } = installBrowserMocks(
+      '/confirmacion/500-extra?fbclid=test&utm_source=meta&utm_medium=paid',
+    );
+    const { trackEvent } = await loadAnalytics();
+
+    const result = await trackEvent('CompleteRegistration', {
+      event_id: 'pame_500_extra_organic',
+    });
+
+    expect(result).toMatchObject({
+      eventName: 'CompleteRegistration',
+      capiAttempted: false,
+      capiSent: false,
+      metaBrowserAttempted: false,
+      metaBrowserSent: false,
+      tiktokAttempted: false,
+      tiktokSent: false,
+    });
+    expect(scripts.size).toBe(0);
+    expect(appendChild).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(windowMock).not.toHaveProperty('fbq');
   });
 
   it('loads pixels and calls CAPI under the ads prefix', async () => {
@@ -121,7 +146,7 @@ describe('ads tracking route gate', () => {
     await expect(trackEvent('PageView')).resolves.toMatchObject({
       capiSent: true,
       metaBrowserSent: true,
-      tiktokBrowserSent: true,
+      tiktokSent: true,
     });
     expect(scripts.get('boilerplate-meta-pixel-script')?.src).toBe(
       'https://connect.facebook.net/en_US/fbevents.js',
@@ -147,12 +172,121 @@ describe('ads tracking route gate', () => {
     ).resolves.toMatchObject({
       capiSent: false,
       metaBrowserSent: false,
-      tiktokBrowserSent: false,
+      tiktokSent: false,
     });
     expect(scripts.size).toBe(0);
     expect(appendChild).not.toHaveBeenCalled();
     expect(fetchMock).not.toHaveBeenCalled();
     expect(windowMock).not.toHaveProperty('fbq');
+  });
+
+  it('returns metaBrowserSent true when CompleteRegistration invokes fbq under /x9m', async () => {
+    const { fetchMock, windowMock } = installBrowserMocks('/x9m/confirmacion/500-extra');
+    const { trackEvent } = await loadAnalytics({
+      capiWebhookUrl: '',
+      metaPixelId: '123456789',
+      siteId: 'PAME_FLORES_CREA',
+      tiktokPixelId: '',
+    });
+
+    const result = await trackEvent('CompleteRegistration', {
+      event_id: 'pame_500_extra_browser_only',
+    });
+
+    expect(result).toMatchObject({
+      eventName: 'CompleteRegistration',
+      eventId: 'pame_500_extra_browser_only',
+      metaBrowserAttempted: true,
+      metaBrowserSent: true,
+      capiAttempted: false,
+      capiSent: false,
+    });
+    expect((windowMock as { fbq?: { queue?: unknown[] } }).fbq?.queue).toContainEqual([
+      'track',
+      'CompleteRegistration',
+      expect.objectContaining({
+        current_path: '/x9m/confirmacion/500-extra',
+        traffic_channel: 'ads',
+      }),
+      { eventID: 'pame_500_extra_browser_only' },
+    ]);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('returns capiSent true only when the relay responds OK', async () => {
+    const { fetchMock } = installBrowserMocks('/x9m/confirmacion/500-extra');
+    const { trackEvent } = await loadAnalytics({
+      capiWebhookUrl: 'https://relay.example/v1/events',
+      metaPixelId: '',
+      siteId: 'PAME_FLORES_CREA',
+      tiktokPixelId: '',
+    });
+
+    await expect(
+      trackEvent('CompleteRegistration', { event_id: 'pame_500_extra_capi_ok' }),
+    ).resolves.toMatchObject({
+      capiAttempted: true,
+      capiSent: true,
+      metaBrowserAttempted: false,
+      metaBrowserSent: false,
+    });
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://relay.example/v1/events',
+      expect.objectContaining({
+        keepalive: true,
+        method: 'POST',
+      }),
+    );
+  });
+
+  it('returns capiSent false when the relay responds with a non-OK status', async () => {
+    const { fetchMock } = installBrowserMocks('/x9m/confirmacion/500-extra');
+    fetchMock.mockResolvedValueOnce({ ok: false, status: 500 });
+    const { trackEvent } = await loadAnalytics({
+      capiWebhookUrl: 'https://relay.example/v1/events',
+      metaPixelId: '',
+      siteId: 'PAME_FLORES_CREA',
+      tiktokPixelId: '',
+    });
+
+    const result = await trackEvent('CompleteRegistration', {
+      event_id: 'pame_500_extra_capi_500',
+    });
+
+    expect(result).toMatchObject({
+      capiAttempted: true,
+      capiSent: false,
+      metaBrowserSent: false,
+    });
+    expect(result.errors).toContainEqual({
+      provider: 'capi',
+      message: 'CAPI relay responded with status 500.',
+    });
+  });
+
+  it('returns capiSent false when the relay fetch throws', async () => {
+    const { fetchMock } = installBrowserMocks('/x9m/confirmacion/500-extra');
+    fetchMock.mockRejectedValueOnce(new Error('Network failed for https://relay.example/v1/events'));
+    const { trackEvent } = await loadAnalytics({
+      capiWebhookUrl: 'https://relay.example/v1/events',
+      metaPixelId: '',
+      siteId: 'PAME_FLORES_CREA',
+      tiktokPixelId: '',
+    });
+
+    const result = await trackEvent('CompleteRegistration', {
+      event_id: 'pame_500_extra_capi_error',
+    });
+
+    expect(result).toMatchObject({
+      capiAttempted: true,
+      capiSent: false,
+      metaBrowserSent: false,
+    });
+    expect(result.errors?.[0]).toMatchObject({
+      provider: 'capi',
+      message: 'Network failed for [url]',
+    });
   });
 
   it('deduplicates events by sharing one event id across Meta Pixel and CAPI', async () => {
@@ -235,7 +369,7 @@ describe('ads tracking route gate', () => {
       eventId: 'pame_500_extra_stable_event',
       capiSent: true,
       metaBrowserSent: true,
-      tiktokBrowserSent: false,
+      tiktokSent: false,
     });
     expect((windowMock as { fbq?: { queue?: unknown[] } }).fbq?.queue).toContainEqual([
       'track',

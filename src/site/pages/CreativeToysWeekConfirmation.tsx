@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { CheckCircle2, MessageCircle } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import funnelConfig from '../../core/config/funnel.config';
@@ -6,45 +6,44 @@ import analytics from '../../core/services/analytics';
 import {
   CREATIVE_TOYS_ASSETS,
   CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME,
-  CREATIVE_TOYS_REGISTRATION_KEY,
+  didCreativeToysTrackingSend,
   getCreativeToysWhatsAppUrl,
+  markCreativeToysPendingConversionAttemptFailed,
   markCreativeToysPendingConversionSent,
   readCreativeToysPendingConversion,
+  readCreativeToysRegistrationSnapshot,
   scheduleCreativeToysWhatsAppRedirect,
   shouldAutoRedirectToCreativeToysWhatsApp,
   shouldTrackCreativeToysCompleteRegistration,
+  summarizeCreativeToysTrackingResult,
   type CreativeToysRegistrationSnapshot,
 } from '../registration/creativeToysRegistration';
 
-function readRegistrationSnapshot(): CreativeToysRegistrationSnapshot | null {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-
-  try {
-    const storedValue = window.localStorage.getItem(CREATIVE_TOYS_REGISTRATION_KEY);
-
-    if (!storedValue) {
-      return null;
-    }
-
-    return JSON.parse(storedValue) as CreativeToysRegistrationSnapshot;
-  } catch {
-    return null;
-  }
-}
+const CREATIVE_TOYS_TRACKING_REDIRECT_TIMEOUT_MS = 2000;
 
 export function CreativeToysWeekConfirmation() {
   const location = useLocation();
   const whatsappGroupUrl = getCreativeToysWhatsAppUrl(location.pathname);
-  const [snapshot] = useState(() => readRegistrationSnapshot());
+  const [snapshot] = useState<CreativeToysRegistrationSnapshot | null>(() =>
+    readCreativeToysRegistrationSnapshot(),
+  );
+  const [redirectReady, setRedirectReady] = useState(false);
+  const trackingAttemptStartedRef = useRef(false);
   const firstName = useMemo(() => snapshot?.lead_name.split(' ')[0] ?? '', [snapshot]);
   const shouldAutoRedirect = shouldAutoRedirectToCreativeToysWhatsApp(whatsappGroupUrl);
 
   useEffect(() => {
-    const pendingConversion = readCreativeToysPendingConversion(window.localStorage);
+    let isMounted = true;
+    const markRedirectReady = () => {
+      if (isMounted) {
+        setRedirectReady(true);
+      }
+    };
+
+    const pendingConversion = readCreativeToysPendingConversion();
 
     if (
+      trackingAttemptStartedRef.current ||
       !pendingConversion ||
       !shouldTrackCreativeToysCompleteRegistration(location.pathname, pendingConversion, {
         capiWebhookUrl: funnelConfig.integrations.capiWebhookUrl,
@@ -52,43 +51,71 @@ export function CreativeToysWeekConfirmation() {
         tiktokPixelId: funnelConfig.integrations.tiktokPixelId,
       })
     ) {
-      return;
+      markRedirectReady();
+      return () => {
+        isMounted = false;
+      };
     }
 
-    void analytics
-      .trackEvent(CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME, {
-        event_id: pendingConversion.event_id,
-        lead: {
-          nombre: pendingConversion.lead_name,
-          email: pendingConversion.lead_email,
-        },
-        capture_ok_at: pendingConversion.capture_ok_at,
-        confirmation_path: pendingConversion.confirmation_path,
-        source_path: pendingConversion.source_path,
-        traffic_channel: pendingConversion.traffic_channel,
+    trackingAttemptStartedRef.current = true;
+
+    const trackingPromise = analytics.trackEvent(CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME, {
+      event_id: pendingConversion.event_id,
+      lead: {
+        nombre: pendingConversion.lead_name,
+        email: pendingConversion.lead_email,
+      },
+      capture_ok_at: pendingConversion.capture_ok_at,
+      confirmation_path: pendingConversion.confirmation_path,
+      source_path: pendingConversion.source_path,
+      traffic_channel: pendingConversion.traffic_channel,
+    });
+
+    void trackingPromise
+      .then((trackingResult) => {
+        const attemptedAt = new Date().toISOString();
+
+        if (didCreativeToysTrackingSend(trackingResult)) {
+          markCreativeToysPendingConversionSent(
+            undefined,
+            pendingConversion,
+            attemptedAt,
+            summarizeCreativeToysTrackingResult(trackingResult),
+          );
+          return;
+        }
+
+        markCreativeToysPendingConversionAttemptFailed(pendingConversion, attemptedAt);
       })
-      .then(() => {
-        markCreativeToysPendingConversionSent(
-          window.localStorage,
+      .catch(() => {
+        markCreativeToysPendingConversionAttemptFailed(
           pendingConversion,
           new Date().toISOString(),
         );
-      })
-      .catch((trackingError: unknown) => {
         console.warn(
-          '[CreativeToysWeekConfirmation] CompleteRegistration tracking failed',
-          trackingError,
+          '[CreativeToysWeekConfirmation] CompleteRegistration tracking did not complete.',
         );
       });
+
+    void Promise.race([
+      trackingPromise.catch(() => undefined),
+      new Promise((resolve) => {
+        window.setTimeout(resolve, CREATIVE_TOYS_TRACKING_REDIRECT_TIMEOUT_MS);
+      }),
+    ]).then(markRedirectReady);
+
+    return () => {
+      isMounted = false;
+    };
   }, [location.pathname]);
 
   useEffect(() => {
-    if (!shouldAutoRedirect) {
+    if (!shouldAutoRedirect || !redirectReady) {
       return undefined;
     }
 
     return scheduleCreativeToysWhatsAppRedirect(window, whatsappGroupUrl);
-  }, [shouldAutoRedirect, whatsappGroupUrl]);
+  }, [redirectReady, shouldAutoRedirect, whatsappGroupUrl]);
 
   return (
     <main className="min-h-screen bg-[#2b1163] text-white">

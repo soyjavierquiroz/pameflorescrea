@@ -7,12 +7,12 @@ import {
   buildCreativeToysPendingConversion,
   buildCreativeToysRegistrationPayload,
   buildCreativeToysRegistrationSnapshot,
-  CREATIVE_TOYS_PENDING_CONVERSION_KEY,
-  CREATIVE_TOYS_REGISTRATION_KEY,
   getCreativeToysCaptureEndpoint,
   getCreativeToysNavigationTargetAfterCapture,
   isCreativeToysCaptureOk,
+  storeCreativeToysPendingConversion,
   validateCreativeToysForm,
+  writeCreativeToysRegistrationSnapshot,
   type CreativeToysFormErrors,
 } from '../../registration/creativeToysRegistration';
 import {
@@ -113,7 +113,7 @@ export function CreativeToysForm({ id }: CreativeToysFormProps) {
         submittedAt,
         location.pathname,
       );
-      window.localStorage.setItem(CREATIVE_TOYS_REGISTRATION_KEY, JSON.stringify(snapshot));
+      writeCreativeToysRegistrationSnapshot(snapshot);
 
       const pendingConversion = buildCreativeToysPendingConversion({
         captureOk,
@@ -125,10 +125,7 @@ export function CreativeToysForm({ id }: CreativeToysFormProps) {
       });
 
       if (pendingConversion) {
-        window.localStorage.setItem(
-          CREATIVE_TOYS_PENDING_CONVERSION_KEY,
-          JSON.stringify(pendingConversion),
-        );
+        storeCreativeToysPendingConversion(pendingConversion);
       }
 
       navigate(navigationTarget);

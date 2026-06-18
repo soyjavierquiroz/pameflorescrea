@@ -37,12 +37,16 @@ export interface AnalyticsTrackEventData extends Record<string, unknown> {
   trackingEnabled?: boolean;
 }
 
-export interface TrackEventResult {
-  eventId: string;
+export interface AnalyticsEventResult {
+  eventName: string;
+  eventId?: string;
+  metaBrowserAttempted: boolean;
   metaBrowserSent: boolean;
-  tiktokBrowserSent: boolean;
+  capiAttempted: boolean;
   capiSent: boolean;
-  capiStatus: number | null;
+  tiktokAttempted?: boolean;
+  tiktokSent?: boolean;
+  errors?: Array<{ provider: string; message: string }>;
 }
 
 type MetaFbqQueueEntry = Array<unknown>;
@@ -400,6 +404,45 @@ const normalizeEventId = (value: unknown): string | null => {
   return normalized.length > 0 ? normalized : null;
 };
 
+const createAnalyticsEventResult = (
+  eventName: string,
+  eventId: string,
+): AnalyticsEventResult => ({
+  eventName,
+  eventId,
+  metaBrowserAttempted: false,
+  metaBrowserSent: false,
+  capiAttempted: false,
+  capiSent: false,
+  tiktokAttempted: false,
+  tiktokSent: false,
+  errors: [],
+});
+
+const sanitizeTrackingErrorMessage = (error: unknown): string => {
+  if (error instanceof Error && error.message.trim()) {
+    return error.message
+      .replace(/https?:\/\/[^\s"')]+/g, '[url]')
+      .replace(/[A-Za-z0-9_-]{24,}/g, '[redacted]');
+  }
+
+  return 'Tracking request failed.';
+};
+
+const appendTrackingError = (
+  result: AnalyticsEventResult,
+  provider: string,
+  error: unknown,
+): void => {
+  result.errors = [
+    ...(result.errors ?? []),
+    {
+      provider,
+      message: sanitizeTrackingErrorMessage(error),
+    },
+  ];
+};
+
 const extractStringValue = (value: unknown): string | undefined => {
   if (typeof value !== 'string') {
     return undefined;
@@ -663,19 +706,14 @@ const isMetaStandardEvent = (eventName: string): boolean => META_STANDARD_EVENTS
 const trackEvent = async (
   eventName: string,
   data: AnalyticsTrackEventData = {},
-): Promise<TrackEventResult> => {
+): Promise<AnalyticsEventResult> => {
   const attribution = resolveEventAttribution(data);
   const eventId = normalizeEventId(data.event_id) ?? normalizeEventId(data.eventId) ?? createEventId();
+  const result = createAnalyticsEventResult(eventName, eventId);
   const shouldSendAdsTracking = resolveAdsTrackingEnabled(attribution);
 
   if (!shouldSendAdsTracking) {
-    return {
-      eventId,
-      metaBrowserSent: false,
-      tiktokBrowserSent: false,
-      capiSent: false,
-      capiStatus: null,
-    };
+    return result;
   }
 
   const legacyAttribution = toLegacyAttributionData(attribution);
@@ -687,8 +725,9 @@ const trackEvent = async (
   const tiktokPixelId = normalizePixelId(funnelConfig.integrations.tiktokPixelId);
   const capiWebhookUrl = normalizePixelId(funnelConfig.integrations.capiWebhookUrl);
 
-  let metaBrowserSent = false;
   if (metaPixelId && isBrowserEnvironment()) {
+    result.metaBrowserAttempted = true;
+
     try {
       await ensureMetaReady(metaPixelId);
       const fbq = window.fbq;
@@ -696,15 +735,17 @@ const trackEvent = async (
       if (typeof fbq === 'function') {
         const method = isMetaStandardEvent(eventName) ? 'track' : 'trackCustom';
         fbq(method, eventName, eventData, { eventID: eventId });
-        metaBrowserSent = true;
+        result.metaBrowserSent = true;
       }
-    } catch {
-      metaBrowserSent = false;
+    } catch (error) {
+      result.metaBrowserSent = false;
+      appendTrackingError(result, 'meta_browser', error);
     }
   }
 
-  let tiktokBrowserSent = false;
   if (tiktokPixelId && isBrowserEnvironment()) {
+    result.tiktokAttempted = true;
+
     try {
       await ensureTikTokReady(tiktokPixelId);
       const ttq = window.ttq;
@@ -723,22 +764,18 @@ const trackEvent = async (
         ttq?.track?.(eventName, eventData, tiktokEventOptions);
       }
 
-      tiktokBrowserSent = Boolean(ttq?.page || ttq?.track);
-    } catch {
-      tiktokBrowserSent = false;
+      result.tiktokSent = Boolean(ttq?.page || ttq?.track);
+    } catch (error) {
+      result.tiktokSent = false;
+      appendTrackingError(result, 'tiktok_browser', error);
     }
   }
 
   if (!capiWebhookUrl) {
-    return {
-      eventId,
-      metaBrowserSent,
-      tiktokBrowserSent,
-      capiSent: false,
-      capiStatus: null,
-    };
+    return result;
   }
 
+  result.capiAttempted = true;
   const capiPayload = buildCapiPayload({
     anonymousId,
     attribution: legacyAttribution,
@@ -761,20 +798,21 @@ const trackEvent = async (
     });
 
     return {
-      eventId,
-      metaBrowserSent,
-      tiktokBrowserSent,
+      ...result,
       capiSent: response.ok,
-      capiStatus: response.status,
+      errors: response.ok
+        ? result.errors
+        : [
+            ...(result.errors ?? []),
+            {
+              provider: 'capi',
+              message: `CAPI relay responded with status ${response.status}.`,
+            },
+          ],
     };
-  } catch {
-    return {
-      eventId,
-      metaBrowserSent,
-      tiktokBrowserSent,
-      capiSent: false,
-      capiStatus: null,
-    };
+  } catch (error) {
+    appendTrackingError(result, 'capi', error);
+    return result;
   }
 };
 

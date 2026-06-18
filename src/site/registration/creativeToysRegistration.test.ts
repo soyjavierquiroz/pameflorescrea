@@ -11,16 +11,22 @@ import {
   CREATIVE_TOYS_EVENT_NAME,
   CREATIVE_TOYS_PENDING_CONVERSION_KEY,
   CREATIVE_TOYS_WHATSAPP_REDIRECT_DELAY_MS,
+  didCreativeToysTrackingSend,
   getCreativeToysWhatsAppUrl,
   getCreativeToysNavigationTargetAfterCapture,
   getCreativeToysConfirmationPath,
   isCreativeToysCaptureOk,
+  markCreativeToysPendingConversionAttemptFailed,
   markCreativeToysPendingConversionSent,
   readCreativeToysPendingConversion,
+  readCreativeToysRegistrationSnapshot,
   scheduleCreativeToysWhatsAppRedirect,
   shouldAutoRedirectToCreativeToysWhatsApp,
   shouldTrackCreativeToysCompleteRegistration,
+  storeCreativeToysPendingConversion,
+  summarizeCreativeToysTrackingResult,
   validateCreativeToysForm,
+  writeCreativeToysRegistrationSnapshot,
 } from './creativeToysRegistration';
 
 const trackingConfigured = {
@@ -41,6 +47,7 @@ function createStorageMock(initialValues: Record<string, string> = {}) {
 afterEach(() => {
   vi.useRealTimers();
   vi.unstubAllEnvs();
+  vi.unstubAllGlobals();
 });
 
 describe('creative toys registration helpers', () => {
@@ -294,6 +301,304 @@ describe('creative toys registration helpers', () => {
     ).toBe(false);
   });
 
+  it('marks confirmation pending as sent when Meta browser tracking was sent', () => {
+    const pendingConversion = buildCreativeToysPendingConversion({
+      captureOk: true,
+      confirmationPath: '/x9m/confirmacion/500-extra',
+      currentPath: '/x9m/500-extra',
+      email: 'pame@example.com',
+      eventId: 'pame_500_extra_meta_sent',
+      name: 'Pame',
+      registeredAt: '2026-06-17T00:00:00.000Z',
+    })!;
+    const storage = createStorageMock({
+      [CREATIVE_TOYS_PENDING_CONVERSION_KEY]: JSON.stringify(pendingConversion),
+    });
+    const trackingResult = {
+      eventId: 'pame_500_extra_meta_sent',
+      metaBrowserSent: true,
+      capiSent: false,
+    };
+
+    expect(didCreativeToysTrackingSend(trackingResult)).toBe(true);
+
+    const sentConversion = markCreativeToysPendingConversionSent(
+      storage,
+      pendingConversion,
+      '2026-06-17T00:00:05.000Z',
+      summarizeCreativeToysTrackingResult(trackingResult),
+    );
+
+    expect(sentConversion).toMatchObject({
+      sent: true,
+      tracking_result: {
+        event_id: 'pame_500_extra_meta_sent',
+        metaBrowserSent: true,
+        capiSent: false,
+      },
+    });
+  });
+
+  it('marks confirmation pending as sent when CAPI was sent even if Pixel failed', () => {
+    const pendingConversion = buildCreativeToysPendingConversion({
+      captureOk: true,
+      confirmationPath: '/x9m/confirmacion/500-extra',
+      currentPath: '/x9m/500-extra',
+      email: 'pame@example.com',
+      eventId: 'pame_500_extra_capi_sent',
+      name: 'Pame',
+      registeredAt: '2026-06-17T00:00:00.000Z',
+    })!;
+    const storage = createStorageMock({
+      [CREATIVE_TOYS_PENDING_CONVERSION_KEY]: JSON.stringify(pendingConversion),
+    });
+    const trackingResult = {
+      eventId: 'pame_500_extra_capi_sent',
+      metaBrowserSent: false,
+      capiSent: true,
+    };
+
+    expect(didCreativeToysTrackingSend(trackingResult)).toBe(true);
+
+    const sentConversion = markCreativeToysPendingConversionSent(
+      storage,
+      pendingConversion,
+      '2026-06-17T00:00:05.000Z',
+      summarizeCreativeToysTrackingResult(trackingResult),
+    );
+
+    expect(sentConversion).toMatchObject({
+      sent: true,
+      tracking_result: {
+        event_id: 'pame_500_extra_capi_sent',
+        metaBrowserSent: false,
+        capiSent: true,
+      },
+    });
+  });
+
+  it('does not mark confirmation pending as sent when Meta browser and CAPI both fail', () => {
+    const pendingConversion = buildCreativeToysPendingConversion({
+      captureOk: true,
+      confirmationPath: '/x9m/confirmacion/500-extra',
+      currentPath: '/x9m/500-extra',
+      email: 'pame@example.com',
+      eventId: 'pame_500_extra_both_failed',
+      name: 'Pame',
+      registeredAt: '2026-06-17T00:00:00.000Z',
+    })!;
+    const trackingResult = {
+      eventId: 'pame_500_extra_both_failed',
+      metaBrowserSent: false,
+      capiSent: false,
+    };
+
+    expect(didCreativeToysTrackingSend(trackingResult)).toBe(false);
+
+    const failedConversion = markCreativeToysPendingConversionAttemptFailed(
+      pendingConversion,
+      '2026-06-17T00:00:05.000Z',
+    );
+
+    expect(failedConversion).toMatchObject({
+      event_id: 'pame_500_extra_both_failed',
+      sent: false,
+      attempts: 1,
+      last_attempt_at: '2026-06-17T00:00:05.000Z',
+    });
+    expect(
+      shouldTrackCreativeToysCompleteRegistration(
+        '/x9m/confirmacion/500-extra',
+        failedConversion,
+        trackingConfigured,
+      ),
+    ).toBe(true);
+  });
+
+  it('lets a second ads registration overwrite a sent pending conversion with a new event id', () => {
+    const randomUUID = vi.fn().mockReturnValueOnce('first-registration').mockReturnValueOnce(
+      'second-registration',
+    );
+    vi.stubGlobal('crypto', { randomUUID });
+
+    const firstPendingConversion = buildCreativeToysPendingConversion({
+      captureOk: true,
+      confirmationPath: '/x9m/confirmacion/500-extra',
+      currentPath: '/x9m/500-extra',
+      email: 'first@example.com',
+      name: 'First Lead',
+      registeredAt: '2026-06-17T00:00:00.000Z',
+    })!;
+    const storage = createStorageMock({
+      [CREATIVE_TOYS_PENDING_CONVERSION_KEY]: JSON.stringify(firstPendingConversion),
+    });
+    markCreativeToysPendingConversionSent(
+      storage,
+      firstPendingConversion,
+      '2026-06-17T00:00:05.000Z',
+    );
+
+    const secondPendingConversion = buildCreativeToysPendingConversion({
+      captureOk: true,
+      confirmationPath: '/x9m/confirmacion/500-extra',
+      currentPath: '/x9m/500-extra',
+      email: 'second@example.com',
+      name: 'Second Lead',
+      registeredAt: '2026-06-17T00:01:00.000Z',
+    })!;
+
+    storage.setItem(
+      CREATIVE_TOYS_PENDING_CONVERSION_KEY,
+      JSON.stringify(secondPendingConversion),
+    );
+
+    expect(secondPendingConversion.event_id).not.toBe(firstPendingConversion.event_id);
+    expect(secondPendingConversion).toMatchObject({
+      lead_email: 'second@example.com',
+      sent: false,
+    });
+    expect(
+      shouldTrackCreativeToysCompleteRegistration(
+        '/x9m/confirmacion/500-extra',
+        readCreativeToysPendingConversion(storage),
+        trackingConfigured,
+      ),
+    ).toBe(true);
+  });
+
+  it('reads the newest pending conversion from fallback storage so refresh can retry sent:false', () => {
+    const oldPendingConversion = buildCreativeToysPendingConversion({
+      captureOk: true,
+      confirmationPath: '/x9m/confirmacion/500-extra',
+      currentPath: '/x9m/500-extra',
+      email: 'old@example.com',
+      eventId: 'pame_500_extra_old',
+      name: 'Old Lead',
+      registeredAt: '2026-06-17T00:00:00.000Z',
+    })!;
+    const retryPendingConversion = {
+      ...buildCreativeToysPendingConversion({
+        captureOk: true,
+        confirmationPath: '/x9m/confirmacion/500-extra',
+        currentPath: '/x9m/500-extra',
+        email: 'retry@example.com',
+        eventId: 'pame_500_extra_retry',
+        name: 'Retry Lead',
+        registeredAt: '2026-06-17T00:01:00.000Z',
+      })!,
+      attempts: 1,
+      last_attempt_at: '2026-06-17T00:01:05.000Z',
+      sent: false,
+    };
+    const localStorage = createStorageMock({
+      [CREATIVE_TOYS_PENDING_CONVERSION_KEY]: JSON.stringify(oldPendingConversion),
+    });
+    const sessionStorage = createStorageMock({
+      [CREATIVE_TOYS_PENDING_CONVERSION_KEY]: JSON.stringify(retryPendingConversion),
+    });
+    vi.stubGlobal('window', { localStorage, sessionStorage });
+
+    const pendingConversion = readCreativeToysPendingConversion();
+
+    expect(pendingConversion).toMatchObject({
+      event_id: 'pame_500_extra_retry',
+      sent: false,
+      attempts: 1,
+    });
+    expect(
+      shouldTrackCreativeToysCompleteRegistration(
+        '/x9m/confirmacion/500-extra',
+        pendingConversion,
+        trackingConfigured,
+      ),
+    ).toBe(true);
+  });
+
+  it('stores pending conversion in sessionStorage when localStorage fails after capture OK', () => {
+    const pendingConversion = buildCreativeToysPendingConversion({
+      captureOk: true,
+      confirmationPath: '/x9m/confirmacion/500-extra',
+      currentPath: '/x9m/500-extra',
+      email: 'session@example.com',
+      eventId: 'pame_500_extra_session_fallback',
+      name: 'Session Fallback',
+      registeredAt: '2026-06-17T00:02:00.000Z',
+    })!;
+    const localStorage = {
+      getItem: vi.fn(() => {
+        throw new Error('localStorage unavailable');
+      }),
+      setItem: vi.fn(() => {
+        throw new Error('localStorage unavailable');
+      }),
+    };
+    const sessionStorage = createStorageMock();
+    vi.stubGlobal('window', { localStorage, sessionStorage });
+
+    expect(() => storeCreativeToysPendingConversion(pendingConversion)).not.toThrow();
+
+    expect(sessionStorage.setItem).toHaveBeenCalledWith(
+      CREATIVE_TOYS_PENDING_CONVERSION_KEY,
+      JSON.stringify(pendingConversion),
+    );
+    expect(readCreativeToysPendingConversion()).toMatchObject({
+      event_id: 'pame_500_extra_session_fallback',
+      sent: false,
+    });
+  });
+
+  it('uses in-memory pending conversion when localStorage and sessionStorage both fail', () => {
+    const pendingConversion = buildCreativeToysPendingConversion({
+      captureOk: true,
+      confirmationPath: '/x9m/confirmacion/500-extra',
+      currentPath: '/x9m/500-extra',
+      email: 'memory@example.com',
+      eventId: 'pame_500_extra_memory_fallback',
+      name: 'Memory Fallback',
+      registeredAt: '2026-06-17T00:03:00.000Z',
+    })!;
+    const failingStorage = {
+      getItem: vi.fn(() => {
+        throw new Error('storage unavailable');
+      }),
+      setItem: vi.fn(() => {
+        throw new Error('storage unavailable');
+      }),
+    };
+    vi.stubGlobal('window', {
+      localStorage: failingStorage,
+      sessionStorage: failingStorage,
+    });
+
+    expect(() => storeCreativeToysPendingConversion(pendingConversion)).not.toThrow();
+    expect(readCreativeToysPendingConversion()).toMatchObject({
+      event_id: 'pame_500_extra_memory_fallback',
+      sent: false,
+    });
+  });
+
+  it('does not throw when registration snapshot storage fails after capture OK', () => {
+    const snapshot = {
+      lead_name: 'Pame',
+      lead_email: 'pame@example.com',
+      registered_at: '2026-06-17T00:04:00.000Z',
+      source_path: '/x9m/500-extra',
+    };
+    const localStorage = {
+      getItem: vi.fn(() => {
+        throw new Error('localStorage unavailable');
+      }),
+      setItem: vi.fn(() => {
+        throw new Error('localStorage unavailable');
+      }),
+    };
+    const sessionStorage = createStorageMock();
+    vi.stubGlobal('window', { localStorage, sessionStorage });
+
+    expect(() => writeCreativeToysRegistrationSnapshot(snapshot)).not.toThrow();
+    expect(readCreativeToysRegistrationSnapshot()).toEqual(snapshot);
+  });
+
   it('uses the organic WhatsApp URL on the organic confirmation route', () => {
     vi.stubEnv('VITE_WHATSAPP_GROUP_URL_ORGANIC', '  https://wa.local/organic  ');
     vi.stubEnv('VITE_WHATSAPP_GROUP_URL_ADS', 'https://wa.local/ads');
@@ -393,11 +698,29 @@ describe('creative toys registration helpers', () => {
 
     expect(formSource).not.toContain('analytics.trackEvent');
     expect(formSource).not.toContain('CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME');
+    expect(formSource).not.toContain('window.localStorage.setItem');
     expect(formSource).not.toContain('Lead');
     expect(confirmationSource).toContain('analytics');
     expect(confirmationSource).toContain('CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME');
     expect(confirmationSource).not.toContain('Purchase');
     expect(confirmationSource).not.toContain('InitiateCheckout');
+  });
+
+  it('starts confirmation tracking before scheduling the WhatsApp redirect', () => {
+    const confirmationSource = readFileSync(
+      join(process.cwd(), 'src/site/pages/CreativeToysWeekConfirmation.tsx'),
+      'utf8',
+    );
+
+    expect(confirmationSource.indexOf('const trackingPromise = analytics.trackEvent')).toBeGreaterThan(
+      -1,
+    );
+    expect(
+      confirmationSource.indexOf('return scheduleCreativeToysWhatsAppRedirect'),
+    ).toBeGreaterThan(-1);
+    expect(confirmationSource.indexOf('const trackingPromise = analytics.trackEvent')).toBeLessThan(
+      confirmationSource.indexOf('return scheduleCreativeToysWhatsAppRedirect'),
+    );
   });
 
   it('references local assets that exist', () => {

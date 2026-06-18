@@ -1,4 +1,4 @@
-import type { AttributionEventFields } from '../../core/services/analytics';
+import type { AnalyticsEventResult, AttributionEventFields } from '../../core/services/analytics';
 import { buildAttributionEventFields } from '../../core/services/analytics';
 import { isAdsRoutePath, withAdsRoutePrefix } from '../../core/routing/adsRoute';
 import type { ResolvedAttribution, TrafficChannel } from '../../core/attribution';
@@ -76,6 +76,15 @@ export interface CreativeToysPendingConversion {
   capture_ok_at: string;
   sent: boolean;
   sent_at?: string;
+  last_attempt_at?: string;
+  attempts?: number;
+  tracking_result?: CreativeToysTrackingResultSummary;
+}
+
+export interface CreativeToysTrackingResultSummary {
+  metaBrowserSent: boolean;
+  capiSent: boolean;
+  event_id: string;
 }
 
 export interface BuildCreativeToysRegistrationPayloadInput {
@@ -121,6 +130,10 @@ export interface BuildCreativeToysPendingConversionInput {
   registeredAt: string;
 }
 
+type PendingConversionStorage = Pick<Storage, 'getItem' | 'setItem'>;
+
+const inMemoryStorage = new Map<string, string>();
+
 function normalizeText(value: string): string {
   return value.trim().replace(/\s+/g, ' ');
 }
@@ -129,6 +142,90 @@ function readPublicEnvValue(key: string): string {
   const env = import.meta.env as Record<string, string | undefined>;
 
   return env[key]?.trim() ?? '';
+}
+
+function readStorageItem(storage: Pick<Storage, 'getItem'> | null, key: string): string | null {
+  if (!storage) {
+    return null;
+  }
+
+  try {
+    return storage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function writeStorageItem(
+  storage: Pick<Storage, 'setItem'> | null,
+  key: string,
+  value: string,
+): boolean {
+  if (!storage) {
+    return false;
+  }
+
+  try {
+    storage.setItem(key, value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function getBrowserStorage(kind: 'localStorage' | 'sessionStorage'): PendingConversionStorage | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  try {
+    return window[kind];
+  } catch {
+    return null;
+  }
+}
+
+function parseCreativeToysPendingConversion(
+  storedValue: string | null,
+): CreativeToysPendingConversion | null {
+  if (!storedValue) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(storedValue) as CreativeToysPendingConversion;
+  } catch {
+    return null;
+  }
+}
+
+function getPendingConversionTimestamp(pendingConversion: CreativeToysPendingConversion): string {
+  return (
+    pendingConversion.sent_at ??
+    pendingConversion.last_attempt_at ??
+    pendingConversion.capture_ok_at
+  );
+}
+
+function chooseNewestPendingConversion(
+  current: CreativeToysPendingConversion | null,
+  next: CreativeToysPendingConversion | null,
+): CreativeToysPendingConversion | null {
+  if (!next) {
+    return current;
+  }
+
+  if (!current) {
+    return next;
+  }
+
+  if (current.event_id === next.event_id && next.sent && !current.sent) {
+    return next;
+  }
+
+  return getPendingConversionTimestamp(next) >= getPendingConversionTimestamp(current)
+    ? next
+    : current;
 }
 
 export function isValidCreativeToysEmail(value: string): boolean {
@@ -344,34 +441,130 @@ export function shouldTrackCreativeToysCompleteRegistration(
   );
 }
 
+export function storeCreativeToysPendingConversion(
+  pendingConversion: CreativeToysPendingConversion,
+): CreativeToysPendingConversion {
+  const serializedPendingConversion = JSON.stringify(pendingConversion);
+
+  writeStorageItem(
+    getBrowserStorage('localStorage'),
+    CREATIVE_TOYS_PENDING_CONVERSION_KEY,
+    serializedPendingConversion,
+  );
+  writeStorageItem(
+    getBrowserStorage('sessionStorage'),
+    CREATIVE_TOYS_PENDING_CONVERSION_KEY,
+    serializedPendingConversion,
+  );
+  inMemoryStorage.set(CREATIVE_TOYS_PENDING_CONVERSION_KEY, serializedPendingConversion);
+
+  return pendingConversion;
+}
+
 export function readCreativeToysPendingConversion(
-  storage: Pick<Storage, 'getItem'>,
+  storage?: Pick<Storage, 'getItem'>,
 ): CreativeToysPendingConversion | null {
+  if (storage) {
+    return parseCreativeToysPendingConversion(
+      readStorageItem(storage, CREATIVE_TOYS_PENDING_CONVERSION_KEY),
+    );
+  }
+
+  return [
+    parseCreativeToysPendingConversion(
+      readStorageItem(getBrowserStorage('localStorage'), CREATIVE_TOYS_PENDING_CONVERSION_KEY),
+    ),
+    parseCreativeToysPendingConversion(
+      readStorageItem(getBrowserStorage('sessionStorage'), CREATIVE_TOYS_PENDING_CONVERSION_KEY),
+    ),
+    parseCreativeToysPendingConversion(
+      inMemoryStorage.get(CREATIVE_TOYS_PENDING_CONVERSION_KEY) ?? null,
+    ),
+  ].reduce<CreativeToysPendingConversion | null>(chooseNewestPendingConversion, null);
+}
+
+export function writeCreativeToysRegistrationSnapshot(
+  snapshot: CreativeToysRegistrationSnapshot,
+): void {
+  const serializedSnapshot = JSON.stringify(snapshot);
+
+  writeStorageItem(getBrowserStorage('localStorage'), CREATIVE_TOYS_REGISTRATION_KEY, serializedSnapshot);
+  writeStorageItem(getBrowserStorage('sessionStorage'), CREATIVE_TOYS_REGISTRATION_KEY, serializedSnapshot);
+  inMemoryStorage.set(CREATIVE_TOYS_REGISTRATION_KEY, serializedSnapshot);
+}
+
+export function readCreativeToysRegistrationSnapshot(): CreativeToysRegistrationSnapshot | null {
+  const storedSnapshot =
+    readStorageItem(getBrowserStorage('localStorage'), CREATIVE_TOYS_REGISTRATION_KEY) ??
+    readStorageItem(getBrowserStorage('sessionStorage'), CREATIVE_TOYS_REGISTRATION_KEY) ??
+    inMemoryStorage.get(CREATIVE_TOYS_REGISTRATION_KEY) ??
+    null;
+
+  if (!storedSnapshot) {
+    return null;
+  }
+
   try {
-    const storedValue = storage.getItem(CREATIVE_TOYS_PENDING_CONVERSION_KEY);
-
-    if (!storedValue) {
-      return null;
-    }
-
-    return JSON.parse(storedValue) as CreativeToysPendingConversion;
+    return JSON.parse(storedSnapshot) as CreativeToysRegistrationSnapshot;
   } catch {
     return null;
   }
 }
 
+export function summarizeCreativeToysTrackingResult(
+  result: Pick<AnalyticsEventResult, 'capiSent' | 'eventId' | 'metaBrowserSent'>,
+): CreativeToysTrackingResultSummary {
+  return {
+    metaBrowserSent: result.metaBrowserSent,
+    capiSent: result.capiSent,
+    event_id: result.eventId ?? '',
+  };
+}
+
+export function didCreativeToysTrackingSend(
+  result: Pick<AnalyticsEventResult, 'capiSent' | 'metaBrowserSent'>,
+): boolean {
+  return result.metaBrowserSent || result.capiSent;
+}
+
 export function markCreativeToysPendingConversionSent(
-  storage: Pick<Storage, 'setItem'>,
+  storage: Pick<Storage, 'setItem'> | null | undefined,
   pendingConversion: CreativeToysPendingConversion,
   sentAt: string,
+  trackingResult?: CreativeToysTrackingResultSummary,
 ): CreativeToysPendingConversion {
   const sentConversion = {
     ...pendingConversion,
     sent: true,
     sent_at: sentAt,
+    tracking_result: trackingResult,
   };
 
-  storage.setItem(CREATIVE_TOYS_PENDING_CONVERSION_KEY, JSON.stringify(sentConversion));
+  if (storage) {
+    writeStorageItem(
+      storage,
+      CREATIVE_TOYS_PENDING_CONVERSION_KEY,
+      JSON.stringify(sentConversion),
+    );
+  } else {
+    storeCreativeToysPendingConversion(sentConversion);
+  }
 
   return sentConversion;
+}
+
+export function markCreativeToysPendingConversionAttemptFailed(
+  pendingConversion: CreativeToysPendingConversion,
+  attemptedAt: string,
+): CreativeToysPendingConversion {
+  const failedConversion = {
+    ...pendingConversion,
+    attempts: (pendingConversion.attempts ?? 0) + 1,
+    last_attempt_at: attemptedAt,
+    sent: false,
+  };
+
+  storeCreativeToysPendingConversion(failedConversion);
+
+  return failedConversion;
 }
