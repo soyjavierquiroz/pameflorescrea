@@ -84,7 +84,7 @@ afterEach(() => {
 describe('ads tracking route gate', () => {
   it('does not load pixels or call CAPI outside the ads prefix even with trackingEnabled', async () => {
     const { appendChild, fetchMock, scripts, windowMock } =
-      installBrowserMocks('/oferta?fbclid=test');
+      installBrowserMocks('/500-extra?fbclid=test');
     const { trackEvent } = await loadAnalytics();
 
     const result = await trackEvent('InitiateCheckout', { trackingEnabled: true });
@@ -102,7 +102,7 @@ describe('ads tracking route gate', () => {
   });
 
   it('does not load pixels or call CAPI outside the ads prefix with paid UTMs', async () => {
-    const { fetchMock, scripts } = installBrowserMocks('/oferta?utm_medium=paid');
+    const { fetchMock, scripts } = installBrowserMocks('/500-extra?utm_medium=paid');
     const { trackEvent } = await loadAnalytics();
 
     await expect(trackEvent('PageView')).resolves.toMatchObject({
@@ -115,7 +115,7 @@ describe('ads tracking route gate', () => {
   });
 
   it('loads pixels and calls CAPI under the ads prefix', async () => {
-    const { fetchMock, scripts } = installBrowserMocks('/x9m/oferta?fbclid=test');
+    const { fetchMock, scripts } = installBrowserMocks('/x9m/500-extra?fbclid=test');
     const { trackEvent } = await loadAnalytics();
 
     await expect(trackEvent('PageView')).resolves.toMatchObject({
