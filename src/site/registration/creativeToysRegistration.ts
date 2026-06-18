@@ -5,8 +5,9 @@ import type { ResolvedAttribution, TrafficChannel } from '../../core/attribution
 import type { VisitorPayload } from '../../core/visitor/visitorPayload';
 
 export const CREATIVE_TOYS_REGISTRATION_KEY = 'pame_500_extra_registration_v1';
+export const CREATIVE_TOYS_PENDING_CONVERSION_KEY = 'pame_500_extra_pending_conversion_v1';
 export const CREATIVE_TOYS_LANDING_SLUG = '500-extra';
-export const CREATIVE_TOYS_LEAD_EVENT_NAME = 'Lead';
+export const CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME = 'CompleteRegistration';
 export const CREATIVE_TOYS_EVENT_NAME = 'SEMANA DEL EMPRENDIMIENTO CON JUGUETES CREATIVOS';
 export const CREATIVE_TOYS_SOURCE = 'pameflorescrea.com';
 export const CREATIVE_TOYS_ORGANIC_LANDING_PATH = '/500-extra';
@@ -64,6 +65,19 @@ export interface CreativeToysRegistrationSnapshot {
   source_path: string;
 }
 
+export interface CreativeToysPendingConversion {
+  event_name: typeof CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME;
+  event_id: string;
+  lead_email: string;
+  lead_name: string;
+  source_path: string;
+  confirmation_path: string;
+  traffic_channel: 'ads';
+  capture_ok_at: string;
+  sent: boolean;
+  sent_at?: string;
+}
+
 export interface BuildCreativeToysRegistrationPayloadInput {
   name: string;
   email: string;
@@ -95,6 +109,16 @@ export interface CreativeToysRegistrationPayload
   submitted_at: string;
   attribution: AttributionEventFields;
   user_agent: string;
+}
+
+export interface BuildCreativeToysPendingConversionInput {
+  captureOk: boolean;
+  confirmationPath: string;
+  currentPath: string;
+  email: string;
+  eventId?: string;
+  name: string;
+  registeredAt: string;
 }
 
 function normalizeText(value: string): string {
@@ -200,6 +224,51 @@ export function buildCreativeToysRegistrationSnapshot(
   };
 }
 
+export function createCreativeToysConversionEventId(): string {
+  const suffix =
+    typeof globalThis.crypto !== 'undefined' && typeof globalThis.crypto.randomUUID === 'function'
+      ? globalThis.crypto.randomUUID()
+      : Math.random().toString(36).slice(2, 12);
+
+  return `pame_500_extra_${Date.now()}_${suffix}`;
+}
+
+export function buildCreativeToysPendingConversion({
+  captureOk,
+  confirmationPath,
+  currentPath,
+  email,
+  eventId,
+  name,
+  registeredAt,
+}: BuildCreativeToysPendingConversionInput): CreativeToysPendingConversion | null {
+  if (!captureOk || !isAdsRoutePath(currentPath)) {
+    return null;
+  }
+
+  return {
+    event_name: CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME,
+    event_id: eventId?.trim() || createCreativeToysConversionEventId(),
+    lead_email: email.trim().toLowerCase(),
+    lead_name: normalizeText(name),
+    source_path: currentPath,
+    confirmation_path: confirmationPath,
+    traffic_channel: 'ads',
+    capture_ok_at: registeredAt,
+    sent: false,
+  };
+}
+
+export function isCreativeToysConfirmationPathForPendingConversion(
+  pathname: string,
+  pendingConversion: CreativeToysPendingConversion,
+): boolean {
+  return (
+    pathname === pendingConversion.confirmation_path ||
+    pathname.startsWith(withAdsRoutePrefix(CREATIVE_TOYS_ORGANIC_CONFIRMATION_PATH))
+  );
+}
+
 export function buildCreativeToysRegistrationPayload({
   name,
   email,
@@ -250,15 +319,59 @@ export function hasCreativeToysAdsTrackingConfig(config: CreativeToysTrackingCon
   );
 }
 
-export function shouldTrackCreativeToysLead(
-  attribution: ResolvedAttribution,
-  captureOk: boolean,
+export function hasCreativeToysMetaConversionConfig(config: CreativeToysTrackingConfig): boolean {
+  return Boolean(config.metaPixelId?.trim() || config.capiWebhookUrl?.trim());
+}
+
+export function shouldTrackCreativeToysCompleteRegistration(
+  pathname: string,
+  pendingConversion: CreativeToysPendingConversion | null,
   trackingConfig: CreativeToysTrackingConfig,
 ): boolean {
+  if (!pendingConversion) {
+    return false;
+  }
+
   return (
-    captureOk &&
-    attribution.shouldTrackAds &&
-    isAdsRoutePath(attribution.currentPath) &&
-    hasCreativeToysAdsTrackingConfig(trackingConfig)
+    pendingConversion.event_name === CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME &&
+    Boolean(pendingConversion.event_id.trim()) &&
+    pendingConversion.sent !== true &&
+    pendingConversion.traffic_channel === 'ads' &&
+    isAdsRoutePath(pathname) &&
+    isAdsRoutePath(pendingConversion.source_path) &&
+    isCreativeToysConfirmationPathForPendingConversion(pathname, pendingConversion) &&
+    hasCreativeToysMetaConversionConfig(trackingConfig)
   );
+}
+
+export function readCreativeToysPendingConversion(
+  storage: Pick<Storage, 'getItem'>,
+): CreativeToysPendingConversion | null {
+  try {
+    const storedValue = storage.getItem(CREATIVE_TOYS_PENDING_CONVERSION_KEY);
+
+    if (!storedValue) {
+      return null;
+    }
+
+    return JSON.parse(storedValue) as CreativeToysPendingConversion;
+  } catch {
+    return null;
+  }
+}
+
+export function markCreativeToysPendingConversionSent(
+  storage: Pick<Storage, 'setItem'>,
+  pendingConversion: CreativeToysPendingConversion,
+  sentAt: string,
+): CreativeToysPendingConversion {
+  const sentConversion = {
+    ...pendingConversion,
+    sent: true,
+    sent_at: sentAt,
+  };
+
+  storage.setItem(CREATIVE_TOYS_PENDING_CONVERSION_KEY, JSON.stringify(sentConversion));
+
+  return sentConversion;
 }

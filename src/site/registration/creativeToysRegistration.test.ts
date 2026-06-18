@@ -4,18 +4,22 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { resolveAttribution } from '../../core/attribution';
 import { buildVisitorPayload } from '../../core/visitor/visitorPayload';
 import {
+  buildCreativeToysPendingConversion,
   buildCreativeToysRegistrationPayload,
   CREATIVE_TOYS_ASSETS,
+  CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME,
   CREATIVE_TOYS_EVENT_NAME,
-  CREATIVE_TOYS_LEAD_EVENT_NAME,
+  CREATIVE_TOYS_PENDING_CONVERSION_KEY,
   CREATIVE_TOYS_WHATSAPP_REDIRECT_DELAY_MS,
   getCreativeToysWhatsAppUrl,
   getCreativeToysNavigationTargetAfterCapture,
   getCreativeToysConfirmationPath,
   isCreativeToysCaptureOk,
+  markCreativeToysPendingConversionSent,
+  readCreativeToysPendingConversion,
   scheduleCreativeToysWhatsAppRedirect,
   shouldAutoRedirectToCreativeToysWhatsApp,
-  shouldTrackCreativeToysLead,
+  shouldTrackCreativeToysCompleteRegistration,
   validateCreativeToysForm,
 } from './creativeToysRegistration';
 
@@ -24,6 +28,15 @@ const trackingConfigured = {
   metaPixelId: '123456789',
   tiktokPixelId: '',
 };
+
+function createStorageMock(initialValues: Record<string, string> = {}) {
+  const storage = new Map(Object.entries(initialValues));
+
+  return {
+    getItem: vi.fn((key: string) => storage.get(key) ?? null),
+    setItem: vi.fn((key: string, value: string) => storage.set(key, value)),
+  };
+}
 
 afterEach(() => {
   vi.useRealTimers();
@@ -146,24 +159,139 @@ describe('creative toys registration helpers', () => {
     expect(payload.confirmation_path).toBe('/x9m/confirmacion/500-extra');
   });
 
-  it('only allows Lead tracking after capture OK, under ads path, and with tracking configured', () => {
-    const adsAttribution = resolveAttribution({
-      url: '/x9m/500-extra?fbclid=paid-click',
-      adsRoutePrefix: '/x9m',
-    });
-    const organicAttribution = resolveAttribution({
-      url: '/500-extra?fbclid=paid-click&utm_medium=paid',
-      adsRoutePrefix: '/x9m',
+  it('creates pending CompleteRegistration only after capture OK under /x9m', () => {
+    const pendingConversion = buildCreativeToysPendingConversion({
+      captureOk: true,
+      confirmationPath: '/x9m/confirmacion/500-extra',
+      currentPath: '/x9m/500-extra',
+      email: 'PAME@EXAMPLE.COM',
+      eventId: 'pame_500_extra_test',
+      name: '  Pame   Flores ',
+      registeredAt: '2026-06-17T00:00:00.000Z',
     });
 
-    expect(shouldTrackCreativeToysLead(adsAttribution, false, trackingConfigured)).toBe(false);
-    expect(shouldTrackCreativeToysLead(organicAttribution, true, trackingConfigured)).toBe(false);
-    expect(shouldTrackCreativeToysLead(adsAttribution, true, {
-      capiWebhookUrl: '',
-      metaPixelId: '',
-      tiktokPixelId: '',
-    })).toBe(false);
-    expect(shouldTrackCreativeToysLead(adsAttribution, true, trackingConfigured)).toBe(true);
+    expect(pendingConversion).toEqual({
+      event_name: CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME,
+      event_id: 'pame_500_extra_test',
+      lead_email: 'pame@example.com',
+      lead_name: 'Pame Flores',
+      source_path: '/x9m/500-extra',
+      confirmation_path: '/x9m/confirmacion/500-extra',
+      traffic_channel: 'ads',
+      capture_ok_at: '2026-06-17T00:00:00.000Z',
+      sent: false,
+    });
+
+    expect(
+      buildCreativeToysPendingConversion({
+        captureOk: false,
+        confirmationPath: '/x9m/confirmacion/500-extra',
+        currentPath: '/x9m/500-extra',
+        email: 'pame@example.com',
+        name: 'Pame',
+        registeredAt: '2026-06-17T00:00:00.000Z',
+      }),
+    ).toBeNull();
+
+    expect(
+      buildCreativeToysPendingConversion({
+        captureOk: true,
+        confirmationPath: '/confirmacion/500-extra',
+        currentPath: '/500-extra',
+        email: 'pame@example.com',
+        name: 'Pame',
+        registeredAt: '2026-06-17T00:00:00.000Z',
+      }),
+    ).toBeNull();
+  });
+
+  it('only allows CompleteRegistration on the ads confirmation route with Meta or CAPI configured', () => {
+    const pendingConversion = buildCreativeToysPendingConversion({
+      captureOk: true,
+      confirmationPath: '/x9m/confirmacion/500-extra',
+      currentPath: '/x9m/500-extra',
+      email: 'pame@example.com',
+      eventId: 'pame_500_extra_test',
+      name: 'Pame',
+      registeredAt: '2026-06-17T00:00:00.000Z',
+    });
+
+    expect(
+      shouldTrackCreativeToysCompleteRegistration(
+        '/x9m/confirmacion/500-extra',
+        null,
+        trackingConfigured,
+      ),
+    ).toBe(false);
+    expect(
+      shouldTrackCreativeToysCompleteRegistration(
+        '/x9m/confirmacion/500-extra',
+        { ...pendingConversion!, sent: true },
+        trackingConfigured,
+      ),
+    ).toBe(false);
+    expect(
+      shouldTrackCreativeToysCompleteRegistration(
+        '/confirmacion/500-extra',
+        pendingConversion,
+        trackingConfigured,
+      ),
+    ).toBe(false);
+    expect(
+      shouldTrackCreativeToysCompleteRegistration(
+        '/x9m/confirmacion/500-extra',
+        pendingConversion,
+        {
+          capiWebhookUrl: '',
+          metaPixelId: '',
+          tiktokPixelId: 'TEST_TIKTOK_ONLY',
+        },
+      ),
+    ).toBe(false);
+    expect(
+      shouldTrackCreativeToysCompleteRegistration(
+        '/x9m/confirmacion/500-extra',
+        pendingConversion,
+        trackingConfigured,
+      ),
+    ).toBe(true);
+  });
+
+  it('marks pending conversion as sent to avoid duplicate refresh tracking', () => {
+    const pendingConversion = buildCreativeToysPendingConversion({
+      captureOk: true,
+      confirmationPath: '/x9m/confirmacion/500-extra',
+      currentPath: '/x9m/500-extra',
+      email: 'pame@example.com',
+      eventId: 'pame_500_extra_test',
+      name: 'Pame',
+      registeredAt: '2026-06-17T00:00:00.000Z',
+    })!;
+    const storage = createStorageMock({
+      [CREATIVE_TOYS_PENDING_CONVERSION_KEY]: JSON.stringify(pendingConversion),
+    });
+
+    expect(readCreativeToysPendingConversion(storage)).toEqual(pendingConversion);
+
+    const sentConversion = markCreativeToysPendingConversionSent(
+      storage,
+      pendingConversion,
+      '2026-06-17T00:00:05.000Z',
+    );
+
+    expect(sentConversion).toMatchObject({
+      event_id: 'pame_500_extra_test',
+      sent: true,
+      sent_at: '2026-06-17T00:00:05.000Z',
+    });
+    expect(readCreativeToysPendingConversion(storage)).toEqual(sentConversion);
+    expect(
+      shouldTrackCreativeToysCompleteRegistration(
+        '/x9m/confirmacion/500-extra',
+        sentConversion,
+        trackingConfigured,
+      ),
+    ).toBe(false);
   });
 
   it('uses the organic WhatsApp URL on the organic confirmation route', () => {
@@ -246,11 +374,30 @@ describe('creative toys registration helpers', () => {
     expect(assign).not.toHaveBeenCalled();
   });
 
-  it('does not define checkout or purchase conversion events', () => {
-    expect(CREATIVE_TOYS_LEAD_EVENT_NAME).toBe('Lead');
-    expect(CREATIVE_TOYS_LEAD_EVENT_NAME).not.toBe('InitiateCheckout');
-    expect(CREATIVE_TOYS_LEAD_EVENT_NAME).not.toBe('Purchase');
-    expect(CREATIVE_TOYS_LEAD_EVENT_NAME).not.toBe('CompleteRegistration');
+  it('defines only CompleteRegistration as the creative toys conversion event', () => {
+    expect(CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME).toBe('CompleteRegistration');
+    expect(CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME).not.toBe('Lead');
+    expect(CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME).not.toBe('InitiateCheckout');
+    expect(CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME).not.toBe('Purchase');
+  });
+
+  it('keeps conversion tracking out of the submit handler and on the confirmation page', () => {
+    const formSource = readFileSync(
+      join(process.cwd(), 'src/site/components/creative-toys/CreativeToysForm.tsx'),
+      'utf8',
+    );
+    const confirmationSource = readFileSync(
+      join(process.cwd(), 'src/site/pages/CreativeToysWeekConfirmation.tsx'),
+      'utf8',
+    );
+
+    expect(formSource).not.toContain('analytics.trackEvent');
+    expect(formSource).not.toContain('CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME');
+    expect(formSource).not.toContain('Lead');
+    expect(confirmationSource).toContain('analytics');
+    expect(confirmationSource).toContain('CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME');
+    expect(confirmationSource).not.toContain('Purchase');
+    expect(confirmationSource).not.toContain('InitiateCheckout');
   });
 
   it('references local assets that exist', () => {

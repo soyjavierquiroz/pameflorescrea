@@ -142,7 +142,9 @@ describe('ads tracking route gate', () => {
       tiktokPixelId: '',
     });
 
-    await expect(trackEvent('Lead')).resolves.toMatchObject({
+    await expect(
+      trackEvent('CompleteRegistration', { event_id: 'pame_500_extra_test' }),
+    ).resolves.toMatchObject({
       capiSent: false,
       metaBrowserSent: false,
       tiktokBrowserSent: false,
@@ -207,6 +209,58 @@ describe('ads tracking route gate', () => {
       },
     });
     expect(capiPayload).not.toHaveProperty('eventId');
+  });
+
+  it('uses a supplied CompleteRegistration event_id for Meta Pixel and CAPI dedupe', async () => {
+    const { fetchMock, windowMock } = installBrowserMocks(
+      '/x9m/confirmacion/500-extra?fbclid=TEST_REGISTRATION_001',
+    );
+    const { trackEvent } = await loadAnalytics({
+      capiWebhookUrl: 'https://relay.example/v1/events',
+      metaPixelId: '123456789',
+      siteId: 'PAME_FLORES_CREA',
+      tiktokPixelId: '',
+    });
+
+    const result = await trackEvent('CompleteRegistration', {
+      event_id: 'pame_500_extra_stable_event',
+      lead: {
+        nombre: 'Pame',
+        email: 'pame@example.com',
+      },
+      confirmation_path: '/x9m/confirmacion/500-extra',
+    });
+
+    expect(result).toMatchObject({
+      eventId: 'pame_500_extra_stable_event',
+      capiSent: true,
+      metaBrowserSent: true,
+      tiktokBrowserSent: false,
+    });
+    expect((windowMock as { fbq?: { queue?: unknown[] } }).fbq?.queue).toContainEqual([
+      'track',
+      'CompleteRegistration',
+      expect.objectContaining({
+        confirmation_path: '/x9m/confirmacion/500-extra',
+        lead: {
+          nombre: 'Pame',
+          email: 'pame@example.com',
+        },
+      }),
+      { eventID: 'pame_500_extra_stable_event' },
+    ]);
+
+    const capiPayload = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body));
+
+    expect(capiPayload).toMatchObject({
+      event_name: 'CompleteRegistration',
+      event_id: 'pame_500_extra_stable_event',
+      data: expect.objectContaining({
+        confirmation_path: '/x9m/confirmacion/500-extra',
+      }),
+    });
+    expect(capiPayload.data).not.toHaveProperty('event_id');
+    expect(capiPayload.data).not.toHaveProperty('eventId');
   });
 
   it('does not synthesize strong conversion events from generic helpers', async () => {

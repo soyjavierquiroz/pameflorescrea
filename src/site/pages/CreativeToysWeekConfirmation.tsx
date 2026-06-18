@@ -1,12 +1,18 @@
 import { useEffect, useMemo, useState } from 'react';
 import { CheckCircle2, MessageCircle } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
+import funnelConfig from '../../core/config/funnel.config';
+import analytics from '../../core/services/analytics';
 import {
   CREATIVE_TOYS_ASSETS,
+  CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME,
   CREATIVE_TOYS_REGISTRATION_KEY,
   getCreativeToysWhatsAppUrl,
+  markCreativeToysPendingConversionSent,
+  readCreativeToysPendingConversion,
   scheduleCreativeToysWhatsAppRedirect,
   shouldAutoRedirectToCreativeToysWhatsApp,
+  shouldTrackCreativeToysCompleteRegistration,
   type CreativeToysRegistrationSnapshot,
 } from '../registration/creativeToysRegistration';
 
@@ -34,6 +40,47 @@ export function CreativeToysWeekConfirmation() {
   const [snapshot] = useState(() => readRegistrationSnapshot());
   const firstName = useMemo(() => snapshot?.lead_name.split(' ')[0] ?? '', [snapshot]);
   const shouldAutoRedirect = shouldAutoRedirectToCreativeToysWhatsApp(whatsappGroupUrl);
+
+  useEffect(() => {
+    const pendingConversion = readCreativeToysPendingConversion(window.localStorage);
+
+    if (
+      !pendingConversion ||
+      !shouldTrackCreativeToysCompleteRegistration(location.pathname, pendingConversion, {
+        capiWebhookUrl: funnelConfig.integrations.capiWebhookUrl,
+        metaPixelId: funnelConfig.integrations.metaPixelId,
+        tiktokPixelId: funnelConfig.integrations.tiktokPixelId,
+      })
+    ) {
+      return;
+    }
+
+    void analytics
+      .trackEvent(CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME, {
+        event_id: pendingConversion.event_id,
+        lead: {
+          nombre: pendingConversion.lead_name,
+          email: pendingConversion.lead_email,
+        },
+        capture_ok_at: pendingConversion.capture_ok_at,
+        confirmation_path: pendingConversion.confirmation_path,
+        source_path: pendingConversion.source_path,
+        traffic_channel: pendingConversion.traffic_channel,
+      })
+      .then(() => {
+        markCreativeToysPendingConversionSent(
+          window.localStorage,
+          pendingConversion,
+          new Date().toISOString(),
+        );
+      })
+      .catch((trackingError: unknown) => {
+        console.warn(
+          '[CreativeToysWeekConfirmation] CompleteRegistration tracking failed',
+          trackingError,
+        );
+      });
+  }, [location.pathname]);
 
   useEffect(() => {
     if (!shouldAutoRedirect) {

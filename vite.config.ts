@@ -1,6 +1,6 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
 const defaultHtmlEnv = {
@@ -109,6 +109,8 @@ function staticAdsEntryPlugin(mode: string) {
         mkdirSync(dirname(targetPath), { recursive: true });
         writeFileSync(targetPath, entry.html);
       }
+
+      rmSync(join(process.cwd(), 'dist', 'capture.php'), { force: true });
     },
   };
 }

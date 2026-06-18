@@ -1,19 +1,17 @@
 import { type ChangeEvent, type FormEvent, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import funnelConfig from '../../../core/config/funnel.config';
 import { resolveCurrentAttribution } from '../../../core/attribution';
-import analytics from '../../../core/services/analytics';
 import { useVisitor } from '../../../core/visitor/VisitorContext';
 import { buildVisitorPayload } from '../../../core/visitor/visitorPayload';
 import {
+  buildCreativeToysPendingConversion,
   buildCreativeToysRegistrationPayload,
   buildCreativeToysRegistrationSnapshot,
-  CREATIVE_TOYS_LEAD_EVENT_NAME,
+  CREATIVE_TOYS_PENDING_CONVERSION_KEY,
   CREATIVE_TOYS_REGISTRATION_KEY,
   getCreativeToysCaptureEndpoint,
   getCreativeToysNavigationTargetAfterCapture,
   isCreativeToysCaptureOk,
-  shouldTrackCreativeToysLead,
   validateCreativeToysForm,
   type CreativeToysFormErrors,
 } from '../../registration/creativeToysRegistration';
@@ -117,32 +115,20 @@ export function CreativeToysForm({ id }: CreativeToysFormProps) {
       );
       window.localStorage.setItem(CREATIVE_TOYS_REGISTRATION_KEY, JSON.stringify(snapshot));
 
-      if (
-        shouldTrackCreativeToysLead(attribution, true, {
-          capiWebhookUrl: funnelConfig.integrations.capiWebhookUrl,
-          metaPixelId: funnelConfig.integrations.metaPixelId,
-          tiktokPixelId: funnelConfig.integrations.tiktokPixelId,
-        })
-      ) {
-        try {
-          await analytics.trackEvent(CREATIVE_TOYS_LEAD_EVENT_NAME, {
-            lead: {
-              nombre: payload.first_name,
-              email: payload.email,
-            },
-            list: payload.list,
-            capture_list_slug: payload.capture_list_slug,
-            confirmation_path: payload.confirmation_path,
-            event_name: payload.event_name,
-            source: payload.source,
-            page_url: payload.page_url,
-            submitted_at: payload.submitted_at,
-            attribution,
-            visitor: payload.visitor,
-          });
-        } catch (trackingError) {
-          console.warn('[CreativeToysForm] lead tracking failed', trackingError);
-        }
+      const pendingConversion = buildCreativeToysPendingConversion({
+        captureOk,
+        confirmationPath: payload.confirmation_path,
+        currentPath: location.pathname,
+        email: payload.email,
+        name: payload.name,
+        registeredAt: submittedAt,
+      });
+
+      if (pendingConversion) {
+        window.localStorage.setItem(
+          CREATIVE_TOYS_PENDING_CONVERSION_KEY,
+          JSON.stringify(pendingConversion),
+        );
       }
 
       navigate(navigationTarget);

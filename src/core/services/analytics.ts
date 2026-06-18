@@ -32,6 +32,8 @@ export interface AttributionEventFields {
 
 export interface AnalyticsTrackEventData extends Record<string, unknown> {
   attribution?: ResolvedAttribution;
+  event_id?: string;
+  eventId?: string;
   trackingEnabled?: boolean;
 }
 
@@ -326,6 +328,8 @@ const resolveAdsTrackingEnabled = (
 const stripAnalyticsControlFields = (data: AnalyticsTrackEventData): Record<string, unknown> => {
   const eventData = { ...data };
   delete eventData.attribution;
+  delete eventData.event_id;
+  delete eventData.eventId;
   delete eventData.trackingEnabled;
 
   return eventData;
@@ -385,6 +389,15 @@ const createEventId = (): string => {
   }
 
   return `evt_${Date.now()}_${Math.random().toString(36).slice(2, 12)}`;
+};
+
+const normalizeEventId = (value: unknown): string | null => {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const normalized = value.trim();
+  return normalized.length > 0 ? normalized : null;
 };
 
 const extractStringValue = (value: unknown): string | undefined => {
@@ -652,7 +665,7 @@ const trackEvent = async (
   data: AnalyticsTrackEventData = {},
 ): Promise<TrackEventResult> => {
   const attribution = resolveEventAttribution(data);
-  const eventId = createEventId();
+  const eventId = normalizeEventId(data.event_id) ?? normalizeEventId(data.eventId) ?? createEventId();
   const shouldSendAdsTracking = resolveAdsTrackingEnabled(attribution);
 
   if (!shouldSendAdsTracking) {
