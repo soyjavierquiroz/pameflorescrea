@@ -114,6 +114,33 @@ describe('ads tracking route gate', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it('does not send temporary offer InitiateCheckout on /temporal even with paid params', async () => {
+    const { appendChild, fetchMock, scripts, windowMock } = installBrowserMocks(
+      '/temporal?fbclid=test&utm_medium=paid',
+    );
+    const { trackEvent } = await loadAnalytics();
+
+    const result = await trackEvent('InitiateCheckout', {
+      event_id: 'pame_temporal_checkout',
+      offer_slug: 'certificacion-jugueteria-creativa',
+      checkout_url: 'https://crm.pameflorescrea.com/pagos',
+    });
+
+    expect(result).toMatchObject({
+      eventName: 'InitiateCheckout',
+      capiAttempted: false,
+      capiSent: false,
+      metaBrowserAttempted: false,
+      metaBrowserSent: false,
+      tiktokAttempted: false,
+      tiktokSent: false,
+    });
+    expect(scripts.size).toBe(0);
+    expect(appendChild).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(windowMock).not.toHaveProperty('fbq');
+  });
+
   it('does not send organic CompleteRegistration even with fbclid and paid UTMs', async () => {
     const { appendChild, fetchMock, scripts, windowMock } = installBrowserMocks(
       '/confirmacion/500-extra?fbclid=test&utm_source=meta&utm_medium=paid',
@@ -343,6 +370,53 @@ describe('ads tracking route gate', () => {
       },
     });
     expect(capiPayload).not.toHaveProperty('eventId');
+  });
+
+  it('sends temporary offer InitiateCheckout under /x9m/temporal', async () => {
+    const { fetchMock, windowMock } = installBrowserMocks(
+      '/x9m/temporal?fbclid=TEST_TEMPORAL_001',
+    );
+    const { trackEvent } = await loadAnalytics({
+      capiWebhookUrl: 'https://relay.example/v1/events',
+      metaPixelId: '123456789',
+      siteId: 'PAME_FLORES_CREA',
+      tiktokPixelId: '',
+    });
+
+    const result = await trackEvent('InitiateCheckout', {
+      event_id: 'pame_temporal_checkout_ads',
+      offer_slug: 'certificacion-jugueteria-creativa',
+      checkout_url: 'https://crm.pameflorescrea.com/pagos',
+    });
+
+    expect(result).toMatchObject({
+      eventName: 'InitiateCheckout',
+      eventId: 'pame_temporal_checkout_ads',
+      capiSent: true,
+      metaBrowserSent: true,
+      tiktokSent: false,
+    });
+    expect((windowMock as { fbq?: { queue?: unknown[] } }).fbq?.queue).toContainEqual([
+      'track',
+      'InitiateCheckout',
+      expect.objectContaining({
+        offer_slug: 'certificacion-jugueteria-creativa',
+        checkout_url: 'https://crm.pameflorescrea.com/pagos',
+      }),
+      { eventID: 'pame_temporal_checkout_ads' },
+    ]);
+
+    const capiPayload = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body));
+
+    expect(capiPayload).toMatchObject({
+      event_name: 'InitiateCheckout',
+      event_id: 'pame_temporal_checkout_ads',
+      event_source_url: 'https://example.com/x9m/temporal?fbclid=TEST_TEMPORAL_001',
+      data: expect.objectContaining({
+        offer_slug: 'certificacion-jugueteria-creativa',
+        current_path: '/x9m/temporal',
+      }),
+    });
   });
 
   it('uses a supplied CompleteRegistration event_id for Meta Pixel and CAPI dedupe', async () => {

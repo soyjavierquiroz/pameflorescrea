@@ -29,10 +29,12 @@ function injectRouteMetadata(
   title: string,
   description: string,
   assetCheck?: string,
+  robots?: string,
 ): string {
   const metadata = [
     `    <title>${title}</title>`,
     `    <meta name="description" content="${description}" />`,
+    `    <meta name="robots" content="${robots ?? 'index, follow'}" />`,
     `    <meta name="x-route-content-check" content="${description}" />`,
     assetCheck ? `    <meta name="x-route-asset-check" content="${assetCheck}" />` : '',
   ]
@@ -42,6 +44,7 @@ function injectRouteMetadata(
   return html
     .replace(/ {4}<title>.*<\/title>\n?/g, '')
     .replace(/ {4}<meta name="description" content="[^"]*" \/>\n?/g, '')
+    .replace(/ {4}<meta name="robots" content="[^"]*" \/>\n?/g, '')
     .replace(/ {4}<meta name="x-route-content-check" content="[^"]*" \/>\n?/g, '')
     .replace(/ {4}<meta name="x-route-asset-check" content="[^"]*" \/>\n?/g, '')
     .replace('</head>', `${metadata}\n  </head>`);
@@ -65,6 +68,12 @@ function staticAdsEntryPlugin(mode: string) {
       const confirmationTitle = 'Registro recibido - Juguetes Creativos';
       const confirmationDescription =
         'Registro recibido para la Semana del Emprendimiento con Juguetes Creativos por WhatsApp. Te llevaremos automáticamente al grupo de WhatsApp en 5 segundos.';
+      const temporaryOfferTitle =
+        'Certificación de Juguetería Creativa Profesional | Pame Flores Crea';
+      const temporaryOfferDescription =
+        'Descubre la manera más simple y rápida de generar ingresos extras con Juguetes Creativos en solo 9 semanas. Quiero inscribirme ahora en la Certificación de Juguetería Creativa Profesional por 197 USD. Checkout: https://crm.pameflorescrea.com/pagos. Soporte para Ecuador por WhatsApp.';
+      const temporaryOfferAssetCheck =
+        '/assets/pame-flores-crea/oferta/hero-certificacion.webp';
       writeFileSync(
         sourcePath,
         injectRouteMetadata(baseHtml, landingTitle, landingDescription, landingAssetCheck),
@@ -77,6 +86,16 @@ function staticAdsEntryPlugin(mode: string) {
         {
           path: 'confirmacion/500-extra',
           html: injectRouteMetadata(baseHtml, confirmationTitle, confirmationDescription),
+        },
+        {
+          path: 'temporal',
+          html: injectRouteMetadata(
+            baseHtml,
+            temporaryOfferTitle,
+            temporaryOfferDescription,
+            temporaryOfferAssetCheck,
+            'noindex, nofollow',
+          ),
         },
       ];
 
@@ -98,6 +117,16 @@ function staticAdsEntryPlugin(mode: string) {
           {
             path: `${adsPrefix}/confirmacion/500-extra`,
             html: injectRouteMetadata(baseHtml, confirmationTitle, confirmationDescription),
+          },
+          {
+            path: `${adsPrefix}/temporal`,
+            html: injectRouteMetadata(
+              baseHtml,
+              temporaryOfferTitle,
+              temporaryOfferDescription,
+              temporaryOfferAssetCheck,
+              'noindex, nofollow',
+            ),
           },
         );
       }

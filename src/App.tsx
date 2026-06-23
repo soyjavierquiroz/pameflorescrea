@@ -1,12 +1,14 @@
 import { useEffect } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { getAdsRoutePrefix } from './core/routing/adsRoute';
+import { CreativeToysOfferTemporaryPage } from './site/pages/CreativeToysOfferTemporaryPage';
 import { CreativeToysWeekConfirmation } from './site/pages/CreativeToysWeekConfirmation';
 import { CreativeToysWeekLanding } from './site/pages/CreativeToysWeekLanding';
 import { AdsTrackingBootstrap } from './site/tracking/AdsTrackingBootstrap';
 
 const siteId = 'PAME_FLORES_CREA';
 const siteTitle = 'Pame Flores Crea - Sitio en preparacion';
+const temporaryOfferTitle = 'Certificación de Juguetería Creativa Profesional | Pame Flores Crea';
 const adsRoutePrefix = getAdsRoutePrefix();
 
 function PreparationPage() {
@@ -37,7 +39,10 @@ function RoutedApp() {
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', 'theme-expert');
-    document.title = siteTitle;
+    document.title =
+      location.pathname === '/temporal' || location.pathname === `${adsRoutePrefix}/temporal`
+        ? temporaryOfferTitle
+        : siteTitle;
   }, [location.pathname]);
 
   return (
@@ -46,6 +51,8 @@ function RoutedApp() {
       <Route path={adsRoutePrefix} element={<PreparationPage />} />
       <Route path="/500-extra" element={<CreativeToysWeekLanding />} />
       <Route path={`${adsRoutePrefix}/500-extra`} element={<CreativeToysWeekLanding />} />
+      <Route path="/temporal" element={<CreativeToysOfferTemporaryPage />} />
+      <Route path={`${adsRoutePrefix}/temporal`} element={<CreativeToysOfferTemporaryPage />} />
       <Route path="/confirmacion/500-extra" element={<CreativeToysWeekConfirmation />} />
       <Route
         path={`${adsRoutePrefix}/confirmacion/500-extra`}

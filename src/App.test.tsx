@@ -5,6 +5,11 @@ import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
 import { VisitorProvider } from './core/visitor/VisitorContext';
+import {
+  buildTemporaryOfferCheckoutEventData,
+  shouldTrackTemporaryOfferCheckout,
+  TEMPORARY_OFFER_CHECKOUT_URL,
+} from './site/registration/creativeToysOfferTemporary';
 
 function renderRoute(pathname: string): string {
   return renderToString(
@@ -48,6 +53,49 @@ describe('App routes', () => {
     expect(renderRoute('/x9m/500-extra')).toContain(
       'SEMANA DEL EMPRENDIMIENTO CON JUGUETES CREATIVOS',
     );
+  });
+
+  it('renders the temporary creative toys offer at /temporal', () => {
+    const html = renderRoute('/temporal');
+
+    expect(html).toContain('Certificación J.C.P.');
+    expect(html).toContain('Descubre la manera más simple y rápida');
+    expect(html).toContain('Quiero inscribirme ahora');
+    expect(html).toContain(`href="${TEMPORARY_OFFER_CHECKOUT_URL}"`);
+    expect(html).toContain('Si estás en Ecuador y deseas pagar con depósito');
+    expect(html).not.toContain('Bolivia');
+  });
+
+  it('renders the temporary creative toys offer at /x9m/temporal', () => {
+    const html = renderRoute('/x9m/temporal');
+
+    expect(html).toContain('Certificación de Juguetería Creativa Profesional');
+    expect(html).toContain(`href="${TEMPORARY_OFFER_CHECKOUT_URL}"`);
+  });
+
+  it('keeps temporary offer checkout tracking disabled outside the ads route', () => {
+    expect(shouldTrackTemporaryOfferCheckout('/temporal')).toBe(false);
+    expect(shouldTrackTemporaryOfferCheckout('/temporal?fbclid=paid-click')).toBe(false);
+  });
+
+  it('allows only InitiateCheckout preparation under the ads temporary route', () => {
+    const payload = buildTemporaryOfferCheckoutEventData({
+      eventId: 'event-test-1',
+      eventSourceUrl: 'https://pameflorescrea.com/x9m/temporal?fbclid=test',
+    });
+
+    expect(shouldTrackTemporaryOfferCheckout('/x9m/temporal')).toBe(true);
+    expect(payload).toMatchObject({
+      event_id: 'event-test-1',
+      event_source_url: 'https://pameflorescrea.com/x9m/temporal?fbclid=test',
+      offer_slug: 'certificacion-jugueteria-creativa',
+      checkout_url: TEMPORARY_OFFER_CHECKOUT_URL,
+      value: 197,
+      currency: 'USD',
+    });
+    expect(Object.values(payload)).not.toContain('Purchase');
+    expect(Object.values(payload)).not.toContain('CompleteRegistration');
+    expect(Object.values(payload)).not.toContain('Lead');
   });
 
   it('renders the confirmation page at /confirmacion/500-extra', () => {
