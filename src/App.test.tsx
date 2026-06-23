@@ -60,7 +60,7 @@ describe('App routes', () => {
 
     expect(html).toContain('Certificación J.C.P.');
     expect(html).toContain('Descubre la manera más simple y rápida');
-    expect(html).toContain('Quiero inscribirme ahora');
+    expect(html).toContain('QUIERO INSCRIBIRME AHORA');
     expect(html).toContain(`href="${TEMPORARY_OFFER_CHECKOUT_URL}"`);
     expect(html).toContain('Si estás en Ecuador y deseas pagar con depósito');
     expect(html).not.toContain('Bolivia');
