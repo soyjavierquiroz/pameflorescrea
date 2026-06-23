@@ -61,6 +61,9 @@ describe('App routes', () => {
     expect(html).toContain('Certificación J.C.P.');
     expect(html).toContain('Descubre la manera más simple y rápida');
     expect(html).toContain('QUIERO INSCRIBIRME AHORA');
+    expect(html).toContain('INSCRIBIRME AHORA');
+    expect(html).toContain('translate-y-[110%]');
+    expect(html).toContain('aria-hidden="true"');
     expect(html).toContain(`href="${TEMPORARY_OFFER_CHECKOUT_URL}"`);
     expect(html).toContain('Si estás en Ecuador y deseas pagar con depósito');
     expect(html).not.toContain('Bolivia');
@@ -96,6 +99,17 @@ describe('App routes', () => {
     expect(Object.values(payload)).not.toContain('Purchase');
     expect(Object.values(payload)).not.toContain('CompleteRegistration');
     expect(Object.values(payload)).not.toContain('Lead');
+  });
+
+  it('delays the mobile sticky CTA until after the scroll threshold', () => {
+    const pageSource = readFileSync(
+      join(process.cwd(), 'src/site/pages/CreativeToysOfferTemporaryPage.tsx'),
+      'utf8',
+    );
+
+    expect(pageSource).toContain('MOBILE_STICKY_CTA_SCROLL_THRESHOLD = 420');
+    expect(pageSource).toContain('scrollY > MOBILE_STICKY_CTA_SCROLL_THRESHOLD');
+    expect(pageSource).toContain('window.addEventListener(\'scroll\'');
   });
 
   it('renders the confirmation page at /confirmacion/500-extra', () => {

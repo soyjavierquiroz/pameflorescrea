@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   ArrowRight,
@@ -31,6 +31,11 @@ import {
 
 const ASSET_BASE = '/assets/pame-flores-crea/oferta';
 const WEEK_ASSET_BASE = '/assets/pame-flores-crea/500-extra';
+const MOBILE_STICKY_CTA_SCROLL_THRESHOLD = 420;
+
+function shouldShowMobileStickyCta(scrollY: number): boolean {
+  return scrollY > MOBILE_STICKY_CTA_SCROLL_THRESHOLD;
+}
 
 const assets = {
   hero: `${ASSET_BASE}/hero-certificacion.webp`,
@@ -370,9 +375,34 @@ function MiniProofCard({ children }: { children: ReactNode }) {
 }
 
 function StickyMobileCta() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const handleScroll = () => {
+      setIsVisible(shouldShowMobileStickyCta(window.scrollY));
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-50 border-t border-white/12 bg-[#170830]/94 px-4 pt-3 shadow-[0_-16px_42px_rgba(23,8,48,0.34)] backdrop-blur sm:hidden"
+      aria-hidden={!isVisible}
+      className={[
+        'fixed inset-x-0 bottom-0 z-50 border-t border-white/12 bg-[#170830]/94 px-4 pt-3 shadow-[0_-16px_42px_rgba(23,8,48,0.34)] backdrop-blur transition-[opacity,transform] duration-300 motion-reduce:transition-none sm:hidden',
+        isVisible
+          ? 'translate-y-0 opacity-100'
+          : 'pointer-events-none translate-y-[110%] opacity-0',
+      ].join(' ')}
       style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
     >
       <div className="mx-auto flex max-w-lg items-center gap-3">
