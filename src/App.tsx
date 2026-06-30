@@ -4,11 +4,13 @@ import { getAdsRoutePrefix } from './core/routing/adsRoute';
 import { CreativeToysOfferTemporaryPage } from './site/pages/CreativeToysOfferTemporaryPage';
 import { CreativeToysWeekConfirmation } from './site/pages/CreativeToysWeekConfirmation';
 import { CreativeToysWeekLanding } from './site/pages/CreativeToysWeekLanding';
+import { ClassOneRedirectPage } from './site/pages/ClassOneRedirectPage';
 import { AdsTrackingBootstrap } from './site/tracking/AdsTrackingBootstrap';
 
 const siteId = 'PAME_FLORES_CREA';
 const siteTitle = 'Pame Flores Crea - Sitio en preparacion';
 const temporaryOfferTitle = 'Certificación de Juguetería Creativa Profesional | Pame Flores Crea';
+const classOneTitle = 'Clase 1 | Pame Flores Crea';
 const adsRoutePrefix = getAdsRoutePrefix();
 
 function PreparationPage() {
@@ -39,10 +41,22 @@ function RoutedApp() {
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', 'theme-expert');
-    document.title =
-      location.pathname === '/temporal' || location.pathname === `${adsRoutePrefix}/temporal`
-        ? temporaryOfferTitle
-        : siteTitle;
+    if (location.pathname === '/temporal' || location.pathname === `${adsRoutePrefix}/temporal`) {
+      document.title = temporaryOfferTitle;
+      return;
+    }
+
+    if (
+      location.pathname === '/clase1' ||
+      location.pathname === '/clase1/' ||
+      location.pathname === `${adsRoutePrefix}/clase1` ||
+      location.pathname === `${adsRoutePrefix}/clase1/`
+    ) {
+      document.title = classOneTitle;
+      return;
+    }
+
+    document.title = siteTitle;
   }, [location.pathname]);
 
   return (
@@ -51,6 +65,10 @@ function RoutedApp() {
       <Route path={adsRoutePrefix} element={<PreparationPage />} />
       <Route path="/500-extra" element={<CreativeToysWeekLanding />} />
       <Route path={`${adsRoutePrefix}/500-extra`} element={<CreativeToysWeekLanding />} />
+      <Route path="/clase1" element={<ClassOneRedirectPage />} />
+      <Route path="/clase1/" element={<ClassOneRedirectPage />} />
+      <Route path={`${adsRoutePrefix}/clase1`} element={<ClassOneRedirectPage />} />
+      <Route path={`${adsRoutePrefix}/clase1/`} element={<ClassOneRedirectPage />} />
       <Route path="/temporal" element={<CreativeToysOfferTemporaryPage />} />
       <Route path={`${adsRoutePrefix}/temporal`} element={<CreativeToysOfferTemporaryPage />} />
       <Route path="/confirmacion/500-extra" element={<CreativeToysWeekConfirmation />} />

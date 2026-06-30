@@ -10,6 +10,11 @@ import {
   shouldTrackTemporaryOfferCheckout,
   TEMPORARY_OFFER_CHECKOUT_URL,
 } from './site/registration/creativeToysOfferTemporary';
+import {
+  CLASS_ONE_ADS_REDIRECT_DELAY_MS,
+  CLASS_ONE_ORGANIC_REDIRECT_DELAY_MS,
+  CLASS_ONE_YOUTUBE_URL,
+} from './site/pages/ClassOneRedirectPage';
 
 function renderRoute(pathname: string): string {
   return renderToString(
@@ -53,6 +58,41 @@ describe('App routes', () => {
     expect(renderRoute('/x9m/500-extra')).toContain(
       'SEMANA DEL EMPRENDIMIENTO CON JUGUETES CREATIVOS',
     );
+  });
+
+  it('renders the class one redirect page at /clase1', () => {
+    const html = renderRoute('/clase1');
+
+    expect(html).toContain('Redirigiendo a la Clase 1');
+    expect(html).toContain(
+      'Estamos preparando tu acceso al video. Si no avanzas automáticamente',
+    );
+  });
+
+  it('renders the class one redirect page at /x9m/clase1', () => {
+    expect(renderRoute('/x9m/clase1')).toContain('Redirigiendo a la Clase 1');
+  });
+
+  it('uses the exact class one fallback video URL', () => {
+    expect(renderRoute('/clase1')).toContain(`href="${CLASS_ONE_YOUTUBE_URL}"`);
+  });
+
+  it('keeps class one redirect behavior timer-only and conversion-free', () => {
+    const pageSource = readFileSync(
+      join(process.cwd(), 'src/site/pages/ClassOneRedirectPage.tsx'),
+      'utf8',
+    );
+
+    expect(CLASS_ONE_ORGANIC_REDIRECT_DELAY_MS).toBe(1500);
+    expect(CLASS_ONE_ADS_REDIRECT_DELAY_MS).toBe(2500);
+    expect(pageSource).toContain('window.setTimeout');
+    expect(pageSource).toContain('window.clearTimeout');
+    expect(pageSource).toContain('window.location.assign(CLASS_ONE_YOUTUBE_URL)');
+    expect(pageSource).not.toContain('trackEvent');
+    expect(pageSource).not.toContain('InitiateCheckout');
+    expect(pageSource).not.toContain('CompleteRegistration');
+    expect(pageSource).not.toContain('Purchase');
+    expect(pageSource).not.toContain('Lead');
   });
 
   it('renders the temporary creative toys offer at /temporal', () => {

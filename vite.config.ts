@@ -74,6 +74,8 @@ function staticAdsEntryPlugin(mode: string) {
         'Descubre la manera más simple y rápida de generar ingresos extras con Juguetes Creativos en solo 9 semanas. Quiero inscribirme ahora en la Certificación de Juguetería Creativa Profesional por 197 USD. Checkout: https://crm.pameflorescrea.com/pagos. Soporte para Ecuador por WhatsApp.';
       const temporaryOfferAssetCheck =
         '/assets/pame-flores-crea/oferta/hero-certificacion.webp';
+      const classOneTitle = 'Clase 1 | Pame Flores Crea';
+      const classOneDescription = 'Redirigiendo a la Clase 1 de Pame Flores Crea.';
       writeFileSync(
         sourcePath,
         injectRouteMetadata(baseHtml, landingTitle, landingDescription, landingAssetCheck),
@@ -94,6 +96,16 @@ function staticAdsEntryPlugin(mode: string) {
             temporaryOfferTitle,
             temporaryOfferDescription,
             temporaryOfferAssetCheck,
+            'noindex, nofollow',
+          ),
+        },
+        {
+          path: 'clase1',
+          html: injectRouteMetadata(
+            baseHtml,
+            classOneTitle,
+            classOneDescription,
+            undefined,
             'noindex, nofollow',
           ),
         },
@@ -125,6 +137,16 @@ function staticAdsEntryPlugin(mode: string) {
               temporaryOfferTitle,
               temporaryOfferDescription,
               temporaryOfferAssetCheck,
+              'noindex, nofollow',
+            ),
+          },
+          {
+            path: `${adsPrefix}/clase1`,
+            html: injectRouteMetadata(
+              baseHtml,
+              classOneTitle,
+              classOneDescription,
+              undefined,
               'noindex, nofollow',
             ),
           },
