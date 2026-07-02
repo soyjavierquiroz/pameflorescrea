@@ -562,8 +562,50 @@ describe('Meta ads PageView bootstrap', () => {
     expect(windowMock).not.toHaveProperty('fbq');
   });
 
+  it('does not initialize Meta Pixel on /clase2 even with paid query params', async () => {
+    const { appendChild, fetchMock, scripts, windowMock } = installBrowserMocks(
+      '/clase2?fbclid=test&utm_medium=paid',
+    );
+    const { trackMetaPageView } = await loadAnalytics({
+      capiWebhookUrl: 'https://relay.example/v1/events',
+      metaPixelId: '123456789',
+      siteId: 'PAME_FLORES_CREA',
+      tiktokPixelId: '',
+    });
+
+    await expect(trackMetaPageView()).resolves.toBe(false);
+
+    expect(scripts.size).toBe(0);
+    expect(appendChild).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(windowMock).not.toHaveProperty('fbq');
+  });
+
   it('allows Meta PageView on the ads class one route', async () => {
     const { fetchMock, scripts, windowMock } = installBrowserMocks('/x9m/clase1?fbclid=test');
+    const { trackMetaPageView } = await loadAnalytics({
+      capiWebhookUrl: 'https://relay.example/v1/events',
+      metaPixelId: '123456789',
+      siteId: 'PAME_FLORES_CREA',
+      tiktokPixelId: '',
+    });
+
+    await expect(trackMetaPageView()).resolves.toBe(true);
+
+    const fbqQueue = (windowMock as { fbq?: { queue?: unknown[] } }).fbq?.queue ?? [];
+    expect(scripts.get('boilerplate-meta-pixel-script')?.src).toBe(
+      'https://connect.facebook.net/en_US/fbevents.js',
+    );
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(fbqQueue).toContainEqual(['track', 'PageView']);
+    expect(fbqQueue).not.toContainEqual(expect.arrayContaining(['Lead']));
+    expect(fbqQueue).not.toContainEqual(expect.arrayContaining(['InitiateCheckout']));
+    expect(fbqQueue).not.toContainEqual(expect.arrayContaining(['Purchase']));
+    expect(fbqQueue).not.toContainEqual(expect.arrayContaining(['CompleteRegistration']));
+  });
+
+  it('allows Meta PageView on the ads class two route', async () => {
+    const { fetchMock, scripts, windowMock } = installBrowserMocks('/x9m/clase2?fbclid=test');
     const { trackMetaPageView } = await loadAnalytics({
       capiWebhookUrl: 'https://relay.example/v1/events',
       metaPixelId: '123456789',

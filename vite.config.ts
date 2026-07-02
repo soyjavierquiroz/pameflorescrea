@@ -76,6 +76,8 @@ function staticAdsEntryPlugin(mode: string) {
         '/assets/pame-flores-crea/oferta/hero-certificacion.webp';
       const classOneTitle = 'Clase 1 | Pame Flores Crea';
       const classOneDescription = 'Redirigiendo a la Clase 1 de Pame Flores Crea.';
+      const classTwoTitle = 'Clase 2 | Pame Flores Crea';
+      const classTwoDescription = 'Redirigiendo a la Clase 2 de Pame Flores Crea.';
       writeFileSync(
         sourcePath,
         injectRouteMetadata(baseHtml, landingTitle, landingDescription, landingAssetCheck),
@@ -105,6 +107,16 @@ function staticAdsEntryPlugin(mode: string) {
             baseHtml,
             classOneTitle,
             classOneDescription,
+            undefined,
+            'noindex, nofollow',
+          ),
+        },
+        {
+          path: 'clase2',
+          html: injectRouteMetadata(
+            baseHtml,
+            classTwoTitle,
+            classTwoDescription,
             undefined,
             'noindex, nofollow',
           ),
@@ -146,6 +158,16 @@ function staticAdsEntryPlugin(mode: string) {
               baseHtml,
               classOneTitle,
               classOneDescription,
+              undefined,
+              'noindex, nofollow',
+            ),
+          },
+          {
+            path: `${adsPrefix}/clase2`,
+            html: injectRouteMetadata(
+              baseHtml,
+              classTwoTitle,
+              classTwoDescription,
               undefined,
               'noindex, nofollow',
             ),

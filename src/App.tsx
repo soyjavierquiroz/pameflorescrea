@@ -4,13 +4,13 @@ import { getAdsRoutePrefix } from './core/routing/adsRoute';
 import { CreativeToysOfferTemporaryPage } from './site/pages/CreativeToysOfferTemporaryPage';
 import { CreativeToysWeekConfirmation } from './site/pages/CreativeToysWeekConfirmation';
 import { CreativeToysWeekLanding } from './site/pages/CreativeToysWeekLanding';
-import { ClassOneRedirectPage } from './site/pages/ClassOneRedirectPage';
+import { ClassOneRedirectPage, CLASS_ONE_TITLE } from './site/pages/ClassOneRedirectPage';
+import { ClassTwoRedirectPage, CLASS_TWO_TITLE } from './site/pages/ClassTwoRedirectPage';
 import { AdsTrackingBootstrap } from './site/tracking/AdsTrackingBootstrap';
 
 const siteId = 'PAME_FLORES_CREA';
 const siteTitle = 'Pame Flores Crea - Sitio en preparacion';
 const temporaryOfferTitle = 'Certificación de Juguetería Creativa Profesional | Pame Flores Crea';
-const classOneTitle = 'Clase 1 | Pame Flores Crea';
 const adsRoutePrefix = getAdsRoutePrefix();
 
 function PreparationPage() {
@@ -52,7 +52,17 @@ function RoutedApp() {
       location.pathname === `${adsRoutePrefix}/clase1` ||
       location.pathname === `${adsRoutePrefix}/clase1/`
     ) {
-      document.title = classOneTitle;
+      document.title = CLASS_ONE_TITLE;
+      return;
+    }
+
+    if (
+      location.pathname === '/clase2' ||
+      location.pathname === '/clase2/' ||
+      location.pathname === `${adsRoutePrefix}/clase2` ||
+      location.pathname === `${adsRoutePrefix}/clase2/`
+    ) {
+      document.title = CLASS_TWO_TITLE;
       return;
     }
 
@@ -69,6 +79,10 @@ function RoutedApp() {
       <Route path="/clase1/" element={<ClassOneRedirectPage />} />
       <Route path={`${adsRoutePrefix}/clase1`} element={<ClassOneRedirectPage />} />
       <Route path={`${adsRoutePrefix}/clase1/`} element={<ClassOneRedirectPage />} />
+      <Route path="/clase2" element={<ClassTwoRedirectPage />} />
+      <Route path="/clase2/" element={<ClassTwoRedirectPage />} />
+      <Route path={`${adsRoutePrefix}/clase2`} element={<ClassTwoRedirectPage />} />
+      <Route path={`${adsRoutePrefix}/clase2/`} element={<ClassTwoRedirectPage />} />
       <Route path="/temporal" element={<CreativeToysOfferTemporaryPage />} />
       <Route path={`${adsRoutePrefix}/temporal`} element={<CreativeToysOfferTemporaryPage />} />
       <Route path="/confirmacion/500-extra" element={<CreativeToysWeekConfirmation />} />

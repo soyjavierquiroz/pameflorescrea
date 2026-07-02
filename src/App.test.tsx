@@ -15,6 +15,11 @@ import {
   CLASS_ONE_ORGANIC_REDIRECT_DELAY_MS,
   CLASS_ONE_YOUTUBE_URL,
 } from './site/pages/ClassOneRedirectPage';
+import {
+  CLASS_TWO_ADS_REDIRECT_DELAY_MS,
+  CLASS_TWO_ORGANIC_REDIRECT_DELAY_MS,
+  CLASS_TWO_YOUTUBE_URL,
+} from './site/pages/ClassTwoRedirectPage';
 
 function renderRoute(pathname: string): string {
   return renderToString(
@@ -77,17 +82,55 @@ describe('App routes', () => {
     expect(renderRoute('/clase1')).toContain(`href="${CLASS_ONE_YOUTUBE_URL}"`);
   });
 
-  it('keeps class one redirect behavior timer-only and conversion-free', () => {
+  it('keeps class one redirect behavior pointing to the original video', () => {
+    expect(CLASS_ONE_ORGANIC_REDIRECT_DELAY_MS).toBe(1500);
+    expect(CLASS_ONE_ADS_REDIRECT_DELAY_MS).toBe(2500);
+    expect(renderRoute('/clase1')).toContain(`href="${CLASS_ONE_YOUTUBE_URL}"`);
+  });
+
+  it('renders the class two redirect page at /clase2', () => {
+    const html = renderRoute('/clase2');
+
+    expect(html).toContain('Redirigiendo a la Clase 2');
+    expect(html).toContain(
+      'Estamos preparando tu acceso al video. Si no avanzas automáticamente',
+    );
+  });
+
+  it('renders the class two redirect page at /x9m/clase2', () => {
+    expect(renderRoute('/x9m/clase2')).toContain('Redirigiendo a la Clase 2');
+  });
+
+  it('uses the exact class two fallback video URL', () => {
+    expect(renderRoute('/clase2')).toContain(`href="${CLASS_TWO_YOUTUBE_URL}"`);
+    expect(renderRoute('/x9m/clase2')).toContain(`href="${CLASS_TWO_YOUTUBE_URL}"`);
+  });
+
+  it('configures static class two metadata for organic and ads routes', () => {
+    const viteSource = readFileSync(join(process.cwd(), 'vite.config.ts'), 'utf8');
+
+    expect(viteSource).toContain("const classTwoTitle = 'Clase 2 | Pame Flores Crea'");
+    expect(viteSource).toContain(
+      "const classTwoDescription = 'Redirigiendo a la Clase 2 de Pame Flores Crea.'",
+    );
+    expect(viteSource).toContain("path: 'clase2'");
+    expect(viteSource).toContain('path: `${adsPrefix}/clase2`');
+    expect(viteSource).toContain("'noindex, nofollow'");
+  });
+
+  it('keeps class redirect behavior timer-only and conversion-free', () => {
     const pageSource = readFileSync(
-      join(process.cwd(), 'src/site/pages/ClassOneRedirectPage.tsx'),
+      join(process.cwd(), 'src/site/pages/ClassRedirectPage.tsx'),
       'utf8',
     );
 
     expect(CLASS_ONE_ORGANIC_REDIRECT_DELAY_MS).toBe(1500);
     expect(CLASS_ONE_ADS_REDIRECT_DELAY_MS).toBe(2500);
+    expect(CLASS_TWO_ORGANIC_REDIRECT_DELAY_MS).toBe(1500);
+    expect(CLASS_TWO_ADS_REDIRECT_DELAY_MS).toBe(2500);
     expect(pageSource).toContain('window.setTimeout');
     expect(pageSource).toContain('window.clearTimeout');
-    expect(pageSource).toContain('window.location.assign(CLASS_ONE_YOUTUBE_URL)');
+    expect(pageSource).toContain('window.location.assign(youtubeUrl)');
     expect(pageSource).not.toContain('trackEvent');
     expect(pageSource).not.toContain('InitiateCheckout');
     expect(pageSource).not.toContain('CompleteRegistration');
