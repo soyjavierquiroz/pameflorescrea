@@ -192,6 +192,9 @@ describe('App routes', () => {
     expect(html).toContain('disena-moldes-canva.webp');
     expect(html).toContain('fotos-videos-que-venden.webp');
     expect(html).toContain('de-principiante-a-experta-cosiendo.webp');
+    expect(html).toContain('agenda-mama.webp');
+    expect(html).toContain('imprime-vende-sublimado.webp');
+    expect(html).toContain('ventas-explisivas-instagram.webp');
     expect(html).toContain('QUIERO INSCRIBIRME AHORA');
     expect(html).toContain('INSCRIBIRME AHORA');
     expect(html).toContain('translate-y-[110%]');

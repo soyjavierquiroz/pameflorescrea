@@ -66,12 +66,15 @@ const assets = {
 };
 
 const bonusImages = {
+  agendaMama: `${ASSET_BASE}/agenda-mama.webp`,
   costura: `${ASSET_BASE}/de-principiante-a-experta-cosiendo.webp`,
   envioPerfecto: `${ASSET_BASE}/envio-perfecto.webp`,
   estimulacionTemprana: `${ASSET_BASE}/estimulacion-temprana.webp`,
   fotosVideos: `${ASSET_BASE}/fotos-videos-que-venden.webp`,
+  imprimeVendeSublimado: `${ASSET_BASE}/imprime-vende-sublimado.webp`,
   juguetesCreativos: `${ASSET_BASE}/juguetes-creativos-que-enamoran.webp`,
   moldesCanva: `${ASSET_BASE}/disena-moldes-canva.webp`,
+  ventasExplosivasInstagram: `${ASSET_BASE}/ventas-explisivas-instagram.webp`,
   ventasTemporadasAltas: `${ASSET_BASE}/ventas-temporadas-altas.webp`,
 };
 
@@ -169,17 +172,25 @@ const bonuses: Bonus[] = [
     text: 'Aprende qué actividades incluir en tus libros según la edad de los niños.',
   },
   {
-    image: assets.bonos[4],
+    image: bonusImages.ventasExplosivasInstagram,
+    imageAlt: 'Bono ventas explosivas en Instagram',
+    imageFit: 'contain',
     title: 'Ventas explosivas con Instagram',
     value: 'Valorado en 97 USD',
     text: 'Aprende a usar Instagram a favor de tu emprendimiento sin sentirte perdida con la tecnología.',
   },
   {
+    image: bonusImages.imprimeVendeSublimado,
+    imageAlt: 'Bono imprime y vende sublimado',
+    imageFit: 'contain',
     title: 'Imprime y Vende - Juguetes en Sublimado',
     value: 'Valorado en 97 USD',
     text: 'Una técnica con posibilidades para crear juguetes lindos y originales.',
   },
   {
+    image: bonusImages.agendaMama,
+    imageAlt: 'Bono agenda para una mamá emprendedora',
+    imageFit: 'contain',
     title: 'Agenda para una mamá emprendedora',
     value: 'Valorado en 47 USD',
     text: 'Tutorial y guía práctica para organizar mejor tu tiempo y avanzar con más calma.',
