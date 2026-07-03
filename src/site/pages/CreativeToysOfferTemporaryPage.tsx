@@ -65,6 +65,16 @@ const assets = {
   ],
 };
 
+const bonusImages = {
+  costura: `${ASSET_BASE}/de-principiante-a-experta-cosiendo.webp`,
+  envioPerfecto: `${ASSET_BASE}/envio-perfecto.webp`,
+  estimulacionTemprana: `${ASSET_BASE}/estimulacion-temprana.webp`,
+  fotosVideos: `${ASSET_BASE}/fotos-videos-que-venden.webp`,
+  juguetesCreativos: `${ASSET_BASE}/juguetes-creativos-que-enamoran.webp`,
+  moldesCanva: `${ASSET_BASE}/disena-moldes-canva.webp`,
+  ventasTemporadasAltas: `${ASSET_BASE}/ventas-temporadas-altas.webp`,
+};
+
 const trustChips = [
   { icon: Clock3, label: 'Acceso por 1 año' },
   { icon: Users, label: 'Acompañamiento y comunidad' },
@@ -124,20 +134,36 @@ const components = [
   },
 ];
 
-const bonuses = [
+type Bonus = {
+  image?: string;
+  imageAlt?: string;
+  imageFit?: 'contain' | 'cover';
+  title: string;
+  value: string;
+  text: string;
+};
+
+const bonuses: Bonus[] = [
   {
-    image: assets.bonos[0],
+    image: bonusImages.juguetesCreativos,
+    imageAlt: 'Bono juguetes creativos que enamoran',
+    imageFit: 'contain',
     title: 'Juguetes Creativos que Enamoran',
     value: 'Valorado en 77 USD',
     text: 'Biblioteca con 24 tutoriales en video, plantillas y moldes para abrir nuevas opciones de ingresos.',
   },
   {
-    image: assets.bonos[1],
+    image: bonusImages.costura,
+    imageAlt: 'Bono de principiante a experta cosiendo',
+    imageFit: 'contain',
     title: 'De Principiante a Experta Cosiendo',
     value: 'Valorado en 127 USD',
     text: 'Una masterclass para vencer el miedo a la costura y ganar habilidades duraderas.',
   },
   {
+    image: bonusImages.estimulacionTemprana,
+    imageAlt: 'Bono estimulación temprana',
+    imageFit: 'contain',
     title: 'Guía Express de Estimulación Temprana',
     value: 'Valorado en 97 USD',
     text: 'Aprende qué actividades incluir en tus libros según la edad de los niños.',
@@ -159,22 +185,33 @@ const bonuses = [
     text: 'Tutorial y guía práctica para organizar mejor tu tiempo y avanzar con más calma.',
   },
   {
-    image: assets.bonos[2],
+    image: bonusImages.envioPerfecto,
+    imageAlt: 'Bono envío perfecto',
+    imageFit: 'contain',
     title: 'Envío Perfecto',
     value: 'Valorado en 47 USD',
     text: 'Empaca tus juguetes creativos de forma rápida, económica y práctica.',
   },
   {
+    image: bonusImages.fotosVideos,
+    imageAlt: 'Bono fotos y videos que venden',
+    imageFit: 'contain',
     title: 'Fotos y videos que venden',
     value: 'Valorado en 47 USD',
     text: 'Aprende a tomar fotos que enamoren a tus clientes usando tu celular.',
   },
   {
+    image: bonusImages.moldesCanva,
+    imageAlt: 'Bono diseña tus moldes en Canva',
+    imageFit: 'contain',
     title: 'Diseña tus propios moldes en Canva',
     value: 'Valorado en 47 USD',
     text: 'Una solución práctica para dejar de sufrir cuando necesitas moldes propios.',
   },
   {
+    image: bonusImages.ventasTemporadasAltas,
+    imageAlt: 'Bono ventas en temporadas altas',
+    imageFit: 'contain',
     title: 'Kit Ventas en Temporadas Altas',
     value: 'Valorado en 97 USD',
     text: 'Juguetes especiales para Pascua, Halloween y Navidad, más una masterclass de planificación de ventas.',
@@ -832,8 +869,11 @@ export function CreativeToysOfferTemporaryPage() {
             >
               {bonus.image ? (
                 <OfferImage
-                  alt={bonus.title}
-                  className="aspect-[4/3] w-full bg-[#f8f1ff] object-cover"
+                  alt={bonus.imageAlt ?? bonus.title}
+                  className={[
+                    'aspect-[4/3] w-full bg-[#f8f1ff]',
+                    bonus.imageFit === 'contain' ? 'object-contain p-4 sm:p-5' : 'object-cover',
+                  ].join(' ')}
                   src={bonus.image}
                 />
               ) : (

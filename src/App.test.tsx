@@ -188,6 +188,10 @@ describe('App routes', () => {
     expect(html).toContain('397 USD');
     expect(html).toContain('197 USD');
     expect(html).toContain('pame-vip-creativa.webp');
+    expect(html).toContain('ventas-temporadas-altas.webp');
+    expect(html).toContain('disena-moldes-canva.webp');
+    expect(html).toContain('fotos-videos-que-venden.webp');
+    expect(html).toContain('de-principiante-a-experta-cosiendo.webp');
     expect(html).toContain('QUIERO INSCRIBIRME AHORA');
     expect(html).toContain('INSCRIBIRME AHORA');
     expect(html).toContain('translate-y-[110%]');
@@ -195,6 +199,7 @@ describe('App routes', () => {
     expect(html).toContain(`href="${TEMPORARY_OFFER_CHECKOUT_URL}"`);
     expect(html).toContain('Si estás en Ecuador y deseas pagar con depósito');
     expect(html).not.toContain('Bolivia');
+    expect(html).not.toContain('InitiateCheckout');
     expect(html).not.toContain('Purchase');
     expect(html).not.toContain('CompleteRegistration');
     expect(html).not.toContain('Lead');
