@@ -185,6 +185,9 @@ describe('App routes', () => {
 
     expect(html).toContain('Certificación J.C.P.');
     expect(html).toContain('Descubre la manera más simple y rápida');
+    expect(html).toContain('397 USD');
+    expect(html).toContain('197 USD');
+    expect(html).toContain('pame-vip-creativa.webp');
     expect(html).toContain('QUIERO INSCRIBIRME AHORA');
     expect(html).toContain('INSCRIBIRME AHORA');
     expect(html).toContain('translate-y-[110%]');
@@ -192,6 +195,9 @@ describe('App routes', () => {
     expect(html).toContain(`href="${TEMPORARY_OFFER_CHECKOUT_URL}"`);
     expect(html).toContain('Si estás en Ecuador y deseas pagar con depósito');
     expect(html).not.toContain('Bolivia');
+    expect(html).not.toContain('Purchase');
+    expect(html).not.toContain('CompleteRegistration');
+    expect(html).not.toContain('Lead');
   });
 
   it('renders the temporary creative toys offer at /x9m/temporal', () => {

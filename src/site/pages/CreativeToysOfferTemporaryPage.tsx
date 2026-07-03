@@ -39,8 +39,10 @@ function shouldShowMobileStickyCta(scrollY: number): boolean {
 
 const assets = {
   hero: `${ASSET_BASE}/hero-certificacion.webp`,
+  discountHeader: `${ASSET_BASE}/cabecera-197.webp`,
   logo: `${WEEK_ASSET_BASE}/logo-pame-flores-crea.png`,
   pame: `${ASSET_BASE}/pame-oferta.webp`,
+  pameVipCreative: `${ASSET_BASE}/pame-vip-creativa.webp`,
   plataforma: `${ASSET_BASE}/plataforma.webp`,
   programa: [
     `${ASSET_BASE}/programa-01.webp`,
@@ -479,12 +481,23 @@ export function CreativeToysOfferTemporaryPage() {
               Domina el arte de la Juguetería Creativa y conviértelo en un negocio con propósito,
               acompañado por Pame y una comunidad que avanza contigo.
             </p>
-            <div className="mt-4 grid gap-3 rounded-lg border border-white/18 bg-white/12 p-4 shadow-[0_22px_54px_rgba(36,16,78,0.32)] backdrop-blur sm:mt-6 sm:max-w-2xl sm:grid-cols-[0.82fr_1.18fr] sm:items-center sm:border-[#ffd45d]/44 sm:p-5">
-              <div>
+            <div className="mt-4 grid gap-3 rounded-lg border border-white/18 bg-white/12 p-4 shadow-[0_22px_54px_rgba(36,16,78,0.32)] backdrop-blur sm:mt-6 sm:max-w-2xl sm:grid-cols-[0.92fr_1.08fr] sm:items-center sm:border-[#ffd45d]/44 sm:p-5">
+              <div className="grid gap-2">
                 <p className="text-xs font-black uppercase text-[#7ef8f0]">Una cuota</p>
-                <p className="mt-1 text-[2.65rem] font-black leading-none text-[#ffd45d] sm:text-5xl">
-                  197 USD
-                </p>
+                <div className="flex items-end gap-3">
+                  <div className="rounded-md border border-white/16 bg-[#170830]/38 px-3 py-2">
+                    <p className="text-[10px] font-black uppercase leading-none text-white/62">Antes</p>
+                    <p className="mt-1 text-base font-black leading-none text-white/58 line-through decoration-[#ffd45d] decoration-2 sm:text-lg">
+                      397 USD
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-black uppercase leading-none text-[#fff0ad]">Hoy solo</p>
+                    <p className="mt-1 text-[2.65rem] font-black leading-none text-[#ffd45d] sm:text-5xl">
+                      197 USD
+                    </p>
+                  </div>
+                </div>
               </div>
               <div className="border-t border-white/16 pt-3 sm:border-l sm:border-t-0 sm:pl-5 sm:pt-0">
                 <p className="text-sm font-black uppercase leading-5 text-white">
@@ -529,8 +542,9 @@ export function CreativeToysOfferTemporaryPage() {
                   </p>
                 </div>
               </div>
-              <div className="absolute -left-4 top-8 hidden max-w-[180px] rounded-lg border-2 border-dashed border-[#ffd45d]/70 bg-[#ffd45d] p-3 text-[#4b1596] shadow-xl sm:block">
-                <p className="text-xs font-black uppercase leading-4">197 USD · Acceso por 1 año</p>
+              <div className="absolute -left-4 top-8 hidden max-w-[190px] rounded-lg border-2 border-dashed border-[#ffd45d]/70 bg-[#ffd45d] p-3 text-[#4b1596] shadow-xl sm:block">
+                <p className="text-[10px] font-black uppercase leading-4 text-[#4b1596]/72">Antes 397 USD</p>
+                <p className="text-xs font-black uppercase leading-4">Hoy 197 USD · Acceso por 1 año</p>
               </div>
               <div className="absolute -bottom-5 right-4 hidden max-w-[220px] rounded-lg border-2 border-dashed border-white/40 bg-[#2b1163]/90 p-4 text-white shadow-xl backdrop-blur sm:block">
                 <p className="text-xs font-black uppercase text-[#7ef8f0]">Incluye regalos</p>
@@ -569,9 +583,9 @@ export function CreativeToysOfferTemporaryPage() {
         <div className="grid gap-8 lg:grid-cols-[0.78fr_1.22fr] lg:items-center">
           <div className="overflow-hidden rounded-lg border-2 border-dashed border-[#ffd45d]/44 bg-white/8 p-2 shadow-[0_24px_58px_rgba(0,0,0,0.22)]">
             <OfferImage
-              alt="Pame Flores"
-              className="h-full min-h-[340px] w-full rounded-md object-cover object-top"
-              src={assets.pame}
+              alt="Pame Flores con juguetes creativos"
+              className="h-full min-h-[340px] w-full rounded-md object-cover object-center sm:min-h-[420px] lg:min-h-[460px]"
+              src={assets.pameVipCreative}
             />
           </div>
           <div className="max-w-2xl">
