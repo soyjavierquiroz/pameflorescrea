@@ -6,6 +6,7 @@ import { CreativeToysWeekConfirmation } from './site/pages/CreativeToysWeekConfi
 import { CreativeToysWeekLanding } from './site/pages/CreativeToysWeekLanding';
 import { ClassOneRedirectPage, CLASS_ONE_TITLE } from './site/pages/ClassOneRedirectPage';
 import { ClassTwoRedirectPage, CLASS_TWO_TITLE } from './site/pages/ClassTwoRedirectPage';
+import { ClassThreeRedirectPage, CLASS_THREE_TITLE } from './site/pages/ClassThreeRedirectPage';
 import { AdsTrackingBootstrap } from './site/tracking/AdsTrackingBootstrap';
 
 const siteId = 'PAME_FLORES_CREA';
@@ -66,6 +67,16 @@ function RoutedApp() {
       return;
     }
 
+    if (
+      location.pathname === '/clase3' ||
+      location.pathname === '/clase3/' ||
+      location.pathname === `${adsRoutePrefix}/clase3` ||
+      location.pathname === `${adsRoutePrefix}/clase3/`
+    ) {
+      document.title = CLASS_THREE_TITLE;
+      return;
+    }
+
     document.title = siteTitle;
   }, [location.pathname]);
 
@@ -83,6 +94,10 @@ function RoutedApp() {
       <Route path="/clase2/" element={<ClassTwoRedirectPage />} />
       <Route path={`${adsRoutePrefix}/clase2`} element={<ClassTwoRedirectPage />} />
       <Route path={`${adsRoutePrefix}/clase2/`} element={<ClassTwoRedirectPage />} />
+      <Route path="/clase3" element={<ClassThreeRedirectPage />} />
+      <Route path="/clase3/" element={<ClassThreeRedirectPage />} />
+      <Route path={`${adsRoutePrefix}/clase3`} element={<ClassThreeRedirectPage />} />
+      <Route path={`${adsRoutePrefix}/clase3/`} element={<ClassThreeRedirectPage />} />
       <Route path="/temporal" element={<CreativeToysOfferTemporaryPage />} />
       <Route path={`${adsRoutePrefix}/temporal`} element={<CreativeToysOfferTemporaryPage />} />
       <Route path="/confirmacion/500-extra" element={<CreativeToysWeekConfirmation />} />

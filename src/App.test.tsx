@@ -20,6 +20,11 @@ import {
   CLASS_TWO_ORGANIC_REDIRECT_DELAY_MS,
   CLASS_TWO_YOUTUBE_URL,
 } from './site/pages/ClassTwoRedirectPage';
+import {
+  CLASS_THREE_ADS_REDIRECT_DELAY_MS,
+  CLASS_THREE_ORGANIC_REDIRECT_DELAY_MS,
+  CLASS_THREE_YOUTUBE_URL,
+} from './site/pages/ClassThreeRedirectPage';
 
 function renderRoute(pathname: string): string {
   return renderToString(
@@ -106,6 +111,29 @@ describe('App routes', () => {
     expect(renderRoute('/x9m/clase2')).toContain(`href="${CLASS_TWO_YOUTUBE_URL}"`);
   });
 
+  it('renders the class three redirect page at /clase3', () => {
+    const html = renderRoute('/clase3');
+
+    expect(html).toContain('Redirigiendo a la Clase 3');
+    expect(html).toContain(
+      'Estamos preparando tu acceso al video. Si no avanzas automáticamente',
+    );
+  });
+
+  it('renders the class three redirect page at /x9m/clase3', () => {
+    expect(renderRoute('/x9m/clase3')).toContain('Redirigiendo a la Clase 3');
+  });
+
+  it('uses the exact class three fallback video URL', () => {
+    expect(renderRoute('/clase3')).toContain(`href="${CLASS_THREE_YOUTUBE_URL}"`);
+    expect(renderRoute('/x9m/clase3')).toContain(`href="${CLASS_THREE_YOUTUBE_URL}"`);
+  });
+
+  it('configures class three redirect delays for organic and ads routes', () => {
+    expect(CLASS_THREE_ORGANIC_REDIRECT_DELAY_MS).toBe(1500);
+    expect(CLASS_THREE_ADS_REDIRECT_DELAY_MS).toBe(2500);
+  });
+
   it('configures static class two metadata for organic and ads routes', () => {
     const viteSource = readFileSync(join(process.cwd(), 'vite.config.ts'), 'utf8');
 
@@ -115,6 +143,18 @@ describe('App routes', () => {
     );
     expect(viteSource).toContain("path: 'clase2'");
     expect(viteSource).toContain('path: `${adsPrefix}/clase2`');
+    expect(viteSource).toContain("'noindex, nofollow'");
+  });
+
+  it('configures static class three metadata for organic and ads routes', () => {
+    const viteSource = readFileSync(join(process.cwd(), 'vite.config.ts'), 'utf8');
+
+    expect(viteSource).toContain("const classThreeTitle = 'Clase 3 | Pame Flores Crea'");
+    expect(viteSource).toContain(
+      "const classThreeDescription = 'Redirigiendo a la Clase 3 de Pame Flores Crea.'",
+    );
+    expect(viteSource).toContain("path: 'clase3'");
+    expect(viteSource).toContain('path: `${adsPrefix}/clase3`');
     expect(viteSource).toContain("'noindex, nofollow'");
   });
 
@@ -128,6 +168,8 @@ describe('App routes', () => {
     expect(CLASS_ONE_ADS_REDIRECT_DELAY_MS).toBe(2500);
     expect(CLASS_TWO_ORGANIC_REDIRECT_DELAY_MS).toBe(1500);
     expect(CLASS_TWO_ADS_REDIRECT_DELAY_MS).toBe(2500);
+    expect(CLASS_THREE_ORGANIC_REDIRECT_DELAY_MS).toBe(1500);
+    expect(CLASS_THREE_ADS_REDIRECT_DELAY_MS).toBe(2500);
     expect(pageSource).toContain('window.setTimeout');
     expect(pageSource).toContain('window.clearTimeout');
     expect(pageSource).toContain('window.location.assign(youtubeUrl)');

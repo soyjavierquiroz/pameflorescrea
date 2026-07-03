@@ -78,6 +78,8 @@ function staticAdsEntryPlugin(mode: string) {
       const classOneDescription = 'Redirigiendo a la Clase 1 de Pame Flores Crea.';
       const classTwoTitle = 'Clase 2 | Pame Flores Crea';
       const classTwoDescription = 'Redirigiendo a la Clase 2 de Pame Flores Crea.';
+      const classThreeTitle = 'Clase 3 | Pame Flores Crea';
+      const classThreeDescription = 'Redirigiendo a la Clase 3 de Pame Flores Crea.';
       writeFileSync(
         sourcePath,
         injectRouteMetadata(baseHtml, landingTitle, landingDescription, landingAssetCheck),
@@ -117,6 +119,16 @@ function staticAdsEntryPlugin(mode: string) {
             baseHtml,
             classTwoTitle,
             classTwoDescription,
+            undefined,
+            'noindex, nofollow',
+          ),
+        },
+        {
+          path: 'clase3',
+          html: injectRouteMetadata(
+            baseHtml,
+            classThreeTitle,
+            classThreeDescription,
             undefined,
             'noindex, nofollow',
           ),
@@ -168,6 +180,16 @@ function staticAdsEntryPlugin(mode: string) {
               baseHtml,
               classTwoTitle,
               classTwoDescription,
+              undefined,
+              'noindex, nofollow',
+            ),
+          },
+          {
+            path: `${adsPrefix}/clase3`,
+            html: injectRouteMetadata(
+              baseHtml,
+              classThreeTitle,
+              classThreeDescription,
               undefined,
               'noindex, nofollow',
             ),
