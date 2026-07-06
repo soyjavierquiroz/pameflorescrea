@@ -694,6 +694,7 @@ export function CreativeToysOfferTemporaryPage() {
 
       <Section
         eyebrow="Lo que incluye"
+        intro="Todo lo que necesitas para dejar de sentirte perdida y empezar a construir un proyecto propio con claridad y confianza."
         title="¿QUÉ INCLUYE LA CERTIFICACIÓN J.C.P.?"
         tone="white"
       >

@@ -221,6 +221,9 @@ describe('App routes', () => {
     expect(html).not.toContain('Pero lo bueno es que siempre es un buen día');
     expect(html).not.toContain('Pero primero debes confiar en ti y también decidir:');
     expect(html).not.toContain('Decidir confiar en tu capacidad');
+    expect(html).toContain(
+      'Todo lo que necesitas para dejar de sentirte perdida y empezar a construir un proyecto propio con claridad y confianza.',
+    );
     expect(html).toContain('pame-oferta.webp');
     expect(html).toContain('pame-vip-creativa.webp');
     expect(html).toContain('ventas-temporadas-altas.webp');
