@@ -191,6 +191,9 @@ describe('App routes', () => {
     expect(html).toContain('proyecto propio que impacte vidas y genere ingresos para tu familia');
     expect(html).toContain('397 USD');
     expect(html).toContain('197 USD');
+    expect(html).toContain('Es ideal para ti si:');
+    expect(html).not.toContain('no te sientes Creativa');
+    expect(html).toContain('pame-oferta.webp');
     expect(html).toContain('pame-vip-creativa.webp');
     expect(html).toContain('ventas-temporadas-altas.webp');
     expect(html).toContain('disena-moldes-canva.webp');

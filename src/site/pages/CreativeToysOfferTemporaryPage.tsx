@@ -611,8 +611,7 @@ export function CreativeToysOfferTemporaryPage() {
 
       <Section
         eyebrow="Para quién es"
-        intro="Con la Certificación de Juguetería Creativa es más fácil generar ingresos con Juguetes Creativos aún si empiezas de cero o no te sientes Creativa."
-        title="Esto programa es ideal para ti si :"
+        title="Es ideal para ti si:"
         tone="light"
       >
         <div className="grid gap-4 md:grid-cols-2">
