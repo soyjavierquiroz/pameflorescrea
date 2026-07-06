@@ -10,6 +10,7 @@ import {
   shouldTrackTemporaryOfferCheckout,
   TEMPORARY_OFFER_CHECKOUT_URL,
 } from './site/registration/creativeToysOfferTemporary';
+import { buildLegacyOfferRedirectTarget } from './site/routing/offerRoutes';
 import {
   CLASS_ONE_ADS_REDIRECT_DELAY_MS,
   CLASS_ONE_ORGANIC_REDIRECT_DELAY_MS,
@@ -180,8 +181,8 @@ describe('App routes', () => {
     expect(pageSource).not.toContain('Lead');
   });
 
-  it('renders the temporary creative toys offer at /temporal', () => {
-    const html = renderRoute('/temporal');
+  it('renders the temporary creative toys offer at /oferta', () => {
+    const html = renderRoute('/oferta');
 
     expect(html).toContain('Certificación J.C.P.');
     expect(html).toContain('Descubre la manera más simple de construir un proyecto propio');
@@ -246,28 +247,76 @@ describe('App routes', () => {
     expect(html).not.toContain('Lead');
   });
 
-  it('renders the temporary creative toys offer at /x9m/temporal', () => {
-    const html = renderRoute('/x9m/temporal');
+  it('renders the temporary creative toys offer at /x9m/oferta', () => {
+    const html = renderRoute('/x9m/oferta');
 
     expect(html).toContain('Certificación de Juguetería Creativa Profesional');
     expect(html).toContain(`href="${TEMPORARY_OFFER_CHECKOUT_URL}"`);
   });
 
+  it('redirects legacy temporary offer routes to oferta and preserves URL details', () => {
+    const appSource = readFileSync(join(process.cwd(), 'src/App.tsx'), 'utf8');
+
+    expect(appSource).toContain('<Route path="/temporal" element={<LegacyOfferRedirect />} />');
+    expect(appSource).toContain('<Route path="/temporal/" element={<LegacyOfferRedirect />} />');
+    expect(appSource).toContain(
+      '<Route path={`${adsRoutePrefix}/temporal`} element={<LegacyOfferRedirect ads />} />',
+    );
+    expect(appSource).toContain(
+      '<Route path={`${adsRoutePrefix}/temporal/`} element={<LegacyOfferRedirect ads />} />',
+    );
+    expect(appSource).toContain('replace');
+    expect(
+      buildLegacyOfferRedirectTarget({
+        pathname: '/temporal',
+        search: '?utm_source=meta',
+        hash: '#x',
+      }),
+    ).toBe('/oferta?utm_source=meta#x');
+    expect(
+      buildLegacyOfferRedirectTarget({
+        pathname: '/temporal/',
+        search: '?utm_source=meta',
+        hash: '#x',
+      }),
+    ).toBe('/oferta/?utm_source=meta#x');
+    expect(
+      buildLegacyOfferRedirectTarget(
+        {
+          pathname: '/x9m/temporal',
+          search: '?utm_source=meta',
+          hash: '#x',
+        },
+        true,
+      ),
+    ).toBe('/x9m/oferta?utm_source=meta#x');
+    expect(
+      buildLegacyOfferRedirectTarget(
+        {
+          pathname: '/x9m/temporal/',
+          search: '?utm_source=meta',
+          hash: '#x',
+        },
+        true,
+      ),
+    ).toBe('/x9m/oferta/?utm_source=meta#x');
+  });
+
   it('keeps temporary offer checkout tracking disabled outside the ads route', () => {
-    expect(shouldTrackTemporaryOfferCheckout('/temporal')).toBe(false);
-    expect(shouldTrackTemporaryOfferCheckout('/temporal?fbclid=paid-click')).toBe(false);
+    expect(shouldTrackTemporaryOfferCheckout('/oferta')).toBe(false);
+    expect(shouldTrackTemporaryOfferCheckout('/oferta?fbclid=paid-click')).toBe(false);
   });
 
   it('allows only InitiateCheckout preparation under the ads temporary route', () => {
     const payload = buildTemporaryOfferCheckoutEventData({
       eventId: 'event-test-1',
-      eventSourceUrl: 'https://pameflorescrea.com/x9m/temporal?fbclid=test',
+      eventSourceUrl: 'https://pameflorescrea.com/x9m/oferta?fbclid=test',
     });
 
-    expect(shouldTrackTemporaryOfferCheckout('/x9m/temporal')).toBe(true);
+    expect(shouldTrackTemporaryOfferCheckout('/x9m/oferta')).toBe(true);
     expect(payload).toMatchObject({
       event_id: 'event-test-1',
-      event_source_url: 'https://pameflorescrea.com/x9m/temporal?fbclid=test',
+      event_source_url: 'https://pameflorescrea.com/x9m/oferta?fbclid=test',
       offer_slug: 'certificacion-jugueteria-creativa',
       checkout_url: TEMPORARY_OFFER_CHECKOUT_URL,
       value: 197,

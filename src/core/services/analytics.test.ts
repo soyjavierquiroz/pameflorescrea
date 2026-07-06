@@ -114,9 +114,9 @@ describe('ads tracking route gate', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('does not send temporary offer InitiateCheckout on /temporal even with paid params', async () => {
+  it('does not send temporary offer InitiateCheckout on /oferta even with paid params', async () => {
     const { appendChild, fetchMock, scripts, windowMock } = installBrowserMocks(
-      '/temporal?fbclid=test&utm_medium=paid',
+      '/oferta?fbclid=test&utm_medium=paid',
     );
     const { trackEvent } = await loadAnalytics();
 
@@ -372,9 +372,9 @@ describe('ads tracking route gate', () => {
     expect(capiPayload).not.toHaveProperty('eventId');
   });
 
-  it('sends temporary offer InitiateCheckout under /x9m/temporal', async () => {
+  it('sends temporary offer InitiateCheckout under /x9m/oferta', async () => {
     const { fetchMock, windowMock } = installBrowserMocks(
-      '/x9m/temporal?fbclid=TEST_TEMPORAL_001',
+      '/x9m/oferta?fbclid=TEST_TEMPORAL_001',
     );
     const { trackEvent } = await loadAnalytics({
       capiWebhookUrl: 'https://relay.example/v1/events',
@@ -411,10 +411,10 @@ describe('ads tracking route gate', () => {
     expect(capiPayload).toMatchObject({
       event_name: 'InitiateCheckout',
       event_id: 'pame_temporal_checkout_ads',
-      event_source_url: 'https://example.com/x9m/temporal?fbclid=TEST_TEMPORAL_001',
+      event_source_url: 'https://example.com/x9m/oferta?fbclid=TEST_TEMPORAL_001',
       data: expect.objectContaining({
         offer_slug: 'certificacion-jugueteria-creativa',
-        current_path: '/x9m/temporal',
+        current_path: '/x9m/oferta',
       }),
     });
   });

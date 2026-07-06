@@ -94,6 +94,16 @@ function staticAdsEntryPlugin(mode: string) {
           html: injectRouteMetadata(baseHtml, confirmationTitle, confirmationDescription),
         },
         {
+          path: 'oferta',
+          html: injectRouteMetadata(
+            baseHtml,
+            temporaryOfferTitle,
+            temporaryOfferDescription,
+            temporaryOfferAssetCheck,
+            'noindex, nofollow',
+          ),
+        },
+        {
           path: 'temporal',
           html: injectRouteMetadata(
             baseHtml,
@@ -153,6 +163,16 @@ function staticAdsEntryPlugin(mode: string) {
           {
             path: `${adsPrefix}/confirmacion/500-extra`,
             html: injectRouteMetadata(baseHtml, confirmationTitle, confirmationDescription),
+          },
+          {
+            path: `${adsPrefix}/oferta`,
+            html: injectRouteMetadata(
+              baseHtml,
+              temporaryOfferTitle,
+              temporaryOfferDescription,
+              temporaryOfferAssetCheck,
+              'noindex, nofollow',
+            ),
           },
           {
             path: `${adsPrefix}/temporal`,
