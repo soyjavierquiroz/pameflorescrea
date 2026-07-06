@@ -527,8 +527,10 @@ export function CreativeToysOfferTemporaryPage() {
               <Zap aria-hidden="true" className="h-4 w-4" />
               Certificación J.C.P. · Oferta temporal
             </div>
-            <h1 className="mt-3 max-w-[41rem] font-sans text-[clamp(1.64rem,7.1vw,2.15rem)] font-black leading-[1.06] text-white sm:mt-4 sm:text-5xl sm:leading-[1.04] lg:text-[3.28rem]">
-              Descubre la manera más simple de construir un proyecto propio con Juguetes Creativos y generar ingresos extra haciendo algo que te haga sentir orgullosa.
+            <h1 className="mt-3 max-w-[41rem] font-sans text-[clamp(1.58rem,6.85vw,2.08rem)] font-black leading-[1.06] text-white sm:mt-4 sm:text-5xl sm:leading-[1.04] lg:text-[3.28rem]">
+              Descubre la manera más simple de construir un proyecto propio con{' '}
+              <span className="text-[#7ef8f0]">Juguetes Creativos</span> y generar ingresos extra
+              haciendo algo que te haga <span className="text-[#ffd45d]">sentir orgullosa</span>.
             </h1>
             <p className="mt-3 max-w-[37rem] text-[clamp(0.96rem,3.75vw,1.08rem)] font-bold leading-6 text-white/88 sm:mt-4 sm:text-xl sm:leading-8 lg:text-[1.28rem]">
               Aunque hoy no sepas por dónde empezar, descubrirás el paso a paso para convertir tu creatividad y tu amor por los niños en un proyecto propio que impacte vidas y genere ingresos para tu familia.
