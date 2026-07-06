@@ -192,7 +192,17 @@ describe('App routes', () => {
     expect(html).toContain('397 USD');
     expect(html).toContain('197 USD');
     expect(html).toContain('Es ideal para ti si:');
-    expect(html).not.toContain('no te sientes Creativa');
+    expect(html).toContain('Sientes que tienes mucho potencial');
+    expect(html).toContain('Sueñas con construir algo propio');
+    expect(html).toContain('Amas la creatividad y el mundo infantil');
+    expect(html).toContain('Has probado diferentes ideas');
+    expect(html).toContain('Quieres dejar de sentirte perdida');
+    expect(html).not.toContain('Si eres una mamá que trabaja medio tiempo');
+    expect(html).not.toContain('Si tienes conocimientos en el área de la educación infantil');
+    expect(html).not.toContain('Si eres una mujer talentosa');
+    expect(html).not.toContain('Si estás agotada de empezar proyectos');
+    expect(html).not.toContain('Si estás cansada de invertir en cursos de marketing');
+    expect(html).not.toContain('Si estás cansada de Invertir en cursos de marketing');
     expect(html).toContain('pame-oferta.webp');
     expect(html).toContain('pame-vip-creativa.webp');
     expect(html).toContain('ventas-temporadas-altas.webp');

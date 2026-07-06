@@ -95,11 +95,11 @@ const trustChips = [
 ];
 
 const idealFor = [
-  'Si eres una mamá que trabaja medio tiempo o está en casa y no ha encontrado la forma de generar ingresos extra sin descuidar a su familia con un proyecto que ames y te permita demostrar tu talento y creatividad.',
-  'Si tienes conocimientos en el área de la educación infantil y has estado buscando una opción de negocio alineado a tu profesión pero también a tus valores.',
-  'Si eres una mujer talentosa con muchas ganas de empezar el proyecto de tus sueños pero que no has encontrado la forma de sacar todo ese potencial para colocarlo en un negocio real y con impacto entonces este es tu momento.',
-  'Si estás agotada de empezar proyectos que no tienen que ver contigo, ni con tu propósito, ni con tus conocimientos y sientes que estás desperdiciando esa energía.',
-  'Si estás cansada de Invertir en cursos de marketing y redes sociales pero que no está alineado a los proyectos que quieres emprender ni a lo que en verdad te gusta.',
+  'Sientes que tienes mucho potencial, pero todavía no encuentras un proyecto rentable donde poner todo lo que eres capaz de hacer.',
+  'Sueñas con construir algo propio que te haga sentir orgullosa y además genere ingresos para tu familia.',
+  'Amas la creatividad y el mundo infantil, y quieres convertir esa pasión en un proyecto con propósito.',
+  'Has probado diferentes ideas, pero ninguna ha conectado realmente contigo ni con la vida que quieres construir.',
+  'Quieres dejar de sentirte perdida y seguir una ruta clara para construir un proyecto propio, aunque hoy empieces desde cero.',
 ];
 
 const certificationIncludes = [
@@ -614,16 +614,17 @@ export function CreativeToysOfferTemporaryPage() {
         title="Es ideal para ti si:"
         tone="light"
       >
-        <div className="grid gap-4 md:grid-cols-2">
-          {idealFor.map((item) => (
-            <article
-              className="flex gap-3 rounded-lg border border-[#eadcf7] bg-white p-5 shadow-[0_14px_30px_rgba(78,28,134,0.08)]"
-              key={item}
-            >
-              <CheckCircle2 aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-[#13cdd7]" />
-              <p className="text-sm font-bold leading-6 text-[#342052] sm:text-base">{item}</p>
-            </article>
-          ))}
+        <div className="mx-auto max-w-4xl rounded-2xl border border-[#eadcf7] bg-white p-5 shadow-[0_18px_42px_rgba(78,28,134,0.1)] sm:p-7 lg:p-8">
+          <ul className="grid gap-5">
+            {idealFor.map((item) => (
+              <li className="flex gap-3 text-[#342052]" key={item}>
+                <span aria-hidden="true" className="mt-0.5 text-xl leading-6 sm:text-2xl">
+                  💛
+                </span>
+                <p className="text-base font-bold leading-7 sm:text-lg sm:leading-8">{item}</p>
+              </li>
+            ))}
+          </ul>
         </div>
       </Section>
 
