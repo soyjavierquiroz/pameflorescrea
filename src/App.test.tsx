@@ -184,7 +184,10 @@ describe('App routes', () => {
     const html = renderRoute('/temporal');
 
     expect(html).toContain('Certificación J.C.P.');
-    expect(html).toContain('Descubre la manera más simple y rápida');
+    expect(html).toContain('Descubre la manera más simple de construir un proyecto propio con Juguetes Creativos');
+    expect(html).toContain('haciendo algo que te haga sentir orgullosa');
+    expect(html).toContain('Aunque hoy no sepas por dónde empezar');
+    expect(html).toContain('proyecto propio que impacte vidas y genere ingresos para tu familia');
     expect(html).toContain('397 USD');
     expect(html).toContain('197 USD');
     expect(html).toContain('pame-vip-creativa.webp');

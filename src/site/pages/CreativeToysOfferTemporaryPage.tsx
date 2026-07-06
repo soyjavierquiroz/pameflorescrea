@@ -95,7 +95,7 @@ const trustChips = [
 ];
 
 const idealFor = [
-  'Si eres una mamá que trabaja medio tiempo o está en casa y no ha encontrado la forma de generar ingresos extras sin descuidar a su familia con un proyecto que ames y te permita demostrar tu talento y creatividad.',
+  'Si eres una mamá que trabaja medio tiempo o está en casa y no ha encontrado la forma de generar ingresos extra sin descuidar a su familia con un proyecto que ames y te permita demostrar tu talento y creatividad.',
   'Si tienes conocimientos en el área de la educación infantil y has estado buscando una opción de negocio alineado a tu profesión pero también a tus valores.',
   'Si eres una mujer talentosa con muchas ganas de empezar el proyecto de tus sueños pero que no has encontrado la forma de sacar todo ese potencial para colocarlo en un negocio real y con impacto entonces este es tu momento.',
   'Si estás agotada de empezar proyectos que no tienen que ver contigo, ni con tu propósito, ni con tus conocimientos y sientes que estás desperdiciando esa energía.',
@@ -482,7 +482,7 @@ export function CreativeToysOfferTemporaryPage() {
   useEffect(() => {
     const title = 'Certificación de Juguetería Creativa Profesional | Pame Flores Crea';
     const description =
-      'Descubre cómo generar ingresos extras con juguetes creativos y construir un proyecto con propósito junto a Pame Flores.';
+      'Descubre cómo generar ingresos extra con juguetes creativos y construir un proyecto con propósito junto a Pame Flores.';
     const previousTitle = document.title;
     const descriptionMeta = document.querySelector<HTMLMetaElement>('meta[name="description"]');
     const robotsMeta = document.querySelector<HTMLMetaElement>('meta[name="robots"]');
@@ -527,18 +527,11 @@ export function CreativeToysOfferTemporaryPage() {
               <Zap aria-hidden="true" className="h-4 w-4" />
               Certificación J.C.P. · Oferta temporal
             </div>
-            <h1 className="mt-3 max-w-3xl font-sans text-[1.72rem] font-black leading-[1.05] text-white sm:mt-4 sm:text-5xl sm:leading-[1.04] lg:text-[3.45rem]">
-              Descubre la manera más simple y rápida de generar{' '}
-              <span className="text-[#ffd45d]">ingresos extras</span> con{' '}
-              <span className="text-[#7ef8f0]">Juguetes Creativos</span> en solo 9 semanas.
+            <h1 className="mt-3 max-w-[41rem] font-sans text-[clamp(1.64rem,7.1vw,2.15rem)] font-black leading-[1.06] text-white sm:mt-4 sm:text-5xl sm:leading-[1.04] lg:text-[3.28rem]">
+              Descubre la manera más simple de construir un proyecto propio con Juguetes Creativos y generar ingresos extra haciendo algo que te haga sentir orgullosa.
             </h1>
-            <p className="mt-3 max-w-2xl text-[0.95rem] font-black leading-6 text-white sm:mt-4 sm:text-2xl sm:leading-8">
-              ¡Tu talento y experiencia puede ser la llave para emprender mientras impactas en tu comunidad!
-            </p>
-            <p className="mt-4 hidden max-w-2xl text-base font-bold leading-7 text-white/84 sm:block sm:text-lg sm:leading-8">
-              La Certificación de Juguetería Creativa Profesional es el único programa de
-              emprendimiento que te enseña a dominar el arte de la Juguetería Creativa y cómo
-              convertir esto en un negocio exitoso que te de la vida que deseas en este 2025.
+            <p className="mt-3 max-w-[37rem] text-[clamp(0.96rem,3.75vw,1.08rem)] font-bold leading-6 text-white/88 sm:mt-4 sm:text-xl sm:leading-8 lg:text-[1.28rem]">
+              Aunque hoy no sepas por dónde empezar, descubrirás el paso a paso para convertir tu creatividad y tu amor por los niños en un proyecto propio que impacte vidas y genere ingresos para tu familia.
             </p>
             <div className="mt-4 grid gap-3 rounded-lg border border-white/18 bg-white/12 p-4 shadow-[0_22px_54px_rgba(36,16,78,0.32)] backdrop-blur sm:mt-6 sm:max-w-2xl sm:grid-cols-[0.92fr_1.08fr] sm:items-center sm:border-[#ffd45d]/44 sm:p-5">
               <div className="grid gap-2">

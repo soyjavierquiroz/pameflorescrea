@@ -71,7 +71,7 @@ function staticAdsEntryPlugin(mode: string) {
       const temporaryOfferTitle =
         'Certificación de Juguetería Creativa Profesional | Pame Flores Crea';
       const temporaryOfferDescription =
-        'Descubre la manera más simple y rápida de generar ingresos extras con Juguetes Creativos en solo 9 semanas. Quiero inscribirme ahora en la Certificación de Juguetería Creativa Profesional por 197 USD. Checkout: https://crm.pameflorescrea.com/pagos. Soporte para Ecuador por WhatsApp.';
+        'Descubre la manera más simple de construir un proyecto propio con Juguetes Creativos y generar ingresos extra haciendo algo que te haga sentir orgullosa. Aunque hoy no sepas por dónde empezar, descubrirás el paso a paso para convertir tu creatividad y tu amor por los niños en un proyecto propio que impacte vidas y genere ingresos para tu familia. Checkout: https://crm.pameflorescrea.com/pagos. Soporte para Ecuador por WhatsApp.';
       const temporaryOfferAssetCheck =
         '/assets/pame-flores-crea/oferta/hero-certificacion.webp';
       const classOneTitle = 'Clase 1 | Pame Flores Crea';
