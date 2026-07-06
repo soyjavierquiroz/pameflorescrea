@@ -334,7 +334,7 @@ function Section({
 
   return (
     <section className={toneClasses[tone]} id={id}>
-      <div className="mx-auto w-full max-w-6xl px-5 py-14 sm:px-8 lg:px-10 lg:py-20">
+      <div className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-8 sm:py-[4.5rem] lg:px-10 lg:py-20">
         <div className="max-w-3xl">
           {eyebrow ? (
             <p
@@ -348,11 +348,13 @@ function Section({
               {eyebrow}
             </p>
           ) : null}
-          <h2 className="font-sans text-3xl font-black leading-tight sm:text-4xl">{title}</h2>
+          <h2 className="font-sans text-[clamp(1.68rem,7vw,2.2rem)] font-black leading-[1.12] sm:text-4xl sm:leading-tight">
+            {title}
+          </h2>
           {intro ? (
             <p
               className={[
-                'mt-4 text-base font-semibold leading-7 sm:text-lg',
+                'mt-4 max-w-[42rem] text-base font-semibold leading-7 sm:text-lg sm:leading-8',
                 tone === 'purple' || tone === 'gradient' || tone === 'dark'
                   ? 'text-white/78'
                   : 'text-[#5b4a77]',
@@ -397,16 +399,16 @@ function CheckoutCta({
     <a
       className={[
         variant === 'sticky'
-          ? 'inline-flex min-h-[46px] items-center justify-center gap-2 rounded-md bg-[#e0008a] px-4 py-3 text-center text-xs font-black uppercase text-white shadow-[0_12px_28px_rgba(224,0,138,0.36)] transition duration-200 hover:bg-[#ff149d] focus:outline-none focus:ring-2 focus:ring-[#ffd45d] focus:ring-offset-2 focus:ring-offset-[#170830]'
+          ? 'inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg bg-[#e0008a] px-4 py-3 text-center text-xs font-black uppercase leading-4 text-white shadow-[0_12px_28px_rgba(224,0,138,0.36)] transition duration-200 hover:bg-[#ff149d] focus:outline-none focus:ring-2 focus:ring-[#ffd45d] focus:ring-offset-2 focus:ring-offset-[#170830]'
           : variant === 'payment'
-            ? 'inline-flex min-h-[50px] w-full items-center justify-center gap-2 rounded-lg bg-[#e0008a] px-5 py-3 text-center text-[13px] font-black uppercase leading-5 text-white shadow-[0_14px_34px_rgba(224,0,138,0.32)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#ff149d] focus:outline-none focus:ring-2 focus:ring-[#ffd45d] focus:ring-offset-2 focus:ring-offset-white sm:text-sm'
-            : 'inline-flex min-h-[58px] w-full items-center justify-center gap-2 rounded-md bg-[#e0008a] px-6 py-4 text-center text-sm font-black uppercase text-white shadow-[0_18px_42px_rgba(224,0,138,0.38)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#ff149d] focus:outline-none focus:ring-2 focus:ring-[#ffd45d] focus:ring-offset-2 focus:ring-offset-[#2b1163] sm:w-auto sm:px-8',
+            ? 'inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-lg bg-[#e0008a] px-4 py-3 text-center text-[13px] font-black uppercase leading-5 text-white shadow-[0_14px_34px_rgba(224,0,138,0.32)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#ff149d] focus:outline-none focus:ring-2 focus:ring-[#ffd45d] focus:ring-offset-2 focus:ring-offset-white sm:px-5 sm:text-sm'
+            : 'inline-flex min-h-[56px] w-full items-center justify-center gap-2 rounded-lg bg-[#e0008a] px-5 py-4 text-center text-sm font-black uppercase leading-5 text-white shadow-[0_18px_42px_rgba(224,0,138,0.38)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#ff149d] focus:outline-none focus:ring-2 focus:ring-[#ffd45d] focus:ring-offset-2 focus:ring-offset-[#2b1163] sm:w-auto sm:px-8',
         className,
       ].join(' ')}
       href={TEMPORARY_OFFER_CHECKOUT_URL}
       onClick={handleCheckoutClick}
     >
-      <span className={variant === 'payment' ? 'whitespace-nowrap' : ''}>{children}</span>
+      <span>{children}</span>
       <ArrowRight aria-hidden="true" className="h-5 w-5 shrink-0" />
     </a>
   );
@@ -422,7 +424,7 @@ function SupportLink({
   return (
     <a
       className={[
-        'inline-flex min-h-[54px] items-center justify-center gap-2 rounded-md border-2 px-5 py-3 text-center text-sm font-black uppercase transition focus:outline-none focus:ring-2',
+        'inline-flex min-h-[54px] w-full items-center justify-center gap-2 rounded-lg border-2 px-5 py-3 text-center text-sm font-black uppercase leading-5 transition focus:outline-none focus:ring-2 sm:w-auto',
         variant === 'offer'
           ? 'border-[#7ef8f0] bg-white text-[#24104e] shadow-[0_12px_26px_rgba(75,21,150,0.12)] hover:border-[#7ef8f0] hover:bg-[#7ef8f0] hover:text-[#24104e] focus:ring-[#7ef8f0] focus:ring-offset-2 focus:ring-offset-white active:bg-[#5ee6de]'
           : 'border-[#7ef8f0]/70 bg-white/12 text-white hover:bg-white/18 focus:ring-[#7ef8f0]',
@@ -493,13 +495,13 @@ function GalleryCarousel() {
   return (
     <div
       aria-label="Galería de juguetes creativos"
-      className="-mx-5 overflow-x-auto px-5 pb-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden sm:-mx-8 sm:px-8 lg:-mx-10 lg:px-10"
+      className="-mx-5 scroll-px-5 overflow-x-auto px-5 pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden sm:-mx-8 sm:scroll-px-8 sm:px-8 lg:-mx-10 lg:scroll-px-10 lg:px-10"
       ref={scrollerRef}
     >
-      <div className="flex snap-x snap-mandatory gap-4">
+      <div className="flex snap-x snap-mandatory gap-3 sm:gap-4">
         {assets.galeria.map((src, index) => (
           <figure
-            className="min-w-[84%] snap-start overflow-hidden rounded-lg border border-[#eadcf7] bg-white p-2 shadow-[0_14px_32px_rgba(78,28,134,0.09)] sm:min-w-[44%] lg:min-w-[28%]"
+            className="min-w-[86%] snap-start overflow-hidden rounded-lg border border-[#eadcf7] bg-white p-2 shadow-[0_16px_36px_rgba(78,28,134,0.11)] sm:min-w-[44%] lg:min-w-[28%]"
             key={src}
             ref={(element) => {
               slideRefs.current[index] = element;
@@ -519,7 +521,7 @@ function GalleryCarousel() {
 
 function MiniProofCard({ children }: { children: ReactNode }) {
   return (
-    <div className="rounded-lg border border-white/16 bg-white/10 p-4 text-sm font-black leading-5 text-white shadow-sm backdrop-blur">
+    <div className="rounded-lg border border-white/16 bg-white/10 p-4 text-sm font-black leading-6 text-white shadow-sm backdrop-blur">
       {children}
     </div>
   );
@@ -549,12 +551,12 @@ function StickyMobileCta() {
     <div
       aria-hidden={!isVisible}
       className={[
-        'fixed inset-x-0 bottom-0 z-50 border-t border-white/12 bg-[#170830]/94 px-4 pt-3 shadow-[0_-16px_42px_rgba(23,8,48,0.34)] backdrop-blur transition-[opacity,transform] duration-300 motion-reduce:transition-none sm:hidden',
+        'fixed inset-x-0 bottom-0 z-50 border-t border-white/12 bg-[#170830]/94 px-4 pt-2.5 shadow-[0_-16px_42px_rgba(23,8,48,0.34)] backdrop-blur transition-[opacity,transform] duration-300 motion-reduce:transition-none sm:hidden',
         isVisible
           ? 'translate-y-0 opacity-100'
           : 'pointer-events-none translate-y-[110%] opacity-0',
       ].join(' ')}
-      style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
+      style={{ paddingBottom: 'max(0.625rem, env(safe-area-inset-bottom))' }}
     >
       <div className="mx-auto flex max-w-lg items-center">
         <CheckoutCta className="w-full" variant="sticky">
@@ -596,7 +598,7 @@ export function CreativeToysOfferTemporaryPage() {
       <section className="relative isolate overflow-hidden bg-[linear-gradient(135deg,#24104e_0%,#4b1596_44%,#c349a4_100%)]">
         <DecorativeLayer />
         <div className="absolute inset-x-0 top-0 h-2 bg-[#ffd45d]" aria-hidden="true" />
-        <div className="relative z-10 mx-auto grid w-full max-w-6xl gap-8 px-5 pb-8 pt-4 sm:px-8 sm:pb-14 sm:pt-8 lg:min-h-[680px] lg:grid-cols-[1.02fr_0.98fr] lg:px-10 lg:pb-20 lg:pt-10">
+        <div className="relative z-10 mx-auto grid w-full max-w-6xl gap-7 px-5 pb-10 pt-4 sm:px-8 sm:pb-14 sm:pt-8 lg:min-h-[680px] lg:grid-cols-[1.02fr_0.98fr] lg:px-10 lg:pb-20 lg:pt-10">
           <div className="flex flex-col justify-center">
             <div className="hidden items-center gap-3 sm:flex">
               <OfferImage
@@ -614,15 +616,15 @@ export function CreativeToysOfferTemporaryPage() {
               <Zap aria-hidden="true" className="h-4 w-4" />
               Certificación J.C.P. · Oferta temporal
             </div>
-            <h1 className="mt-3 max-w-[41rem] font-sans text-[clamp(1.58rem,6.85vw,2.08rem)] font-black leading-[1.06] text-white sm:mt-4 sm:text-5xl sm:leading-[1.04] lg:text-[3.28rem]">
+            <h1 className="mt-4 max-w-[41rem] font-sans text-[clamp(1.55rem,6.6vw,2.05rem)] font-black leading-[1.08] text-white sm:text-5xl sm:leading-[1.04] lg:text-[3.28rem]">
               Descubre la manera más simple de construir un proyecto propio con{' '}
               <span className="text-[#7ef8f0]">Juguetes Creativos</span> y generar ingresos extra
               haciendo algo que te haga <span className="text-[#ffd45d]">sentir orgullosa</span>.
             </h1>
-            <p className="mt-3 max-w-[37rem] text-[clamp(0.96rem,3.75vw,1.08rem)] font-bold leading-6 text-white/88 sm:mt-4 sm:text-xl sm:leading-8 lg:text-[1.28rem]">
+            <p className="mt-4 max-w-[37rem] text-[clamp(0.96rem,3.75vw,1.08rem)] font-bold leading-[1.55] text-white/88 sm:text-xl sm:leading-8 lg:text-[1.28rem]">
               Aunque hoy no sepas por dónde empezar, descubrirás el paso a paso para convertir tu creatividad y tu amor por los niños en un proyecto propio que impacte vidas y genere ingresos para tu familia.
             </p>
-            <div className="mt-4 grid gap-3 rounded-lg border border-white/18 bg-white/12 p-4 shadow-[0_22px_54px_rgba(36,16,78,0.32)] backdrop-blur sm:mt-6 sm:max-w-2xl sm:grid-cols-[0.92fr_1.08fr] sm:items-center sm:border-[#ffd45d]/44 sm:p-5">
+            <div className="mt-5 grid gap-4 rounded-lg border border-white/18 bg-white/12 p-4 shadow-[0_22px_54px_rgba(36,16,78,0.32)] backdrop-blur sm:mt-6 sm:max-w-2xl sm:grid-cols-[0.92fr_1.08fr] sm:items-center sm:border-[#ffd45d]/44 sm:p-5">
               <div className="grid gap-2">
                 <p className="text-xs font-black uppercase text-[#7ef8f0]">Una cuota</p>
                 <div className="flex items-end gap-3">
@@ -665,14 +667,14 @@ export function CreativeToysOfferTemporaryPage() {
             </div>
           </div>
 
-          <div className="relative flex min-h-[380px] items-end justify-center lg:min-h-[600px] lg:items-center">
+          <div className="relative flex min-h-[340px] items-end justify-center sm:min-h-[430px] lg:min-h-[600px] lg:items-center">
             <div className="absolute inset-x-8 bottom-4 top-12 rotate-[-3deg] rounded-lg border-2 border-dotted border-[#ffd45d]/60 bg-white/10" />
             <div className="absolute -right-8 bottom-8 h-32 w-32 rounded-full bg-[#e0008a]/38 blur-3xl" />
             <div className="relative w-full max-w-[520px]">
               <div className="overflow-hidden rounded-lg border-2 border-dashed border-white/38 bg-[#4a1ca4] shadow-[0_26px_74px_rgba(36,16,78,0.45)]">
                 <OfferImage
                   alt="Pame Flores acompañando la Certificación de Juguetería Creativa Profesional"
-                  className="h-full min-h-[360px] w-full object-cover object-top sm:min-h-[460px] lg:min-h-[560px]"
+                  className="h-full min-h-[320px] w-full object-cover object-top sm:min-h-[460px] lg:min-h-[560px]"
                   loading="eager"
                   src={assets.pame}
                 />
@@ -701,11 +703,11 @@ export function CreativeToysOfferTemporaryPage() {
         title="Es ideal para ti si:"
         tone="light"
       >
-        <div className="mx-auto max-w-4xl rounded-2xl border border-[#eadcf7] bg-white p-5 shadow-[0_18px_42px_rgba(78,28,134,0.1)] sm:p-7 lg:p-8">
-          <ul className="grid gap-5">
+        <div className="mx-auto max-w-4xl rounded-2xl border border-[#eadcf7] bg-white p-6 shadow-[0_18px_42px_rgba(78,28,134,0.1)] sm:p-7 lg:p-8">
+          <ul className="grid gap-5 sm:gap-6">
             {idealFor.map((item) => (
-              <li className="flex gap-3 text-[#342052]" key={item}>
-                <span aria-hidden="true" className="mt-0.5 text-xl leading-6 sm:text-2xl">
+              <li className="flex gap-3.5 text-[#342052]" key={item}>
+                <span aria-hidden="true" className="mt-0.5 text-lg leading-7 sm:text-2xl">
                   💛
                 </span>
                 <p className="text-base font-bold leading-7 sm:text-lg sm:leading-8">{item}</p>
@@ -720,11 +722,11 @@ export function CreativeToysOfferTemporaryPage() {
         title="La Juguetería Creativa puede convertirse en ese proyecto propio que llevas tiempo buscando."
         tone="purple"
       >
-        <div className="grid gap-8 lg:grid-cols-[0.78fr_1.22fr] lg:items-center">
+        <div className="grid gap-9 lg:grid-cols-[0.78fr_1.22fr] lg:items-center">
           <div className="overflow-hidden rounded-lg border-2 border-dashed border-[#ffd45d]/44 bg-white/8 p-2 shadow-[0_24px_58px_rgba(0,0,0,0.22)]">
             <OfferImage
               alt="Pame Flores con juguetes creativos"
-              className="h-full min-h-[340px] w-full rounded-md object-cover object-center sm:min-h-[420px] lg:min-h-[460px]"
+              className="h-full min-h-[300px] w-full rounded-md object-cover object-center sm:min-h-[420px] lg:min-h-[460px]"
               src={assets.pameVipCreative}
             />
           </div>
@@ -733,7 +735,7 @@ export function CreativeToysOfferTemporaryPage() {
               <Images aria-hidden="true" className="h-4 w-4" />
               Creatividad con propósito
             </p>
-            <div className="mt-5 space-y-5 text-lg font-bold leading-8 text-white/88 sm:text-xl sm:leading-9">
+            <div className="mt-5 space-y-5 text-base font-bold leading-7 text-white/88 sm:text-xl sm:leading-9">
               <p>
                 Sé que dentro de ti hay un enorme deseo de crear, crecer y construir algo propio.
                 Un proyecto que no solo te permita generar ingresos, sino también descubrir de lo
@@ -743,8 +745,8 @@ export function CreativeToysOfferTemporaryPage() {
               </p>
               <p>Pero primero debes confiar en ti y también:</p>
             </div>
-            <div className="mt-6 rounded-2xl border border-white/16 bg-white/10 p-5 shadow-[0_18px_44px_rgba(0,0,0,0.16)] sm:p-6">
-              <ul className="grid gap-4">
+            <div className="mt-6 border-l-2 border-[#ffd45d]/55 pl-5 sm:pl-6">
+              <ul className="grid gap-[1.125rem]">
                 {[
                   'Confiar en tu capacidad.',
                   'Confiar en tu intuición y en ese proyecto que hace tanto tiempo está en tu corazón.',
@@ -759,7 +761,7 @@ export function CreativeToysOfferTemporaryPage() {
                 ))}
               </ul>
             </div>
-            <p className="mt-6 text-lg font-bold leading-8 text-white/88 sm:text-xl sm:leading-9">
+            <p className="mt-6 text-base font-bold leading-7 text-white/88 sm:text-xl sm:leading-9">
               Esta transformación requiere un proceso y estoy aquí para caminar juntas, paso a paso.
             </p>
             <div className="mt-7">
@@ -774,7 +776,7 @@ export function CreativeToysOfferTemporaryPage() {
         title="La Juguetería Creativa es la opción que conecta con tu corazón y tus talentos."
         tone="gradient"
       >
-        <blockquote className="max-w-4xl rounded-lg border-2 border-dashed border-[#ffd45d]/46 bg-white/10 p-6 text-xl font-black leading-9 text-white shadow-[0_18px_48px_rgba(0,0,0,0.18)] sm:p-8 sm:text-2xl sm:leading-10">
+        <blockquote className="max-w-4xl rounded-lg border-2 border-dashed border-[#ffd45d]/46 bg-white/10 p-6 text-[1.2rem] font-black leading-8 text-white shadow-[0_18px_48px_rgba(0,0,0,0.18)] sm:p-8 sm:text-2xl sm:leading-10">
           “A veces no se trata ni de emprender, ni de generar ingresos. Se trata de ver a la luz ese potencial que sabemos que tenemos.”
         </blockquote>
       </Section>
@@ -785,15 +787,17 @@ export function CreativeToysOfferTemporaryPage() {
         title="¿QUÉ INCLUYE LA CERTIFICACIÓN J.C.P.?"
         tone="white"
       >
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {certificationIncludes.map((item) => (
             <article
-              className="rounded-lg border border-[#eadcf7] bg-[#fbf3ff] p-5 shadow-[0_12px_28px_rgba(78,28,134,0.07)]"
+              className="rounded-lg border border-[#eadcf7] bg-[#fbf3ff] p-6 shadow-[0_14px_30px_rgba(78,28,134,0.08)]"
               key={item.title}
             >
-              <BadgeCheck aria-hidden="true" className="h-6 w-6 text-[#e0008a]" />
+              <BadgeCheck aria-hidden="true" className="h-7 w-7 text-[#e0008a]" />
               <h3 className="mt-4 font-sans text-lg font-black text-[#24104e]">{item.title}</h3>
-              <p className="mt-2 text-sm font-bold leading-6 text-[#5b4a77]">{item.text}</p>
+              <p className="mt-3 text-sm font-bold leading-6 text-[#5b4a77] sm:text-[15px] sm:leading-7">
+                {item.text}
+              </p>
             </article>
           ))}
         </div>
