@@ -56,6 +56,16 @@ const assets = {
     `${ASSET_BASE}/testimonio-04.jpg`,
     `${ASSET_BASE}/testimonio-05.jpg`,
   ],
+  galeria: [
+    `${ASSET_BASE}/gallery/galeria-1.webp`,
+    `${ASSET_BASE}/gallery/galeria-2.webp`,
+    `${ASSET_BASE}/gallery/galeria-3.webp`,
+    `${ASSET_BASE}/gallery/galeria-4.webp`,
+    `${ASSET_BASE}/gallery/galeria-5.webp`,
+    `${ASSET_BASE}/gallery/galeria-6.webp`,
+    `${ASSET_BASE}/gallery/galeria-7.webp`,
+    `${ASSET_BASE}/gallery/galeria-8.webp`,
+  ],
   bonos: [
     `${ASSET_BASE}/bono-calculadora.webp`,
     `${ASSET_BASE}/bono-costura.webp`,
@@ -80,42 +90,42 @@ const bonusImages = {
 
 const trustChips = [
   { icon: Clock3, label: 'Acceso por 1 año' },
-  { icon: Users, label: 'Acompañamiento y comunidad' },
+  { icon: Users, label: 'Comunidad y soporte' },
   { icon: ShieldCheck, label: '7 días de garantía' },
 ];
 
 const idealFor = [
-  'Quieres generar ingresos extras sin descuidar a tu familia.',
-  'Amas el mundo infantil y quieres emprender con propósito.',
-  'Tienes talento manual, educativo o creativo y no sabes cómo convertirlo en negocio.',
-  'Te cansaste de proyectos que no conectan contigo ni con tus valores.',
-  'Has probado cursos o ideas sueltas, pero necesitas una ruta clara.',
+  'Si eres una mamá que trabaja medio tiempo o está en casa y no ha encontrado la forma de generar ingresos extras sin descuidar a su familia con un proyecto que ames y te permita demostrar tu talento y creatividad.',
+  'Si tienes conocimientos en el área de la educación infantil y has estado buscando una opción de negocio alineado a tu profesión pero también a tus valores.',
+  'Si eres una mujer talentosa con muchas ganas de empezar el proyecto de tus sueños pero que no has encontrado la forma de sacar todo ese potencial para colocarlo en un negocio real y con impacto entonces este es tu momento.',
+  'Si estás agotada de empezar proyectos que no tienen que ver contigo, ni con tu propósito, ni con tus conocimientos y sientes que estás desperdiciando esa energía.',
+  'Si estás cansada de Invertir en cursos de marketing y redes sociales pero que no está alineado a los proyectos que quieres emprender ni a lo que en verdad te gusta.',
 ];
 
 const certificationIncludes = [
   {
-    title: 'Método',
-    text: 'Mi método estrella de las 3N para construir un negocio con propósito y mirada rentable.',
+    title: 'MÉTODO',
+    text: 'Tendrás mi método estrella de la 3Ns y te mostraré cómo aplicarlo para tener un negocio con un propósito pero además que sea rentable.',
   },
   {
-    title: 'Producto estrella',
-    text: 'Paso a paso para crear libros sensoriales novedosos, tiernos y atractivos para tus clientes.',
+    title: 'PRODUCTO ESTRELLA',
+    text: 'Obtendrás el paso a paso para hacer Libros sensoriales novedosos, que atraigan a tus clientes.',
   },
   {
-    title: 'Clientes estrella',
-    text: 'Los 5 nichos de oportunidad para encontrar clientes que valoren tus productos y paguen lo justo.',
+    title: 'CLIENTES ESTRELLA',
+    text: 'Te mostraré exactamente cómo utilizar los 5 nichos de oportunidad para conseguir clientes estrella que valoren tus productos y paguen lo justo.',
   },
   {
-    title: 'Confección rápida',
-    text: 'Plantillas y moldes en tamaño real para avanzar de forma más simple con tus primeros libros.',
+    title: 'CONFECCIÓN RÁPIDA',
+    text: 'Obtendrás plantillas y moldes en tamaño real para que puedas hacer tus primeros libros sensoriales de la manera más fácil y rápida.',
   },
   {
-    title: 'Comunidad',
-    text: 'Un espacio de Jugueteras Creativas Profesionales para apoyarte, compartir y mantener la motivación.',
+    title: 'COMUNIDAD',
+    text: 'Tendrás una comunidad de Jugueteras Creativas Profesionales con quien apoyarte y además con quien compartir conocimiento y recibirás la motivación que necesitas.',
   },
   {
-    title: 'Ruta exacta',
-    text: 'Una ruta para conseguir tus primeros clientes y avanzar hacia convertirte en una experta.',
+    title: 'RUTA EXACTA',
+    text: 'Tendrás una ruta exacta para conseguir desde tus primeros clientes hasta convertirte en una experta.',
   },
 ];
 
@@ -523,11 +533,12 @@ export function CreativeToysOfferTemporaryPage() {
               <span className="text-[#7ef8f0]">Juguetes Creativos</span> en solo 9 semanas.
             </h1>
             <p className="mt-3 max-w-2xl text-[0.95rem] font-black leading-6 text-white sm:mt-4 sm:text-2xl sm:leading-8">
-              Tu talento puede convertirse en un proyecto creativo con propósito.
+              ¡Tu talento y experiencia puede ser la llave para emprender mientras impactas en tu comunidad!
             </p>
             <p className="mt-4 hidden max-w-2xl text-base font-bold leading-7 text-white/84 sm:block sm:text-lg sm:leading-8">
-              Domina el arte de la Juguetería Creativa y conviértelo en un negocio con propósito,
-              acompañado por Pame y una comunidad que avanza contigo.
+              La Certificación de Juguetería Creativa Profesional es el único programa de
+              emprendimiento que te enseña a dominar el arte de la Juguetería Creativa y cómo
+              convertir esto en un negocio exitoso que te de la vida que deseas en este 2025.
             </p>
             <div className="mt-4 grid gap-3 rounded-lg border border-white/18 bg-white/12 p-4 shadow-[0_22px_54px_rgba(36,16,78,0.32)] backdrop-blur sm:mt-6 sm:max-w-2xl sm:grid-cols-[0.92fr_1.08fr] sm:items-center sm:border-[#ffd45d]/44 sm:p-5">
               <div className="grid gap-2">
@@ -605,8 +616,8 @@ export function CreativeToysOfferTemporaryPage() {
 
       <Section
         eyebrow="Para quién es"
-        intro="Con la Certificación de Juguetería Creativa es más fácil generar ingresos con Juguetes Creativos, aún si empiezas de cero o no te sientes creativa."
-        title="Es ideal para ti si..."
+        intro="Con la Certificación de Juguetería Creativa es más fácil generar ingresos con Juguetes Creativos aún si empiezas de cero o no te sientes Creativa."
+        title="Esto programa es ideal para ti si :"
         tone="light"
       >
         <div className="grid gap-4 md:grid-cols-2">
@@ -624,8 +635,7 @@ export function CreativeToysOfferTemporaryPage() {
 
       <Section
         eyebrow="Menos frustración y más acción creativa"
-        intro="Sé que dentro de ti hay una fuerza enorme de querer crear, crecer y encontrar una actividad que no solo te apasione, sino que te permita descubrir tu verdadero potencial mientras generas ingresos extra."
-        title="La Juguetería Creativa conecta con tu corazón y tus talentos"
+        title="MENOS FRUSTRACIÓN Y MÁS ACCIÓN CREATIVA"
         tone="purple"
       >
         <div className="grid gap-8 lg:grid-cols-[0.78fr_1.22fr] lg:items-center">
@@ -643,20 +653,22 @@ export function CreativeToysOfferTemporaryPage() {
             </p>
             <div className="mt-5 space-y-5 text-lg font-bold leading-8 text-white/88 sm:text-xl sm:leading-9">
               <p>
-                Sé lo que es sentirse perdida, con mil ideas y ganas de avanzar.{' '}
-                <span className="text-[#ffd45d]">Siempre es un buen día para tomar acción.</span>
+                Sé lo que es sentirse perdida, con mil ideas y con muchas ganas pero también con
+                muchos miedos y en constante comparación.
               </p>
               <p>
-                Esta transformación requiere un proceso y estoy aquí para caminar juntas,{' '}
-                <span className="text-[#7ef8f0]">paso a paso.</span>
+                Pero lo bueno es que siempre es un buen día para cambiar y pensar diferente y tomar
+                acción.
               </p>
+              <p>Pero primero debes confiar en ti y también decidir:</p>
             </div>
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               {[
-                'Decidir confiar en tu capacidad.',
-                'Decidir confiar en ese proyecto que hace tiempo está en tu corazón.',
-                'Decidir dejarte acompañar.',
-                'Decidir que mereces una actividad para ti.',
+                'Decidir confiar en tu capacidad…',
+                'Decidir confiar en tu intuición y en ese proyecto que hace tanto tiempo está en tu corazón…',
+                'Decidir dejarte acompañar…',
+                'Decidir que mereces un espacio y una actividad para ti.',
+                'Decidir que puedes construir el proyecto de tus sueños…',
               ].map((item) => (
                 <div
                   className="rounded-lg border border-white/14 bg-white/10 p-4 text-sm font-black leading-6 text-white shadow-sm"
@@ -666,17 +678,34 @@ export function CreativeToysOfferTemporaryPage() {
                 </div>
               ))}
             </div>
+            <p className="mt-6 text-lg font-bold leading-8 text-white/88 sm:text-xl sm:leading-9">
+              Esta transformación requiere un proceso y estoy aquí para caminar juntas, paso a paso.
+            </p>
             <div className="mt-7">
-              <CheckoutCta>QUIERO ENTRAR A LA CERTIFICACIÓN</CheckoutCta>
+              <CheckoutCta>QUIERO YA SER PARTE DEL PROGRAMA</CheckoutCta>
             </div>
           </div>
         </div>
       </Section>
 
       <Section
+        eyebrow="Quote"
+        title="La Juguetería Creativa es la opción que conecta con tu corazón y tus talentos."
+        tone="gradient"
+      >
+        <blockquote className="max-w-4xl rounded-lg border-2 border-dashed border-[#ffd45d]/46 bg-white/10 p-6 text-xl font-black leading-9 text-white shadow-[0_18px_48px_rgba(0,0,0,0.18)] sm:p-8 sm:text-2xl sm:leading-10">
+          “Sé que dentro de ti hay una fuerza enorme de querer Crear, Crecer y Encontrar una
+          actividad que no solo te apasione, sino que te permita descubrir tu verdadero potencial
+          mientras generas ingresos extra. Y si hasta ahora no ha sido fácil, no es porque no
+          puedas, es porque aún no habías encontrado esa actividad que realmente esté alineada con
+          lo que eres y lo que amas. La Juguetería Creativa es la opción que conecta con tu corazón
+          y tus talentos.”
+        </blockquote>
+      </Section>
+
+      <Section
         eyebrow="Lo que incluye"
-        intro="Una ruta concreta para pasar de la creatividad dispersa a un proyecto con producto, clientes, confección y comunidad."
-        title="Qué incluye la Certificación J.C.P."
+        title="¿QUÉ INCLUYE LA CERTIFICACIÓN J.C.P.?"
         tone="white"
       >
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -690,6 +719,30 @@ export function CreativeToysOfferTemporaryPage() {
               <p className="mt-2 text-sm font-bold leading-6 text-[#5b4a77]">{item.text}</p>
             </article>
           ))}
+        </div>
+      </Section>
+
+      <Section
+        eyebrow="Galería"
+        intro="Mira algunos de los proyectos y resultados creativos que acompañan este camino."
+        title="Juguetes creativos hechos con propósito"
+        tone="light"
+      >
+        <div className="-mx-5 overflow-x-auto px-5 pb-3 sm:-mx-8 sm:px-8 lg:-mx-10 lg:px-10">
+          <div className="flex snap-x snap-mandatory gap-4">
+            {assets.galeria.map((src, index) => (
+              <figure
+                className="min-w-[78%] snap-start overflow-hidden rounded-lg border border-[#eadcf7] bg-white p-2 shadow-[0_14px_32px_rgba(78,28,134,0.09)] sm:min-w-[42%] lg:min-w-[28%]"
+                key={src}
+              >
+                <OfferImage
+                  alt={`Galería de juguetes creativos ${index + 1}`}
+                  className="aspect-[4/5] w-full rounded-md object-cover"
+                  src={src}
+                />
+              </figure>
+            ))}
+          </div>
         </div>
       </Section>
 
