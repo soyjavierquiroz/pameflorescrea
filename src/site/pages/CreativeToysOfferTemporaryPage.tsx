@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   ArrowRight,
@@ -32,6 +32,7 @@ import {
 const ASSET_BASE = '/assets/pame-flores-crea/oferta';
 const WEEK_ASSET_BASE = '/assets/pame-flores-crea/500-extra';
 const MOBILE_STICKY_CTA_SCROLL_THRESHOLD = 420;
+const GALLERY_AUTOPLAY_INTERVAL_MS = 2000;
 
 function shouldShowMobileStickyCta(scrollY: number): boolean {
   return scrollY > MOBILE_STICKY_CTA_SCROLL_THRESHOLD;
@@ -411,11 +412,20 @@ function CheckoutCta({
   );
 }
 
-function SupportLink({ className = '' }: { className?: string }) {
+function SupportLink({
+  className = '',
+  variant = 'dark',
+}: {
+  className?: string;
+  variant?: 'dark' | 'offer';
+}) {
   return (
     <a
       className={[
-        'inline-flex min-h-[54px] items-center justify-center gap-2 rounded-md border-2 border-[#7ef8f0]/70 bg-white/12 px-5 py-3 text-center text-sm font-black uppercase text-white transition hover:bg-white/18 focus:outline-none focus:ring-2 focus:ring-[#7ef8f0]',
+        'inline-flex min-h-[54px] items-center justify-center gap-2 rounded-md border-2 px-5 py-3 text-center text-sm font-black uppercase transition focus:outline-none focus:ring-2',
+        variant === 'offer'
+          ? 'border-[#7ef8f0] bg-white text-[#24104e] shadow-[0_12px_26px_rgba(75,21,150,0.12)] hover:border-[#7ef8f0] hover:bg-[#7ef8f0] hover:text-[#24104e] focus:ring-[#7ef8f0] focus:ring-offset-2 focus:ring-offset-white active:bg-[#5ee6de]'
+          : 'border-[#7ef8f0]/70 bg-white/12 text-white hover:bg-white/18 focus:ring-[#7ef8f0]',
         className,
       ].join(' ')}
       href={TEMPORARY_OFFER_SUPPORT_WHATSAPP_URL}
@@ -425,6 +435,85 @@ function SupportLink({ className = '' }: { className?: string }) {
       <MessageCircle aria-hidden="true" className="h-5 w-5" />
       ESCRÍBENOS POR WHATSAPP
     </a>
+  );
+}
+
+function GalleryCarousel() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const slideRefs = useRef<Array<HTMLElement | null>>([]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const updatePreference = () => {
+      setPrefersReducedMotion(mediaQuery.matches);
+    };
+
+    updatePreference();
+    mediaQuery.addEventListener?.('change', updatePreference);
+
+    return () => {
+      mediaQuery.removeEventListener?.('change', updatePreference);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || prefersReducedMotion) {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      setCurrentIndex((index) => (index + 1) % assets.galeria.length);
+    }, GALLERY_AUTOPLAY_INTERVAL_MS);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [prefersReducedMotion]);
+
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    const currentSlide = slideRefs.current[currentIndex];
+
+    if (!scroller || !currentSlide) {
+      return;
+    }
+
+    scroller.scrollTo({
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+      left: currentSlide.offsetLeft,
+    });
+  }, [currentIndex, prefersReducedMotion]);
+
+  return (
+    <div
+      aria-label="Galería de juguetes creativos"
+      className="-mx-5 overflow-x-auto px-5 pb-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden sm:-mx-8 sm:px-8 lg:-mx-10 lg:px-10"
+      ref={scrollerRef}
+    >
+      <div className="flex snap-x snap-mandatory gap-4">
+        {assets.galeria.map((src, index) => (
+          <figure
+            className="min-w-[84%] snap-start overflow-hidden rounded-lg border border-[#eadcf7] bg-white p-2 shadow-[0_14px_32px_rgba(78,28,134,0.09)] sm:min-w-[44%] lg:min-w-[28%]"
+            key={src}
+            ref={(element) => {
+              slideRefs.current[index] = element;
+            }}
+          >
+            <OfferImage
+              alt={`Galería de juguetes creativos ${index + 1}`}
+              className="aspect-[4/5] w-full rounded-md object-cover"
+              src={src}
+            />
+          </figure>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -716,22 +805,7 @@ export function CreativeToysOfferTemporaryPage() {
         title="Juguetes creativos hechos con propósito"
         tone="light"
       >
-        <div className="-mx-5 overflow-x-auto px-5 pb-3 sm:-mx-8 sm:px-8 lg:-mx-10 lg:px-10">
-          <div className="flex snap-x snap-mandatory gap-4">
-            {assets.galeria.map((src, index) => (
-              <figure
-                className="min-w-[78%] snap-start overflow-hidden rounded-lg border border-[#eadcf7] bg-white p-2 shadow-[0_14px_32px_rgba(78,28,134,0.09)] sm:min-w-[42%] lg:min-w-[28%]"
-                key={src}
-              >
-                <OfferImage
-                  alt={`Galería de juguetes creativos ${index + 1}`}
-                  className="aspect-[4/5] w-full rounded-md object-cover"
-                  src={src}
-                />
-              </figure>
-            ))}
-          </div>
-        </div>
+        <GalleryCarousel />
       </Section>
 
       <Section
@@ -903,7 +977,7 @@ export function CreativeToysOfferTemporaryPage() {
                 )}
               </div>
               <div className="mt-7 flex flex-col gap-3">
-                <SupportLink className="border-[#13cdd7] bg-[#f5ecff] text-[#24104e] shadow-[0_12px_26px_rgba(75,21,150,0.12)] hover:bg-white" />
+                <SupportLink variant="offer" />
               </div>
             </div>
             <div className="lg:pt-2">

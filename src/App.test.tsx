@@ -249,11 +249,14 @@ describe('App routes', () => {
     expect(html).toContain('ventas-explisivas-instagram.webp');
     expect(html).toContain('QUIERO INSCRIBIRME AHORA');
     expect(html).toContain('INSCRIBIRME AHORA');
+    expect(html).toContain('ESCRÍBENOS POR WHATSAPP');
     expect(html).toContain('translate-y-[110%]');
     expect(html).toContain('aria-hidden="true"');
     expect(html).toContain(`href="${TEMPORARY_OFFER_CHECKOUT_URL}"`);
     expect(countOccurrences(html, `href="${TEMPORARY_OFFER_CHECKOUT_URL}"`)).toBeGreaterThanOrEqual(2);
     expect(html).toContain('Si estás en Ecuador y deseas pagar con depósito');
+    expect(html).toContain('galeria-1.webp');
+    expect(html).toContain('galeria-8.webp');
     expect(html).not.toContain('Bolivia');
     expect(html).not.toContain('InitiateCheckout');
     expect(html).not.toContain('Purchase');
@@ -288,6 +291,23 @@ describe('App routes', () => {
     expect(pageSource).not.toContain("'Purchase'");
     expect(pageSource).not.toContain("'CompleteRegistration'");
     expect(pageSource).not.toContain("'Lead'");
+  });
+
+  it('configures the temporary offer gallery carousel autoplay accessibly', () => {
+    const pageSource = readFileSync(
+      join(process.cwd(), 'src/site/pages/CreativeToysOfferTemporaryPage.tsx'),
+      'utf8',
+    );
+
+    expect(pageSource).toContain('GALLERY_AUTOPLAY_INTERVAL_MS = 2000');
+    expect(pageSource).toContain('window.setInterval');
+    expect(pageSource).toContain('window.clearInterval');
+    expect(pageSource).toContain('prefers-reduced-motion: reduce');
+    expect(pageSource).toContain('scroller.scrollTo');
+    expect(pageSource).toContain('[scrollbar-width:none]');
+    expect(pageSource).toContain('alt={`Galería de juguetes creativos ${index + 1}`}');
+    expect(pageSource).toContain('galeria-1.webp');
+    expect(pageSource).toContain('galeria-8.webp');
   });
 
   it('redirects legacy temporary offer routes to oferta and preserves URL details', () => {
