@@ -848,19 +848,38 @@ export function CreativeToysOfferTemporaryPage() {
       <Section
         eyebrow="Oferta"
         intro="La Certificación de Juguetería Creativa Profesional, todos los regalos y el acompañamiento."
-        title="Inscríbete por una cuota de 197 USD"
+        title="Inscríbete eligiendo la opción de pago que prefieras"
         tone="gradient"
       >
         <div className="relative overflow-hidden rounded-lg border-2 border-dashed border-[#ffd45d]/46 bg-[#170830]/72 p-5 shadow-[0_30px_90px_rgba(23,8,48,0.42)] backdrop-blur sm:p-7 lg:p-8">
           <Sparkles className="absolute right-5 top-5 h-8 w-8 text-[#ffd45d]/70" aria-hidden="true" />
           <div className="grid gap-7 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
             <div className="rounded-lg bg-white p-6 text-[#24104e] shadow-[0_24px_64px_rgba(0,0,0,0.2)] sm:p-7">
-              <p className="inline-flex rounded-md bg-[#ffd45d] px-3 py-1 text-sm font-black uppercase text-[#4b1596]">
-                Una cuota
-              </p>
-              <p className="mt-3 font-sans text-6xl font-black leading-none text-[#e0008a] sm:text-7xl">
-                197 USD
-              </p>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="flex flex-col rounded-lg border-2 border-[#ffd45d] bg-[#fffaf0] p-5 shadow-[0_18px_38px_rgba(224,0,138,0.12)]">
+                  <p className="inline-flex self-start rounded-md bg-[#ffd45d] px-3 py-1 text-sm font-black uppercase text-[#4b1596]">
+                    UNA CUOTA
+                  </p>
+                  <p className="mt-4 font-sans text-5xl font-black leading-none text-[#e0008a] sm:text-6xl">
+                    197 USD
+                  </p>
+                  <div className="mt-6 flex flex-1 items-end">
+                    <CheckoutCta className="sm:w-full">QUIERO PAGAR 197 USD</CheckoutCta>
+                  </div>
+                </div>
+                <div className="flex flex-col rounded-lg border-2 border-[#eadcf7] bg-white p-5 shadow-[0_18px_38px_rgba(75,21,150,0.1)]">
+                  <p className="inline-flex self-start rounded-md bg-[#13cdd7]/14 px-3 py-1 text-sm font-black uppercase text-[#4b1596]">
+                    3 CUOTAS
+                  </p>
+                  <p className="mt-4 font-sans text-5xl font-black leading-none text-[#e0008a] sm:text-6xl">
+                    77 USD
+                  </p>
+                  <p className="mt-2 text-sm font-black uppercase text-[#5b4a77]">por 3 meses</p>
+                  <div className="mt-6 flex flex-1 items-end">
+                    <CheckoutCta className="sm:w-full">QUIERO PAGAR EN 3 CUOTAS</CheckoutCta>
+                  </div>
+                </div>
+              </div>
               <p className="mt-4 text-sm font-bold leading-6 text-[#5b4a77]">
                 Paga con tarjeta de crédito, débito o PayPal. Si estás en Ecuador y deseas depósito,
                 escríbenos por WhatsApp.
@@ -876,7 +895,6 @@ export function CreativeToysOfferTemporaryPage() {
                 )}
               </div>
               <div className="mt-7 flex flex-col gap-3">
-                <CheckoutCta>QUIERO INSCRIBIRME AHORA</CheckoutCta>
                 <SupportLink className="border-[#4b1596]/24 bg-[#4b1596]/8 text-[#4b1596] hover:bg-[#4b1596]/12" />
               </div>
             </div>

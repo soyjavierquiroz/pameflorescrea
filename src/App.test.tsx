@@ -37,6 +37,10 @@ function renderRoute(pathname: string): string {
   );
 }
 
+function countOccurrences(value: string, search: string): number {
+  return value.split(search).length - 1;
+}
+
 afterEach(() => {
   vi.unstubAllEnvs();
 });
@@ -192,6 +196,13 @@ describe('App routes', () => {
     expect(html).toContain('proyecto propio que impacte vidas y genere ingresos para tu familia');
     expect(html).toContain('397 USD');
     expect(html).toContain('197 USD');
+    expect(html).toContain('Inscríbete eligiendo la opción de pago que prefieras');
+    expect(html).toContain('UNA CUOTA');
+    expect(html).toContain('3 CUOTAS');
+    expect(html).toContain('77 USD');
+    expect(html).toContain('por 3 meses');
+    expect(html).toContain('QUIERO PAGAR 197 USD');
+    expect(html).toContain('QUIERO PAGAR EN 3 CUOTAS');
     expect(html).toContain('Es ideal para ti si:');
     expect(html).toContain('Sientes que tienes mucho potencial');
     expect(html).toContain('Sueñas con construir algo propio');
@@ -239,6 +250,7 @@ describe('App routes', () => {
     expect(html).toContain('translate-y-[110%]');
     expect(html).toContain('aria-hidden="true"');
     expect(html).toContain(`href="${TEMPORARY_OFFER_CHECKOUT_URL}"`);
+    expect(countOccurrences(html, `href="${TEMPORARY_OFFER_CHECKOUT_URL}"`)).toBeGreaterThanOrEqual(2);
     expect(html).toContain('Si estás en Ecuador y deseas pagar con depósito');
     expect(html).not.toContain('Bolivia');
     expect(html).not.toContain('InitiateCheckout');
@@ -251,7 +263,28 @@ describe('App routes', () => {
     const html = renderRoute('/x9m/oferta');
 
     expect(html).toContain('Certificación de Juguetería Creativa Profesional');
+    expect(html).toContain('QUIERO PAGAR 197 USD');
+    expect(html).toContain('QUIERO PAGAR EN 3 CUOTAS');
     expect(html).toContain(`href="${TEMPORARY_OFFER_CHECKOUT_URL}"`);
+  });
+
+  it('wires both temporary offer payment buttons to checkout', () => {
+    const pageSource = readFileSync(
+      join(process.cwd(), 'src/site/pages/CreativeToysOfferTemporaryPage.tsx'),
+      'utf8',
+    );
+
+    expect(pageSource).toContain(
+      '<CheckoutCta className="sm:w-full">QUIERO PAGAR 197 USD</CheckoutCta>',
+    );
+    expect(pageSource).toContain(
+      '<CheckoutCta className="sm:w-full">QUIERO PAGAR EN 3 CUOTAS</CheckoutCta>',
+    );
+    expect(pageSource).toContain('href={TEMPORARY_OFFER_CHECKOUT_URL}');
+    expect(pageSource).toContain("'InitiateCheckout'");
+    expect(pageSource).not.toContain("'Purchase'");
+    expect(pageSource).not.toContain("'CompleteRegistration'");
+    expect(pageSource).not.toContain("'Lead'");
   });
 
   it('redirects legacy temporary offer routes to oferta and preserves URL details', () => {
@@ -304,6 +337,7 @@ describe('App routes', () => {
 
   it('keeps temporary offer checkout tracking disabled outside the ads route', () => {
     expect(shouldTrackTemporaryOfferCheckout('/oferta')).toBe(false);
+    expect(shouldTrackTemporaryOfferCheckout('/oferta/')).toBe(false);
     expect(shouldTrackTemporaryOfferCheckout('/oferta?fbclid=paid-click')).toBe(false);
   });
 
@@ -314,6 +348,7 @@ describe('App routes', () => {
     });
 
     expect(shouldTrackTemporaryOfferCheckout('/x9m/oferta')).toBe(true);
+    expect(shouldTrackTemporaryOfferCheckout('/x9m/oferta/')).toBe(true);
     expect(payload).toMatchObject({
       event_id: 'event-test-1',
       event_source_url: 'https://pameflorescrea.com/x9m/oferta?fbclid=test',
