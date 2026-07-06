@@ -3,11 +3,10 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { getAdsRoutePrefix } from './core/routing/adsRoute';
 import { CreativeToysOfferTemporaryPage } from './site/pages/CreativeToysOfferTemporaryPage';
 import { CreativeToysWeekConfirmation } from './site/pages/CreativeToysWeekConfirmation';
-import { CreativeToysWeekLanding } from './site/pages/CreativeToysWeekLanding';
 import { ClassOneRedirectPage, CLASS_ONE_TITLE } from './site/pages/ClassOneRedirectPage';
 import { ClassTwoRedirectPage, CLASS_TWO_TITLE } from './site/pages/ClassTwoRedirectPage';
 import { ClassThreeRedirectPage, CLASS_THREE_TITLE } from './site/pages/ClassThreeRedirectPage';
-import { buildLegacyOfferRedirectTarget } from './site/routing/offerRoutes';
+import { buildTemporaryOfferRedirectTarget } from './site/routing/offerRoutes';
 import { AdsTrackingBootstrap } from './site/tracking/AdsTrackingBootstrap';
 
 const siteId = 'PAME_FLORES_CREA';
@@ -15,10 +14,10 @@ const siteTitle = 'Pame Flores Crea - Sitio en preparacion';
 const temporaryOfferTitle = 'Certificación de Juguetería Creativa Profesional | Pame Flores Crea';
 const adsRoutePrefix = getAdsRoutePrefix();
 
-function LegacyOfferRedirect({ ads = false }: { ads?: boolean }) {
+function TemporaryOfferRedirect({ ads = false }: { ads?: boolean }) {
   const location = useLocation();
 
-  return <Navigate to={buildLegacyOfferRedirectTarget(location, ads)} replace />;
+  return <Navigate to={buildTemporaryOfferRedirectTarget(location, ads)} replace />;
 }
 
 function PreparationPage() {
@@ -94,10 +93,12 @@ function RoutedApp() {
 
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/500-extra" replace />} />
+      <Route path="/" element={<TemporaryOfferRedirect />} />
       <Route path={adsRoutePrefix} element={<PreparationPage />} />
-      <Route path="/500-extra" element={<CreativeToysWeekLanding />} />
-      <Route path={`${adsRoutePrefix}/500-extra`} element={<CreativeToysWeekLanding />} />
+      <Route path="/500-extra" element={<TemporaryOfferRedirect />} />
+      <Route path="/500-extra/" element={<TemporaryOfferRedirect />} />
+      <Route path={`${adsRoutePrefix}/500-extra`} element={<TemporaryOfferRedirect ads />} />
+      <Route path={`${adsRoutePrefix}/500-extra/`} element={<TemporaryOfferRedirect ads />} />
       <Route path="/clase1" element={<ClassOneRedirectPage />} />
       <Route path="/clase1/" element={<ClassOneRedirectPage />} />
       <Route path={`${adsRoutePrefix}/clase1`} element={<ClassOneRedirectPage />} />
@@ -114,10 +115,10 @@ function RoutedApp() {
       <Route path="/oferta/" element={<CreativeToysOfferTemporaryPage />} />
       <Route path={`${adsRoutePrefix}/oferta`} element={<CreativeToysOfferTemporaryPage />} />
       <Route path={`${adsRoutePrefix}/oferta/`} element={<CreativeToysOfferTemporaryPage />} />
-      <Route path="/temporal" element={<LegacyOfferRedirect />} />
-      <Route path="/temporal/" element={<LegacyOfferRedirect />} />
-      <Route path={`${adsRoutePrefix}/temporal`} element={<LegacyOfferRedirect ads />} />
-      <Route path={`${adsRoutePrefix}/temporal/`} element={<LegacyOfferRedirect ads />} />
+      <Route path="/temporal" element={<TemporaryOfferRedirect />} />
+      <Route path="/temporal/" element={<TemporaryOfferRedirect />} />
+      <Route path={`${adsRoutePrefix}/temporal`} element={<TemporaryOfferRedirect ads />} />
+      <Route path={`${adsRoutePrefix}/temporal/`} element={<TemporaryOfferRedirect ads />} />
       <Route path="/confirmacion/500-extra" element={<CreativeToysWeekConfirmation />} />
       <Route
         path={`${adsRoutePrefix}/confirmacion/500-extra`}

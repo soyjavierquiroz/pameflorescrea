@@ -1,13 +1,12 @@
 import type { Location } from 'react-router-dom';
 import { getAdsRoutePrefix } from '../../core/routing/adsRoute';
 
-export function buildLegacyOfferRedirectTarget(
+export function buildTemporaryOfferRedirectTarget(
   location: Pick<Location, 'pathname' | 'search' | 'hash'>,
   ads = false,
   adsRoutePrefix = getAdsRoutePrefix(),
 ): string {
-  const targetPath = ads ? `${adsRoutePrefix}/oferta` : '/oferta';
-  const trailingSlash = location.pathname.endsWith('/') ? '/' : '';
+  const targetPath = ads ? `${adsRoutePrefix}/oferta/` : '/oferta/';
 
-  return `${targetPath}${trailingSlash}${location.search}${location.hash}`;
+  return `${targetPath}${location.search}${location.hash}`;
 }
