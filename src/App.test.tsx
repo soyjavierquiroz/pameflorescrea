@@ -203,6 +203,24 @@ describe('App routes', () => {
     expect(html).not.toContain('Si estás agotada de empezar proyectos');
     expect(html).not.toContain('Si estás cansada de invertir en cursos de marketing');
     expect(html).not.toContain('Si estás cansada de Invertir en cursos de marketing');
+    expect(html).toContain(
+      'La Juguetería Creativa puede convertirse en ese proyecto propio que llevas tiempo buscando.',
+    );
+    expect(html).toContain('Sé que dentro de ti hay un enorme deseo de crear');
+    expect(html).toContain('Eso es lo que representa la Juguetería Creativa');
+    expect(html).toContain('Pero primero debes confiar en ti y también:');
+    expect(html).toContain('Confiar en tu capacidad.');
+    expect(html).toContain(
+      'Confiar en tu intuición y en ese proyecto que hace tanto tiempo está en tu corazón.',
+    );
+    expect(html).toContain('Dejarte acompañar.');
+    expect(html).toContain('Reconocer que mereces un espacio y una actividad para ti.');
+    expect(html).toContain('Entender que puedes construir el proyecto de tus sueños.');
+    expect(html).not.toContain('MENOS FRUSTRACIÓN Y MÁS ACCIÓN CREATIVA');
+    expect(html).not.toContain('Sé lo que es sentirse perdida');
+    expect(html).not.toContain('Pero lo bueno es que siempre es un buen día');
+    expect(html).not.toContain('Pero primero debes confiar en ti y también decidir:');
+    expect(html).not.toContain('Decidir confiar en tu capacidad');
     expect(html).toContain('pame-oferta.webp');
     expect(html).toContain('pame-vip-creativa.webp');
     expect(html).toContain('ventas-temporadas-altas.webp');

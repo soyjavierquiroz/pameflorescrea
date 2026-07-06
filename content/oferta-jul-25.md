@@ -42,11 +42,11 @@ Icono
 
 **[Imagen: pame 2]**
 
-Sé lo que es sentirse perdida, con mil ideas y con muchas ganas pero también con muchos miedos y en constante comparación.
+Sé que dentro de ti hay un enorme deseo de crear, crecer y construir algo propio. Un proyecto que no solo te permita generar ingresos, sino también descubrir de lo que eres capaz, sentirte orgullosa de lo que construyes y poner tus talentos al servicio de los demás.
 
-Pero lo bueno es que siempre es un buen día para cambiar y pensar diferente y tomar acción.
+Eso es lo que representa la Juguetería Creativa para cientos de mujeres que decidieron darse una oportunidad.
 
-Pero primero debes confiar en ti y también decidir:
+Pero primero debes confiar en ti y también:
 
 * Decidir confiar en tu capacidad…
 * Decidir confiar en tu intuición y en ese proyecto que hace tanto tiempo está en tu corazón…

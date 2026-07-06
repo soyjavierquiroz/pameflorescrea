@@ -630,7 +630,7 @@ export function CreativeToysOfferTemporaryPage() {
 
       <Section
         eyebrow="Menos frustración y más acción creativa"
-        title="MENOS FRUSTRACIÓN Y MÁS ACCIÓN CREATIVA"
+        title="La Juguetería Creativa puede convertirse en ese proyecto propio que llevas tiempo buscando."
         tone="purple"
       >
         <div className="grid gap-8 lg:grid-cols-[0.78fr_1.22fr] lg:items-center">
@@ -648,30 +648,29 @@ export function CreativeToysOfferTemporaryPage() {
             </p>
             <div className="mt-5 space-y-5 text-lg font-bold leading-8 text-white/88 sm:text-xl sm:leading-9">
               <p>
-                Sé lo que es sentirse perdida, con mil ideas y con muchas ganas pero también con
-                muchos miedos y en constante comparación.
+                Sé que dentro de ti hay un enorme deseo de crear, crecer y construir algo propio.
+                Un proyecto que no solo te permita generar ingresos, sino también descubrir de lo
+                que eres capaz, sentirte orgullosa de lo que construyes y poner tus talentos al
+                servicio de los demás. Eso es lo que representa la Juguetería Creativa para cientos
+                de mujeres que decidieron darse una oportunidad.
               </p>
-              <p>
-                Pero lo bueno es que siempre es un buen día para cambiar y pensar diferente y tomar
-                acción.
-              </p>
-              <p>Pero primero debes confiar en ti y también decidir:</p>
+              <p>Pero primero debes confiar en ti y también:</p>
             </div>
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              {[
-                'Decidir confiar en tu capacidad…',
-                'Decidir confiar en tu intuición y en ese proyecto que hace tanto tiempo está en tu corazón…',
-                'Decidir dejarte acompañar…',
-                'Decidir que mereces un espacio y una actividad para ti.',
-                'Decidir que puedes construir el proyecto de tus sueños…',
-              ].map((item) => (
-                <div
-                  className="rounded-lg border border-white/14 bg-white/10 p-4 text-sm font-black leading-6 text-white shadow-sm"
-                  key={item}
-                >
-                  {item}
-                </div>
-              ))}
+            <div className="mt-6 rounded-2xl border border-white/16 bg-white/10 p-5 shadow-[0_18px_44px_rgba(0,0,0,0.16)] sm:p-6">
+              <ul className="grid gap-4">
+                {[
+                  'Confiar en tu capacidad.',
+                  'Confiar en tu intuición y en ese proyecto que hace tanto tiempo está en tu corazón.',
+                  'Dejarte acompañar.',
+                  'Reconocer que mereces un espacio y una actividad para ti.',
+                  'Entender que puedes construir el proyecto de tus sueños.',
+                ].map((item) => (
+                  <li className="flex gap-3 text-base font-black leading-7 text-white sm:text-lg" key={item}>
+                    <span aria-hidden="true" className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-[#ffd45d] shadow-[0_0_0_4px_rgba(255,212,93,0.16)]" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
             <p className="mt-6 text-lg font-bold leading-8 text-white/88 sm:text-xl sm:leading-9">
               Esta transformación requiere un proceso y estoy aquí para caminar juntas, paso a paso.
@@ -689,12 +688,7 @@ export function CreativeToysOfferTemporaryPage() {
         tone="gradient"
       >
         <blockquote className="max-w-4xl rounded-lg border-2 border-dashed border-[#ffd45d]/46 bg-white/10 p-6 text-xl font-black leading-9 text-white shadow-[0_18px_48px_rgba(0,0,0,0.18)] sm:p-8 sm:text-2xl sm:leading-10">
-          “Sé que dentro de ti hay una fuerza enorme de querer Crear, Crecer y Encontrar una
-          actividad que no solo te apasione, sino que te permita descubrir tu verdadero potencial
-          mientras generas ingresos extra. Y si hasta ahora no ha sido fácil, no es porque no
-          puedas, es porque aún no habías encontrado esa actividad que realmente esté alineada con
-          lo que eres y lo que amas. La Juguetería Creativa es la opción que conecta con tu corazón
-          y tus talentos.”
+          “A veces no se trata ni de emprender, ni de generar ingresos. Se trata de ver a la luz ese potencial que sabemos que tenemos.”
         </blockquote>
       </Section>
 

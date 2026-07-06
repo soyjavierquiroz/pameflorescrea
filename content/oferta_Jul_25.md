@@ -36,7 +36,7 @@ Icono
 
 *"Sé que dentro de ti hay una fuerza enorme de querer **Crear, Crecer y Encontrar** una actividad que no solo te apasione, sino que te permita **descubrir tu verdadero potencial mientras generas ingresos extra.** Y si hasta ahora no ha sido fácil, no es porque no puedas, es porque aún no habías encontrado esa actividad que realmente esté alineada con lo que eres y lo que amas. **La Juguetería Creativa es la opción que conecta con tu corazón y tus talentos.**”*
 
-*MENOS FRUSTRACIÓN  Y MÁS ACCIÓN CREATIVA*
+*La Juguetería Creativa puede convertirse en ese proyecto propio que llevas tiempo buscando.*
 
 *foto*
 
