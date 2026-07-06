@@ -200,7 +200,7 @@ describe('App routes', () => {
     expect(html).toContain('UNA CUOTA');
     expect(html).toContain('3 CUOTAS');
     expect(html).toContain('77 USD');
-    expect(html).toContain('por 3 meses');
+    expect(html).toContain('POR 3 MESES');
     expect(html).toContain('QUIERO PAGAR 197 USD');
     expect(html).toContain('QUIERO PAGAR EN 3 CUOTAS');
     expect(html).toContain('Es ideal para ti si:');
@@ -236,6 +236,8 @@ describe('App routes', () => {
     expect(html).toContain(
       'Todo lo que necesitas para dejar de sentirte perdida y empezar a construir un proyecto propio con claridad y confianza.',
     );
+    expect(html).toContain('certificacion-jcp.webp');
+    expect(html).not.toContain('programa-01.webp');
     expect(html).toContain('pame-oferta.webp');
     expect(html).toContain('pame-vip-creativa.webp');
     expect(html).toContain('ventas-temporadas-altas.webp');
@@ -275,11 +277,12 @@ describe('App routes', () => {
     );
 
     expect(pageSource).toContain(
-      '<CheckoutCta className="sm:w-full">QUIERO PAGAR 197 USD</CheckoutCta>',
+      '<CheckoutCta className="lg:w-[250px] xl:w-[280px]" variant="payment">',
     );
-    expect(pageSource).toContain(
-      '<CheckoutCta className="sm:w-full">QUIERO PAGAR EN 3 CUOTAS</CheckoutCta>',
-    );
+    expect(pageSource).toContain('QUIERO PAGAR 197 USD');
+    expect(pageSource).toContain('QUIERO PAGAR EN 3 CUOTAS');
+    expect(pageSource).toContain('certificacion-jcp.webp');
+    expect(pageSource).not.toContain('programa-01.webp');
     expect(pageSource).toContain('href={TEMPORARY_OFFER_CHECKOUT_URL}');
     expect(pageSource).toContain("'InitiateCheckout'");
     expect(pageSource).not.toContain("'Purchase'");
@@ -360,6 +363,22 @@ describe('App routes', () => {
     expect(Object.values(payload)).not.toContain('Purchase');
     expect(Object.values(payload)).not.toContain('CompleteRegistration');
     expect(Object.values(payload)).not.toContain('Lead');
+  });
+
+  it('keeps the mobile sticky CTA focused on checkout only', () => {
+    const pageSource = readFileSync(
+      join(process.cwd(), 'src/site/pages/CreativeToysOfferTemporaryPage.tsx'),
+      'utf8',
+    );
+    const stickySource = pageSource.slice(
+      pageSource.indexOf('function StickyMobileCta'),
+      pageSource.indexOf('export function CreativeToysOfferTemporaryPage'),
+    );
+
+    expect(stickySource).toContain('INSCRIBIRME AHORA');
+    expect(stickySource).not.toContain('UNA CUOTA');
+    expect(stickySource).not.toContain('Una cuota');
+    expect(stickySource).not.toContain('197 USD');
   });
 
   it('delays the mobile sticky CTA until after the scroll threshold', () => {

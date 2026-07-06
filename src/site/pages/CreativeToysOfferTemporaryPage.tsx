@@ -45,7 +45,7 @@ const assets = {
   pameVipCreative: `${ASSET_BASE}/pame-vip-creativa.webp`,
   plataforma: `${ASSET_BASE}/plataforma.webp`,
   programa: [
-    `${ASSET_BASE}/programa-01.webp`,
+    `${ASSET_BASE}/certificacion-jcp.webp`,
     `${ASSET_BASE}/programa-02.webp`,
     `${ASSET_BASE}/programa-03.webp`,
   ],
@@ -374,7 +374,7 @@ function CheckoutCta({
 }: {
   children?: string;
   className?: string;
-  variant?: 'default' | 'sticky';
+  variant?: 'default' | 'payment' | 'sticky';
 }) {
   const location = useLocation();
 
@@ -397,13 +397,15 @@ function CheckoutCta({
       className={[
         variant === 'sticky'
           ? 'inline-flex min-h-[46px] items-center justify-center gap-2 rounded-md bg-[#e0008a] px-4 py-3 text-center text-xs font-black uppercase text-white shadow-[0_12px_28px_rgba(224,0,138,0.36)] transition duration-200 hover:bg-[#ff149d] focus:outline-none focus:ring-2 focus:ring-[#ffd45d] focus:ring-offset-2 focus:ring-offset-[#170830]'
-          : 'inline-flex min-h-[58px] w-full items-center justify-center gap-2 rounded-md bg-[#e0008a] px-6 py-4 text-center text-sm font-black uppercase text-white shadow-[0_18px_42px_rgba(224,0,138,0.38)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#ff149d] focus:outline-none focus:ring-2 focus:ring-[#ffd45d] focus:ring-offset-2 focus:ring-offset-[#2b1163] sm:w-auto sm:px-8',
+          : variant === 'payment'
+            ? 'inline-flex min-h-[50px] w-full items-center justify-center gap-2 rounded-lg bg-[#e0008a] px-5 py-3 text-center text-[13px] font-black uppercase leading-5 text-white shadow-[0_14px_34px_rgba(224,0,138,0.32)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#ff149d] focus:outline-none focus:ring-2 focus:ring-[#ffd45d] focus:ring-offset-2 focus:ring-offset-white sm:text-sm'
+            : 'inline-flex min-h-[58px] w-full items-center justify-center gap-2 rounded-md bg-[#e0008a] px-6 py-4 text-center text-sm font-black uppercase text-white shadow-[0_18px_42px_rgba(224,0,138,0.38)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#ff149d] focus:outline-none focus:ring-2 focus:ring-[#ffd45d] focus:ring-offset-2 focus:ring-offset-[#2b1163] sm:w-auto sm:px-8',
         className,
       ].join(' ')}
       href={TEMPORARY_OFFER_CHECKOUT_URL}
       onClick={handleCheckoutClick}
     >
-      {children}
+      <span className={variant === 'payment' ? 'whitespace-nowrap' : ''}>{children}</span>
       <ArrowRight aria-hidden="true" className="h-5 w-5 shrink-0" />
     </a>
   );
@@ -465,12 +467,8 @@ function StickyMobileCta() {
       ].join(' ')}
       style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
     >
-      <div className="mx-auto flex max-w-lg items-center gap-3">
-        <div className="min-w-[86px]">
-          <p className="text-[10px] font-black uppercase leading-4 text-[#7ef8f0]">Una cuota</p>
-          <p className="text-xl font-black leading-none text-[#ffd45d]">197 USD</p>
-        </div>
-        <CheckoutCta className="flex-1" variant="sticky">
+      <div className="mx-auto flex max-w-lg items-center">
+        <CheckoutCta className="w-full" variant="sticky">
           INSCRIBIRME AHORA
         </CheckoutCta>
       </div>
@@ -853,30 +851,40 @@ export function CreativeToysOfferTemporaryPage() {
       >
         <div className="relative overflow-hidden rounded-lg border-2 border-dashed border-[#ffd45d]/46 bg-[#170830]/72 p-5 shadow-[0_30px_90px_rgba(23,8,48,0.42)] backdrop-blur sm:p-7 lg:p-8">
           <Sparkles className="absolute right-5 top-5 h-8 w-8 text-[#ffd45d]/70" aria-hidden="true" />
-          <div className="grid gap-7 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
-            <div className="rounded-lg bg-white p-6 text-[#24104e] shadow-[0_24px_64px_rgba(0,0,0,0.2)] sm:p-7">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="flex flex-col rounded-lg border-2 border-[#ffd45d] bg-[#fffaf0] p-5 shadow-[0_18px_38px_rgba(224,0,138,0.12)]">
-                  <p className="inline-flex self-start rounded-md bg-[#ffd45d] px-3 py-1 text-sm font-black uppercase text-[#4b1596]">
-                    UNA CUOTA
-                  </p>
-                  <p className="mt-4 font-sans text-5xl font-black leading-none text-[#e0008a] sm:text-6xl">
-                    197 USD
-                  </p>
-                  <div className="mt-6 flex flex-1 items-end">
-                    <CheckoutCta className="sm:w-full">QUIERO PAGAR 197 USD</CheckoutCta>
+          <div className="grid gap-7 lg:grid-cols-[minmax(0,1.22fr)_minmax(280px,0.78fr)] lg:items-start xl:grid-cols-[minmax(620px,1.15fr)_minmax(340px,0.85fr)]">
+            <div className="rounded-lg bg-white p-5 text-[#24104e] shadow-[0_24px_64px_rgba(0,0,0,0.2)] sm:p-7 lg:p-8">
+              <div className="grid gap-4">
+                <div className="grid gap-5 rounded-lg border-2 border-[#ffd45d] bg-[#fffaf0] p-5 shadow-[0_18px_38px_rgba(224,0,138,0.12)] sm:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(250px,0.42fr)] lg:items-center">
+                  <div>
+                    <p className="inline-flex rounded-md bg-[#ffd45d] px-3 py-1 text-sm font-black uppercase text-[#4b1596]">
+                      UNA CUOTA
+                    </p>
+                    <p className="mt-3 font-sans text-5xl font-black leading-none text-[#e0008a] sm:text-6xl">
+                      197 USD
+                    </p>
+                  </div>
+                  <div className="lg:justify-self-end">
+                    <CheckoutCta className="lg:w-[250px] xl:w-[280px]" variant="payment">
+                      QUIERO PAGAR 197 USD
+                    </CheckoutCta>
                   </div>
                 </div>
-                <div className="flex flex-col rounded-lg border-2 border-[#eadcf7] bg-white p-5 shadow-[0_18px_38px_rgba(75,21,150,0.1)]">
-                  <p className="inline-flex self-start rounded-md bg-[#13cdd7]/14 px-3 py-1 text-sm font-black uppercase text-[#4b1596]">
-                    3 CUOTAS
-                  </p>
-                  <p className="mt-4 font-sans text-5xl font-black leading-none text-[#e0008a] sm:text-6xl">
-                    77 USD
-                  </p>
-                  <p className="mt-2 text-sm font-black uppercase text-[#5b4a77]">por 3 meses</p>
-                  <div className="mt-6 flex flex-1 items-end">
-                    <CheckoutCta className="sm:w-full">QUIERO PAGAR EN 3 CUOTAS</CheckoutCta>
+                <div className="grid gap-5 rounded-lg border-2 border-[#eadcf7] bg-[#fbf7ff] p-5 shadow-[0_18px_38px_rgba(75,21,150,0.1)] sm:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(250px,0.42fr)] lg:items-center">
+                  <div>
+                    <p className="inline-flex rounded-md bg-[#13cdd7]/14 px-3 py-1 text-sm font-black uppercase text-[#4b1596]">
+                      3 CUOTAS
+                    </p>
+                    <div className="mt-3 flex flex-wrap items-end gap-x-3 gap-y-1">
+                      <p className="font-sans text-5xl font-black leading-none text-[#e0008a] sm:text-6xl">
+                        77 USD
+                      </p>
+                      <p className="pb-1 text-sm font-black uppercase text-[#5b4a77]">POR 3 MESES</p>
+                    </div>
+                  </div>
+                  <div className="lg:justify-self-end">
+                    <CheckoutCta className="lg:w-[250px] xl:w-[280px]" variant="payment">
+                      QUIERO PAGAR EN 3 CUOTAS
+                    </CheckoutCta>
                   </div>
                 </div>
               </div>
@@ -895,10 +903,10 @@ export function CreativeToysOfferTemporaryPage() {
                 )}
               </div>
               <div className="mt-7 flex flex-col gap-3">
-                <SupportLink className="border-[#4b1596]/24 bg-[#4b1596]/8 text-[#4b1596] hover:bg-[#4b1596]/12" />
+                <SupportLink className="border-[#13cdd7] bg-[#f5ecff] text-[#24104e] shadow-[0_12px_26px_rgba(75,21,150,0.12)] hover:bg-white" />
               </div>
             </div>
-            <div>
+            <div className="lg:pt-2">
               <p className="text-xs font-black uppercase text-[#7ef8f0]">Decisión con tranquilidad</p>
               <h3 className="mt-3 max-w-xl font-sans text-3xl font-black leading-tight text-white sm:text-4xl">
                 Una habilidad creativa que puede acompañarte durante años.
