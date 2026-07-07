@@ -224,8 +224,13 @@ describe('App routes', () => {
     expect(html).toContain('3 CUOTAS');
     expect(html).toContain('77 USD');
     expect(html).toContain('POR 3 MESES');
+    expect(html).toContain('5 CUOTAS');
+    expect(html).toContain('47 USD');
+    expect(html).toContain('por 5 meses');
     expect(html).toContain('QUIERO PAGAR 197 USD');
     expect(html).toContain('QUIERO PAGAR EN 3 CUOTAS');
+    expect(html).toContain('QUIERO PAGAR EN 5 CUOTAS');
+    expect(html).toContain('o en 3 o 5 cuotas');
     expect(html).toContain('Es ideal para ti si:');
     expect(html).toContain('Sientes que tienes mucho potencial');
     expect(html).toContain('Sueñas con construir algo propio');
@@ -276,7 +281,7 @@ describe('App routes', () => {
     expect(html).toContain('translate-y-[110%]');
     expect(html).toContain('aria-hidden="true"');
     expect(html).toContain(`href="${TEMPORARY_OFFER_CHECKOUT_URL}"`);
-    expect(countOccurrences(html, `href="${TEMPORARY_OFFER_CHECKOUT_URL}"`)).toBeGreaterThanOrEqual(2);
+    expect(countOccurrences(html, `href="${TEMPORARY_OFFER_CHECKOUT_URL}"`)).toBeGreaterThanOrEqual(3);
     expect(html).toContain('Si estás en Ecuador y deseas pagar con depósito');
     expect(html).toContain('galeria-1.webp');
     expect(html).toContain('galeria-8.webp');
@@ -295,20 +300,22 @@ describe('App routes', () => {
     expect(htmlWithSlash).toContain('Certificación de Juguetería Creativa Profesional');
     expect(html).toContain('QUIERO PAGAR 197 USD');
     expect(html).toContain('QUIERO PAGAR EN 3 CUOTAS');
+    expect(html).toContain('QUIERO PAGAR EN 5 CUOTAS');
     expect(html).toContain(`href="${TEMPORARY_OFFER_CHECKOUT_URL}"`);
   });
 
-  it('wires both temporary offer payment buttons to checkout', () => {
+  it('wires all three temporary offer payment buttons to checkout', () => {
     const pageSource = readFileSync(
       join(process.cwd(), 'src/site/pages/CreativeToysOfferTemporaryPage.tsx'),
       'utf8',
     );
 
-    expect(pageSource).toContain(
-      '<CheckoutCta className="lg:w-[250px] xl:w-[280px]" variant="payment">',
-    );
+    expect(countOccurrences(pageSource, 'variant="payment"')).toBe(3);
+    expect(pageSource).toContain('onClick={handleCheckoutClick}');
+    expect(pageSource).toContain('shouldTrackTemporaryOfferCheckout(location.pathname)');
     expect(pageSource).toContain('QUIERO PAGAR 197 USD');
     expect(pageSource).toContain('QUIERO PAGAR EN 3 CUOTAS');
+    expect(pageSource).toContain('QUIERO PAGAR EN 5 CUOTAS');
     expect(pageSource).toContain('certificacion-jcp.webp');
     expect(pageSource).not.toContain('programa-01.webp');
     expect(pageSource).toContain('href={TEMPORARY_OFFER_CHECKOUT_URL}');

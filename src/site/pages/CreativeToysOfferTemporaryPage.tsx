@@ -264,7 +264,7 @@ const faqs = [
   {
     question: 'No tengo dinero',
     answer:
-      'La oferta es una cuota de 197 USD. Puedes pagar con tarjeta de crédito, débito o PayPal; si estás en Ecuador y deseas depósito, puedes escribirnos por WhatsApp.',
+      'La oferta es una cuota de 197 USD o en 3 o 5 cuotas. Puedes pagar con tarjeta de crédito, débito o PayPal; si estás en Ecuador y deseas depósito, puedes escribirnos por WhatsApp.',
   },
   {
     question: 'No soy creativa',
@@ -626,7 +626,9 @@ export function CreativeToysOfferTemporaryPage() {
             </p>
             <div className="mt-5 grid gap-4 rounded-lg border border-white/18 bg-white/12 p-4 shadow-[0_22px_54px_rgba(36,16,78,0.32)] backdrop-blur sm:mt-6 sm:max-w-2xl sm:grid-cols-[0.92fr_1.08fr] sm:items-center sm:border-[#ffd45d]/44 sm:p-5">
               <div className="grid gap-2">
-                <p className="text-xs font-black uppercase text-[#7ef8f0]">Una cuota</p>
+                <p className="text-xs font-black uppercase text-[#7ef8f0]">
+                  Una cuota o en 3 o 5 cuotas
+                </p>
                 <div className="flex items-end gap-3">
                   <div className="rounded-md border border-white/16 bg-[#170830]/38 px-3 py-2">
                     <p className="text-[10px] font-black uppercase leading-none text-white/62">Antes</p>
@@ -932,7 +934,7 @@ export function CreativeToysOfferTemporaryPage() {
           <div className="grid gap-7 lg:grid-cols-[minmax(0,1.22fr)_minmax(280px,0.78fr)] lg:items-start xl:grid-cols-[minmax(620px,1.15fr)_minmax(340px,0.85fr)]">
             <div className="rounded-lg bg-white p-5 text-[#24104e] shadow-[0_24px_64px_rgba(0,0,0,0.2)] sm:p-7 lg:p-8">
               <div className="grid gap-4">
-                <div className="grid gap-5 rounded-lg border-2 border-[#ffd45d] bg-[#fffaf0] p-5 shadow-[0_18px_38px_rgba(224,0,138,0.12)] sm:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(250px,0.42fr)] lg:items-center">
+                <div className="grid gap-5 rounded-lg border-2 border-[#ffd45d] bg-[#fffaf0] p-5 shadow-[0_18px_38px_rgba(224,0,138,0.12)] sm:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(270px,0.42fr)] lg:items-center">
                   <div>
                     <p className="inline-flex rounded-md bg-[#ffd45d] px-3 py-1 text-sm font-black uppercase text-[#4b1596]">
                       UNA CUOTA
@@ -942,12 +944,12 @@ export function CreativeToysOfferTemporaryPage() {
                     </p>
                   </div>
                   <div className="lg:justify-self-end">
-                    <CheckoutCta className="lg:w-[250px] xl:w-[280px]" variant="payment">
+                    <CheckoutCta className="lg:w-[270px] xl:w-[300px]" variant="payment">
                       QUIERO PAGAR 197 USD
                     </CheckoutCta>
                   </div>
                 </div>
-                <div className="grid gap-5 rounded-lg border-2 border-[#eadcf7] bg-[#fbf7ff] p-5 shadow-[0_18px_38px_rgba(75,21,150,0.1)] sm:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(250px,0.42fr)] lg:items-center">
+                <div className="grid gap-5 rounded-lg border-2 border-[#eadcf7] bg-[#fbf7ff] p-5 shadow-[0_18px_38px_rgba(75,21,150,0.1)] sm:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(270px,0.42fr)] lg:items-center">
                   <div>
                     <p className="inline-flex rounded-md bg-[#13cdd7]/14 px-3 py-1 text-sm font-black uppercase text-[#4b1596]">
                       3 CUOTAS
@@ -960,8 +962,26 @@ export function CreativeToysOfferTemporaryPage() {
                     </div>
                   </div>
                   <div className="lg:justify-self-end">
-                    <CheckoutCta className="lg:w-[250px] xl:w-[280px]" variant="payment">
+                    <CheckoutCta className="lg:w-[270px] xl:w-[300px]" variant="payment">
                       QUIERO PAGAR EN 3 CUOTAS
+                    </CheckoutCta>
+                  </div>
+                </div>
+                <div className="grid gap-5 rounded-lg border-2 border-[#eadcf7] bg-[#fbf7ff] p-5 shadow-[0_18px_38px_rgba(75,21,150,0.1)] sm:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(270px,0.42fr)] lg:items-center">
+                  <div>
+                    <p className="inline-flex rounded-md bg-[#13cdd7]/14 px-3 py-1 text-sm font-black uppercase text-[#4b1596]">
+                      5 CUOTAS
+                    </p>
+                    <div className="mt-3 flex flex-wrap items-end gap-x-3 gap-y-1">
+                      <p className="font-sans text-5xl font-black leading-none text-[#e0008a] sm:text-6xl">
+                        47 USD
+                      </p>
+                      <p className="pb-1 text-sm font-black text-[#5b4a77]">por 5 meses</p>
+                    </div>
+                  </div>
+                  <div className="lg:justify-self-end">
+                    <CheckoutCta className="lg:w-[270px] xl:w-[300px]" variant="payment">
+                      QUIERO PAGAR EN 5 CUOTAS
                     </CheckoutCta>
                   </div>
                 </div>
@@ -1137,7 +1157,7 @@ export function CreativeToysOfferTemporaryPage() {
           </div>
           <div className="rounded-lg border-2 border-dashed border-white/28 bg-[#2b1163]/72 p-5 shadow-[0_20px_54px_rgba(36,16,78,0.35)] backdrop-blur">
             <p className="inline-flex rounded-md bg-[#ffd45d] px-3 py-1 text-xs font-black uppercase text-[#4b1596]">
-              Una cuota
+              Una cuota o en 3 o 5 cuotas
             </p>
             <p className="mt-3 font-sans text-5xl font-black leading-none text-[#ffd45d]">197 USD</p>
             <p className="mt-3 text-sm font-bold leading-6 text-white/78">
