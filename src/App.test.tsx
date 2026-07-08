@@ -4,13 +4,13 @@ import { renderToString } from 'react-dom/server';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
+import { isAdsRoutePath } from './core/routing/adsRoute';
 import { VisitorProvider } from './core/visitor/VisitorContext';
 import {
   buildTemporaryOfferCheckoutEventData,
   shouldTrackTemporaryOfferCheckout,
   TEMPORARY_OFFER_CHECKOUT_URL,
 } from './site/registration/creativeToysOfferTemporary';
-import { buildTemporaryOfferRedirectTarget } from './site/routing/offerRoutes';
 import {
   CLASS_ONE_ADS_REDIRECT_DELAY_MS,
   CLASS_ONE_ORGANIC_REDIRECT_DELAY_MS,
@@ -46,54 +46,57 @@ afterEach(() => {
 });
 
 describe('App routes', () => {
-  it('redirects / to the organic temporary offer', () => {
+  it('renders / as the organic free landing instead of redirecting to the offer', () => {
     const appSource = readFileSync(join(process.cwd(), 'src/App.tsx'), 'utf8');
+    const html = renderRoute('/');
 
-    expect(appSource).toContain('<Route path="/" element={<TemporaryOfferRedirect />} />');
-    expect(buildTemporaryOfferRedirectTarget({ pathname: '/', search: '', hash: '' })).toBe(
-      '/oferta/',
-    );
+    expect(appSource).toContain('<Route path="/" element={<CreativeToysWeekLanding />} />');
+    expect(appSource).not.toContain('TemporaryOfferRedirect');
     expect(renderRoute('/')).not.toContain('Sitio en preparacion');
+    expect(html).toContain('500 dólares extras al mes');
+    expect(html).toContain('SEMANA DEL EMPRENDIMIENTO CON JUGUETES CREATIVOS');
+    expect(html).not.toContain('Certificación J.C.P.');
+    expect(html).not.toContain('397 USD');
   });
 
   it('keeps the preparation page at /x9m', () => {
     expect(renderRoute('/x9m')).toContain('Sitio en preparacion');
   });
 
-  it('redirects organic free landing routes to the temporary offer', () => {
+  it('renders organic free landing routes without ads tracking', () => {
     const appSource = readFileSync(join(process.cwd(), 'src/App.tsx'), 'utf8');
+    const html = renderRoute('/500-extra');
+    const htmlWithSlash = renderRoute('/500-extra/');
 
-    expect(appSource).toContain('<Route path="/500-extra" element={<TemporaryOfferRedirect />} />');
+    expect(appSource).toContain('<Route path="/500-extra" element={<CreativeToysWeekLanding />} />');
     expect(appSource).toContain(
-      '<Route path="/500-extra/" element={<TemporaryOfferRedirect />} />',
+      '<Route path="/500-extra/" element={<CreativeToysWeekLanding />} />',
     );
-    expect(buildTemporaryOfferRedirectTarget({ pathname: '/500-extra', search: '', hash: '' })).toBe(
-      '/oferta/',
-    );
-    expect(
-      buildTemporaryOfferRedirectTarget({ pathname: '/500-extra/', search: '', hash: '' }),
-    ).toBe('/oferta/');
-    expect(
-      buildTemporaryOfferRedirectTarget({
-        pathname: '/500-extra',
-        search: '?utm_source=ig',
-        hash: '',
-      }),
-    ).toBe('/oferta/?utm_source=ig');
+    expect(isAdsRoutePath('/500-extra')).toBe(false);
+    expect(html).toContain('500 dólares extras al mes');
+    expect(htmlWithSlash).toContain('500 dólares extras al mes');
+    expect(html).toContain('Registro gratis Semana del Emprendimiento con Juguetes Creativos');
+    expect(html).not.toContain('Certificación J.C.P.');
+    expect(html).not.toContain('397 USD');
   });
 
-  it('redirects ads free landing routes to the ads temporary offer', () => {
+  it('renders ads free landing routes and keeps ads route tracking eligibility', () => {
     const appSource = readFileSync(join(process.cwd(), 'src/App.tsx'), 'utf8');
+    const html = renderRoute('/x9m/500-extra');
+    const htmlWithSlash = renderRoute('/x9m/500-extra/');
 
     expect(appSource).toContain(
-      '<Route path={`${adsRoutePrefix}/500-extra`} element={<TemporaryOfferRedirect ads />} />',
+      '<Route path={`${adsRoutePrefix}/500-extra`} element={<CreativeToysWeekLanding />} />',
     );
     expect(appSource).toContain(
-      '<Route path={`${adsRoutePrefix}/500-extra/`} element={<TemporaryOfferRedirect ads />} />',
+      '<Route path={`${adsRoutePrefix}/500-extra/`} element={<CreativeToysWeekLanding />} />',
     );
-    expect(
-      buildTemporaryOfferRedirectTarget({ pathname: '/x9m/500-extra', search: '', hash: '' }, true),
-    ).toBe('/x9m/oferta/');
+    expect(isAdsRoutePath('/x9m/500-extra')).toBe(true);
+    expect(html).toContain('500 dólares extras al mes');
+    expect(htmlWithSlash).toContain('500 dólares extras al mes');
+    expect(html).toContain('Registro gratis Semana del Emprendimiento con Juguetes Creativos');
+    expect(html).not.toContain('Certificación J.C.P.');
+    expect(html).not.toContain('397 USD');
   });
 
   it('renders the class one redirect page at /clase1', () => {
@@ -342,74 +345,23 @@ describe('App routes', () => {
     expect(pageSource).toContain('galeria-8.webp');
   });
 
-  it('redirects temporary offer routes to oferta and preserves URL details', () => {
+  it('does not keep temporal routes as forced offer entry points', () => {
     const appSource = readFileSync(join(process.cwd(), 'src/App.tsx'), 'utf8');
+    const viteSource = readFileSync(join(process.cwd(), 'vite.config.ts'), 'utf8');
+    const temporalHtml = renderRoute('/temporal');
+    const adsTemporalHtml = renderRoute('/x9m/temporal');
 
-    expect(appSource).toContain('<Route path="/temporal" element={<TemporaryOfferRedirect />} />');
-    expect(appSource).toContain(
-      '<Route path="/temporal/" element={<TemporaryOfferRedirect />} />',
-    );
-    expect(appSource).toContain(
-      '<Route path={`${adsRoutePrefix}/temporal`} element={<TemporaryOfferRedirect ads />} />',
-    );
-    expect(appSource).toContain(
-      '<Route path={`${adsRoutePrefix}/temporal/`} element={<TemporaryOfferRedirect ads />} />',
-    );
-    expect(appSource).toContain('replace');
-    expect(
-      buildTemporaryOfferRedirectTarget({
-        pathname: '/temporal',
-        search: '?utm_source=meta',
-        hash: '#x',
-      }),
-    ).toBe('/oferta/?utm_source=meta#x');
-    expect(
-      buildTemporaryOfferRedirectTarget({
-        pathname: '/temporal/',
-        search: '?utm_source=meta',
-        hash: '#x',
-      }),
-    ).toBe('/oferta/?utm_source=meta#x');
-    expect(
-      buildTemporaryOfferRedirectTarget(
-        {
-          pathname: '/x9m/temporal',
-          search: '?utm_source=meta',
-          hash: '#x',
-        },
-        true,
-      ),
-    ).toBe('/x9m/oferta/?utm_source=meta#x');
-    expect(
-      buildTemporaryOfferRedirectTarget(
-        {
-          pathname: '/x9m/temporal/',
-          search: '?utm_source=meta',
-          hash: '#x',
-        },
-        true,
-      ),
-    ).toBe('/x9m/oferta/?utm_source=meta#x');
-    expect(
-      buildTemporaryOfferRedirectTarget(
-        {
-          pathname: '/x9m/500-extra',
-          search: '?fbclid=test&utm_source=meta',
-          hash: '',
-        },
-        true,
-      ),
-    ).toBe('/x9m/oferta/?fbclid=test&utm_source=meta');
-    expect(
-      buildTemporaryOfferRedirectTarget(
-        {
-          pathname: '/x9m/temporal',
-          search: '?utm_campaign=x',
-          hash: '#cta',
-        },
-        true,
-      ),
-    ).toBe('/x9m/oferta/?utm_campaign=x#cta');
+    expect(appSource).not.toContain('path="/temporal"');
+    expect(appSource).not.toContain('path="/temporal/"');
+    expect(appSource).not.toContain('path={`${adsRoutePrefix}/temporal`}');
+    expect(appSource).not.toContain('path={`${adsRoutePrefix}/temporal/`}');
+    expect(appSource).not.toContain('buildTemporaryOfferRedirectTarget');
+    expect(viteSource).not.toContain("path: 'temporal'");
+    expect(viteSource).not.toContain('path: `${adsPrefix}/temporal`');
+    expect(temporalHtml).not.toContain('Certificación J.C.P.');
+    expect(temporalHtml).not.toContain('397 USD');
+    expect(adsTemporalHtml).not.toContain('Certificación J.C.P.');
+    expect(adsTemporalHtml).not.toContain('397 USD');
   });
 
   it('keeps temporary offer checkout tracking disabled outside the ads route', () => {

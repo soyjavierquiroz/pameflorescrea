@@ -104,16 +104,6 @@ function staticAdsEntryPlugin(mode: string) {
           ),
         },
         {
-          path: 'temporal',
-          html: injectRouteMetadata(
-            baseHtml,
-            temporaryOfferTitle,
-            temporaryOfferDescription,
-            temporaryOfferAssetCheck,
-            'noindex, nofollow',
-          ),
-        },
-        {
           path: 'clase1',
           html: injectRouteMetadata(
             baseHtml,
@@ -166,16 +156,6 @@ function staticAdsEntryPlugin(mode: string) {
           },
           {
             path: `${adsPrefix}/oferta`,
-            html: injectRouteMetadata(
-              baseHtml,
-              temporaryOfferTitle,
-              temporaryOfferDescription,
-              temporaryOfferAssetCheck,
-              'noindex, nofollow',
-            ),
-          },
-          {
-            path: `${adsPrefix}/temporal`,
             html: injectRouteMetadata(
               baseHtml,
               temporaryOfferTitle,
