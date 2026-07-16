@@ -3,7 +3,8 @@
   RewriteBase /
 
   # Temporary root-only redirect to sensorial book landing.
-  RewriteRule ^$ https://sensorial.pameflorescrea.com/libro [R=302,L]
+  RewriteCond %{REQUEST_URI} ^/$
+  RewriteRule ^ https://sensorial.pameflorescrea.com/libro [R=302,L,NE]
 
   RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f
