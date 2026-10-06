@@ -66,12 +66,12 @@ function EventDetails() {
   );
 }
 
-function DecorativeLayer() {
+function DecorativeLayer({ hideMobileTopIcons = false }: { hideMobileTopIcons?: boolean }) {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
       <div className="absolute inset-0 opacity-30 [background-image:radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.58)_1px,transparent_0)] [background-size:22px_22px]" />
-      <Sparkles className="absolute left-[7%] top-24 h-8 w-8 rotate-12 text-[#ffd45d]/80" />
-      <Star className="absolute right-[9%] top-16 h-7 w-7 -rotate-12 fill-[#ffd45d]/70 text-[#ffd45d]/70" />
+      <Sparkles className={`${hideMobileTopIcons ? 'max-md:hidden ' : ''}absolute left-[7%] top-24 h-8 w-8 rotate-12 text-[#ffd45d]/80`} />
+      <Star className={`${hideMobileTopIcons ? 'max-md:hidden ' : ''}absolute right-[9%] top-16 h-7 w-7 -rotate-12 fill-[#ffd45d]/70 text-[#ffd45d]/70`} />
       <Wand2 className="absolute bottom-20 right-[13%] h-8 w-8 rotate-12 text-[#7ef8f0]/70" />
       <div className="absolute -left-8 top-1/3 h-28 w-28 rounded-full border-2 border-dotted border-[#ffd45d]/60" />
     </div>
@@ -82,25 +82,25 @@ export function RetoLanding() {
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#2b1163] text-white">
       <section className="relative isolate overflow-hidden bg-[linear-gradient(135deg,#24104e_0%,#4b1596_44%,#c349a4_100%)]">
-        <DecorativeLayer />
+        <DecorativeLayer hideMobileTopIcons />
         <div className="absolute inset-x-0 top-0 h-2 bg-[#ffd45d]" aria-hidden="true" />
         <div className="relative z-10 mx-auto grid w-full max-w-6xl gap-6 px-5 pb-8 pt-5 sm:gap-8 sm:px-8 sm:pb-14 sm:pt-8 lg:grid-cols-[1.02fr_0.98fr] lg:px-10 lg:pb-20 lg:pt-10">
           <div className="flex min-w-0 flex-col justify-center">
-            <div className="flex items-center gap-3">
+            <div className="hidden items-center gap-3 md:flex">
               <img alt="Pame Flores Crea" className="h-14 w-14 rounded-md border-2 border-dashed border-[#ffd45d] bg-white object-contain p-1 shadow-lg" src={RETO_ASSETS.logo} width="56" height="56" />
               <div><p className="text-sm font-black uppercase">Pame Flores Crea</p><p className="text-xs font-semibold text-white/74">Juguetes creativos</p></div>
             </div>
-            <p className="mt-3 inline-flex w-fit items-center gap-2 rounded-md border-2 border-dashed border-[#ffd45d]/70 bg-[#ffd45d]/16 px-3 py-2 text-[11px] font-black uppercase leading-4 text-[#fff0ad] shadow-sm sm:mt-8 sm:text-xs">
+            <p className="mt-0 inline-flex w-fit items-center gap-2 rounded-md border-2 border-dashed border-[#ffd45d]/70 bg-[#ffd45d]/16 px-3 py-1.5 text-[11px] font-black uppercase leading-4 text-[#fff0ad] shadow-sm sm:text-xs md:mt-8 md:py-2">
               <Sparkles aria-hidden="true" className="h-4 w-4 shrink-0" /> RETO VIRTUAL GRATUITO DE 4 CLASES
             </p>
-            <p className="mt-2 text-sm font-black text-[#7ef8f0] sm:mt-5 sm:text-base">20, 21, 22 y 25 de octubre</p>
-            <h1 className="mt-1 min-w-0 text-[clamp(2.2rem,6vw,3.5rem)] font-black leading-[1.02] tracking-tight sm:mt-3">
-              CONQUISTA LA<span className="block max-w-[9.5em] text-[#ffd45d]">JUGUETERÍA RENTABLE</span>
+            <p className="mt-2 text-sm font-black text-[#7ef8f0] md:mt-5 md:text-base">20, 21, 22 y 25 de octubre</p>
+            <h1 className="mt-1 min-w-0 text-[clamp(2.625rem,11.75vw,3rem)] font-black leading-[0.98] tracking-[-0.07em] md:mt-3 md:text-[clamp(2.2rem,6vw,3.5rem)] md:leading-[1.02] md:tracking-tight">
+              <span className="block whitespace-nowrap md:inline md:whitespace-normal">CONQUISTA LA</span><span className="block max-w-[9.5em] text-[#ffd45d]"><span className="block md:inline">JUGUETERÍA</span>{' '}<span className="block md:inline">RENTABLE</span></span>
             </h1>
-            <p className="mt-2 max-w-2xl text-lg font-black leading-6 sm:mt-5 sm:text-2xl sm:leading-8">Aprende la ruta para aumentar tus ingresos hasta $500 dólares mensuales creando libros sensoriales y juguetes educativos.</p>
+            <p className="mt-2 max-w-2xl text-[17px] font-black leading-[1.22] md:mt-5 md:text-2xl md:leading-8">Aprende la ruta para aumentar tus ingresos hasta $500 dólares mensuales creando libros sensoriales y juguetes educativos.</p>
             <p className="mt-3 hidden max-w-2xl text-base font-bold leading-6 text-white/86 sm:mt-4 sm:text-lg sm:leading-7 md:block">Aunque empieces desde cero, tengas poco tiempo y quieras seguir estando presente para tu familia.</p>
             <p className="mt-3 hidden max-w-2xl text-base font-bold leading-6 text-white/86 sm:mt-4 sm:text-lg sm:leading-7 md:block">Dale dirección a tu creatividad y transforma tu experiencia en un proyecto rentable antes que acabe el 2026.</p>
-            <div className="mt-4 min-w-0 rounded-lg border-2 border-dashed border-white/26 bg-[#2b1163]/95 p-4 shadow-[0_20px_54px_rgba(36,16,78,0.35)] sm:mt-7 sm:max-w-xl sm:p-5">
+            <div className="mt-3 min-w-0 rounded-lg border-2 border-dashed border-white/26 bg-[#2b1163]/95 p-4 shadow-[0_20px_54px_rgba(36,16,78,0.35)] sm:max-w-xl sm:p-5 md:mt-7">
               <h2 className="mb-3 text-xl font-black sm:mb-4">Regístrate gratis aquí abajo</h2>
               <CreativeToysForm id="reto-hero-form" campaign={retoCampaign} />
               <EventDetails />
