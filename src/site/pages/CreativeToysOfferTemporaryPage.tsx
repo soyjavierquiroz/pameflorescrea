@@ -40,7 +40,6 @@ function shouldShowMobileStickyCta(scrollY: number): boolean {
 
 const assets = {
   hero: `${ASSET_BASE}/hero-certificacion.webp`,
-  discountHeader: `${ASSET_BASE}/cabecera-197.webp`,
   logo: `${WEEK_ASSET_BASE}/logo-pame-flores-crea.png`,
   pame: `${ASSET_BASE}/pame-oferta.webp`,
   pameVipCreative: `${ASSET_BASE}/pame-vip-creativa.webp`,
@@ -163,7 +162,7 @@ const bonuses: Bonus[] = [
     imageAlt: 'Bono juguetes creativos que enamoran',
     imageFit: 'contain',
     title: 'Juguetes Creativos que Enamoran',
-    value: 'Valorado en 77 USD',
+    value: 'Bono incluido',
     text: 'Biblioteca con 24 tutoriales en video, plantillas y moldes para abrir nuevas opciones de ingresos.',
   },
   {
@@ -203,7 +202,7 @@ const bonuses: Bonus[] = [
     imageAlt: 'Bono agenda para una mamá emprendedora',
     imageFit: 'contain',
     title: 'Agenda para una mamá emprendedora',
-    value: 'Valorado en 47 USD',
+    value: 'Bono incluido',
     text: 'Tutorial y guía práctica para organizar mejor tu tiempo y avanzar con más calma.',
   },
   {
@@ -211,7 +210,7 @@ const bonuses: Bonus[] = [
     imageAlt: 'Bono envío perfecto',
     imageFit: 'contain',
     title: 'Envío Perfecto',
-    value: 'Valorado en 47 USD',
+    value: 'Bono incluido',
     text: 'Empaca tus juguetes creativos de forma rápida, económica y práctica.',
   },
   {
@@ -219,7 +218,7 @@ const bonuses: Bonus[] = [
     imageAlt: 'Bono fotos y videos que venden',
     imageFit: 'contain',
     title: 'Fotos y videos que venden',
-    value: 'Valorado en 47 USD',
+    value: 'Bono incluido',
     text: 'Aprende a tomar fotos que enamoren a tus clientes usando tu celular.',
   },
   {
@@ -227,7 +226,7 @@ const bonuses: Bonus[] = [
     imageAlt: 'Bono diseña tus moldes en Canva',
     imageFit: 'contain',
     title: 'Diseña tus propios moldes en Canva',
-    value: 'Valorado en 47 USD',
+    value: 'Bono incluido',
     text: 'Una solución práctica para dejar de sufrir cuando necesitas moldes propios.',
   },
   {
@@ -264,7 +263,7 @@ const faqs = [
   {
     question: 'No tengo dinero',
     answer:
-      'La oferta es una cuota de 197 USD o en 3 o 5 cuotas. Puedes pagar con tarjeta de crédito, débito o PayPal; si estás en Ecuador y deseas depósito, puedes escribirnos por WhatsApp.',
+      'Inscríbete por una cuota de 397 USD. Puedes pagar con tarjeta de crédito, débito o PayPal; si estás en Ecuador y deseas depósito, puedes escribirnos por WhatsApp.',
   },
   {
     question: 'No soy creativa',
@@ -627,21 +626,13 @@ export function CreativeToysOfferTemporaryPage() {
             <div className="mt-5 grid gap-4 rounded-lg border border-white/18 bg-white/12 p-4 shadow-[0_22px_54px_rgba(36,16,78,0.32)] backdrop-blur sm:mt-6 sm:max-w-2xl sm:grid-cols-[0.92fr_1.08fr] sm:items-center sm:border-[#ffd45d]/44 sm:p-5">
               <div className="grid gap-2">
                 <p className="text-xs font-black uppercase text-[#7ef8f0]">
-                  Una cuota o en 3 o 5 cuotas
+                  Inscríbete por una cuota
                 </p>
-                <div className="flex items-end gap-3">
-                  <div className="rounded-md border border-white/16 bg-[#170830]/38 px-3 py-2">
-                    <p className="text-[10px] font-black uppercase leading-none text-white/62">Antes</p>
-                    <p className="mt-1 text-base font-black leading-none text-white/58 line-through decoration-[#ffd45d] decoration-2 sm:text-lg">
-                      397 USD
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-[11px] font-black uppercase leading-none text-[#fff0ad]">Hoy solo</p>
-                    <p className="mt-1 text-[2.65rem] font-black leading-none text-[#ffd45d] sm:text-5xl">
-                      197 USD
-                    </p>
-                  </div>
+                <div>
+                  <p className="text-[11px] font-black uppercase leading-none text-[#fff0ad]">UNA CUOTA</p>
+                  <p className="mt-1 text-[2.65rem] font-black leading-none text-[#ffd45d] sm:text-5xl">
+                    397 USD
+                  </p>
                 </div>
               </div>
               <div className="border-t border-white/16 pt-3 sm:border-l sm:border-t-0 sm:pl-5 sm:pt-0">
@@ -688,8 +679,8 @@ export function CreativeToysOfferTemporaryPage() {
                 </div>
               </div>
               <div className="absolute -left-4 top-8 hidden max-w-[190px] rounded-lg border-2 border-dashed border-[#ffd45d]/70 bg-[#ffd45d] p-3 text-[#4b1596] shadow-xl sm:block">
-                <p className="text-[10px] font-black uppercase leading-4 text-[#4b1596]/72">Antes 397 USD</p>
-                <p className="text-xs font-black uppercase leading-4">Hoy 197 USD · Acceso por 1 año</p>
+                <p className="text-[10px] font-black uppercase leading-4 text-[#4b1596]/72">UNA CUOTA</p>
+                <p className="text-xs font-black uppercase leading-4">397 USD · Acceso por 1 año</p>
               </div>
               <div className="absolute -bottom-5 right-4 hidden max-w-[220px] rounded-lg border-2 border-dashed border-white/40 bg-[#2b1163]/90 p-4 text-white shadow-xl backdrop-blur sm:block">
                 <p className="text-xs font-black uppercase text-[#7ef8f0]">Incluye regalos</p>
@@ -926,64 +917,25 @@ export function CreativeToysOfferTemporaryPage() {
       <Section
         eyebrow="Oferta"
         intro="La Certificación de Juguetería Creativa Profesional, todos los regalos y el acompañamiento."
-        title="Inscríbete eligiendo la opción de pago que prefieras"
+        title="Inscríbete por una cuota de 397 USD"
         tone="gradient"
       >
         <div className="relative overflow-hidden rounded-lg border-2 border-dashed border-[#ffd45d]/46 bg-[#170830]/72 p-5 shadow-[0_30px_90px_rgba(23,8,48,0.42)] backdrop-blur sm:p-7 lg:p-8">
           <Sparkles className="absolute right-5 top-5 h-8 w-8 text-[#ffd45d]/70" aria-hidden="true" />
-          <div className="grid gap-7 lg:grid-cols-[minmax(0,1.22fr)_minmax(280px,0.78fr)] lg:items-start xl:grid-cols-[minmax(620px,1.15fr)_minmax(340px,0.85fr)]">
+          <div className="grid gap-7 lg:grid-cols-[minmax(0,0.95fr)_minmax(300px,1.05fr)] lg:items-center">
             <div className="rounded-lg bg-white p-5 text-[#24104e] shadow-[0_24px_64px_rgba(0,0,0,0.2)] sm:p-7 lg:p-8">
-              <div className="grid gap-4">
-                <div className="grid gap-5 rounded-lg border-2 border-[#ffd45d] bg-[#fffaf0] p-5 shadow-[0_18px_38px_rgba(224,0,138,0.12)] sm:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(270px,0.42fr)] lg:items-center">
-                  <div>
-                    <p className="inline-flex rounded-md bg-[#ffd45d] px-3 py-1 text-sm font-black uppercase text-[#4b1596]">
-                      UNA CUOTA
-                    </p>
-                    <p className="mt-3 font-sans text-5xl font-black leading-none text-[#e0008a] sm:text-6xl">
-                      197 USD
-                    </p>
-                  </div>
-                  <div className="lg:justify-self-end">
-                    <CheckoutCta className="lg:w-[270px] xl:w-[300px]" variant="payment">
-                      QUIERO PAGAR 197 USD
-                    </CheckoutCta>
-                  </div>
-                </div>
-                <div className="grid gap-5 rounded-lg border-2 border-[#eadcf7] bg-[#fbf7ff] p-5 shadow-[0_18px_38px_rgba(75,21,150,0.1)] sm:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(270px,0.42fr)] lg:items-center">
-                  <div>
-                    <p className="inline-flex rounded-md bg-[#13cdd7]/14 px-3 py-1 text-sm font-black uppercase text-[#4b1596]">
-                      3 CUOTAS
-                    </p>
-                    <div className="mt-3 flex flex-wrap items-end gap-x-3 gap-y-1">
-                      <p className="font-sans text-5xl font-black leading-none text-[#e0008a] sm:text-6xl">
-                        77 USD
-                      </p>
-                      <p className="pb-1 text-sm font-black uppercase text-[#5b4a77]">POR 3 MESES</p>
-                    </div>
-                  </div>
-                  <div className="lg:justify-self-end">
-                    <CheckoutCta className="lg:w-[270px] xl:w-[300px]" variant="payment">
-                      QUIERO PAGAR EN 3 CUOTAS
-                    </CheckoutCta>
-                  </div>
-                </div>
-                <div className="grid gap-5 rounded-lg border-2 border-[#eadcf7] bg-[#fbf7ff] p-5 shadow-[0_18px_38px_rgba(75,21,150,0.1)] sm:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(270px,0.42fr)] lg:items-center">
-                  <div>
-                    <p className="inline-flex rounded-md bg-[#13cdd7]/14 px-3 py-1 text-sm font-black uppercase text-[#4b1596]">
-                      5 CUOTAS
-                    </p>
-                    <div className="mt-3 flex flex-wrap items-end gap-x-3 gap-y-1">
-                      <p className="font-sans text-5xl font-black leading-none text-[#e0008a] sm:text-6xl">
-                        47 USD
-                      </p>
-                      <p className="pb-1 text-sm font-black text-[#5b4a77]">por 5 meses</p>
-                    </div>
-                  </div>
-                  <div className="lg:justify-self-end">
-                    <CheckoutCta className="lg:w-[270px] xl:w-[300px]" variant="payment">
-                      QUIERO PAGAR EN 5 CUOTAS
-                    </CheckoutCta>
-                  </div>
+              <div className="rounded-lg border-2 border-[#ffd45d] bg-[#fffaf0] p-5 shadow-[0_18px_38px_rgba(224,0,138,0.12)] sm:p-7">
+                <p className="inline-flex rounded-md bg-[#ffd45d] px-3 py-1 text-sm font-black uppercase text-[#4b1596]">
+                  UNA CUOTA
+                </p>
+                <p className="mt-4 font-sans text-5xl font-black leading-none text-[#e0008a] sm:text-6xl">
+                  397 USD
+                </p>
+                <p className="mt-3 text-sm font-black uppercase leading-6 text-[#5b4a77]">
+                  Certificación completa, bonos y acceso por 1 año.
+                </p>
+                <div className="mt-6">
+                  <CheckoutCta variant="payment">QUIERO PAGAR 397 USD</CheckoutCta>
                 </div>
               </div>
               <p className="mt-4 text-sm font-bold leading-6 text-[#5b4a77]">
@@ -1157,9 +1109,9 @@ export function CreativeToysOfferTemporaryPage() {
           </div>
           <div className="rounded-lg border-2 border-dashed border-white/28 bg-[#2b1163]/72 p-5 shadow-[0_20px_54px_rgba(36,16,78,0.35)] backdrop-blur">
             <p className="inline-flex rounded-md bg-[#ffd45d] px-3 py-1 text-xs font-black uppercase text-[#4b1596]">
-              Una cuota o en 3 o 5 cuotas
+              UNA CUOTA
             </p>
-            <p className="mt-3 font-sans text-5xl font-black leading-none text-[#ffd45d]">197 USD</p>
+            <p className="mt-3 font-sans text-5xl font-black leading-none text-[#ffd45d]">397 USD</p>
             <p className="mt-3 text-sm font-bold leading-6 text-white/78">
               Acceso por 1 año, bonos incluidos y garantía de 7 días.
             </p>

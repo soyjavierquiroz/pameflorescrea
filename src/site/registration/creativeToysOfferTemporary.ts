@@ -22,7 +22,7 @@ export function buildTemporaryOfferCheckoutEventData({
     offer_slug: TEMPORARY_OFFER_SLUG,
     content_name: 'Certificación de Juguetería Creativa Profesional',
     content_ids: [TEMPORARY_OFFER_SLUG],
-    value: 197,
+    value: 397,
     currency: 'USD',
     checkout_url: TEMPORARY_OFFER_CHECKOUT_URL,
   };

@@ -147,7 +147,7 @@ Si estás en Ecuador o en Bolivia, y deseas pagar con depósito o tienes pregunt
 
 ## **UNA CUOTA**
 
-## **197 USD**
+## **397 USD**
 
 [QUIERO UNIRME](https://pameflorescrea.com/ordenar)
 
@@ -162,7 +162,7 @@ Puedes pagar con tarjeta de crédito, débito, PayPal. o en deposito directo seg
 
 ## **Juguetes Creativos que Enamoran**
 
-## **( Valorado en 77 dólares)**
+## **Bono incluido**
 
 ## Crea una nueva opción de ingresos adicionales gracias a esta biblioteca de videos tutoriales para tener otras opciones de ingresos.
 
@@ -203,7 +203,7 @@ Una técnica que te sorprenderá por las posibilidades que tendrás para hacer j
 
 ## **Agenda para una mamá emprendedora**
 
-## **( Valorado en 47\)**
+## **Bono incluido**
 
 Sientes que apenas te alcanza el tiempo,este curso es la solución. Aprende a maximizar cada día con nuestro tutorial y guía práctica.
 
@@ -211,7 +211,7 @@ Sientes que apenas te alcanza el tiempo,este curso es la solución. Aprende a ma
 
 ## **ENVIO PERFECTO**
 
-## **( Valorado en 47\)**
+## **Bono incluido**
 
 Empaca rápido, económico y práctico tus juguetes creativos.
 
@@ -223,7 +223,7 @@ Empaca rápido, económico y práctico tus juguetes creativos.
 
 ##    **FOTOS Y VIDEOS QUE VENDEN**
 
-## **( Valorado en 47\)**
+## **Bono incluido**
 
 Aprende a tomar fotos que enamoren a tus clientes solo con tu celular.
 
@@ -231,7 +231,7 @@ Aprende a tomar fotos que enamoren a tus clientes solo con tu celular.
 
 ##    **Diseña tus Propios Moldes en Canva**
 
-## **( Valorado en 47\)**
+## **Bono incluido**
 
 Jamás volverás a sufrir por no tener moldes, aquí esta la solución.
 

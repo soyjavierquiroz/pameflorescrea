@@ -41,6 +41,30 @@ function countOccurrences(value: string, search: string): number {
   return value.split(search).length - 1;
 }
 
+function legacyOfferCopy(): string[] {
+  const usd = (amount: string) => `${amount} USD`;
+  const cuotas = (count: string) => `${count} CUOTAS`;
+  const oldOnePay = ['1', '9', '7'].join('');
+  const oldThreePay = ['7', '7'].join('');
+  const oldFivePay = ['4', '7'].join('');
+  const payIn = ['QUIERO PAGAR', 'EN'].join(' ');
+
+  return [
+    usd(oldOnePay),
+    cuotas('3'),
+    usd(oldThreePay),
+    `POR ${'3'} MESES`,
+    cuotas('5'),
+    usd(oldFivePay),
+    `por ${'3'} meses`,
+    `por ${'5'} meses`,
+    `o en ${'3'} o ${'5'} cuotas`,
+    `en ${'3'} o ${'5'} cuotas`,
+    `${payIn} ${'3'} CUOTAS`,
+    `${payIn} ${'5'} CUOTAS`,
+  ];
+}
+
 afterEach(() => {
   vi.unstubAllEnvs();
 });
@@ -221,19 +245,12 @@ describe('App routes', () => {
     expect(html).toContain('Aunque hoy no sepas por dónde empezar');
     expect(html).toContain('proyecto propio que impacte vidas y genere ingresos para tu familia');
     expect(html).toContain('397 USD');
-    expect(html).toContain('197 USD');
-    expect(html).toContain('Inscríbete eligiendo la opción de pago que prefieras');
+    expect(html).toContain('Inscríbete por una cuota de 397 USD');
     expect(html).toContain('UNA CUOTA');
-    expect(html).toContain('3 CUOTAS');
-    expect(html).toContain('77 USD');
-    expect(html).toContain('POR 3 MESES');
-    expect(html).toContain('5 CUOTAS');
-    expect(html).toContain('47 USD');
-    expect(html).toContain('por 5 meses');
-    expect(html).toContain('QUIERO PAGAR 197 USD');
-    expect(html).toContain('QUIERO PAGAR EN 3 CUOTAS');
-    expect(html).toContain('QUIERO PAGAR EN 5 CUOTAS');
-    expect(html).toContain('o en 3 o 5 cuotas');
+    expect(html).toContain('QUIERO PAGAR 397 USD');
+    for (const copy of legacyOfferCopy()) {
+      expect(html).not.toContain(copy);
+    }
     expect(html).toContain('Es ideal para ti si:');
     expect(html).toContain('Sientes que tienes mucho potencial');
     expect(html).toContain('Sueñas con construir algo propio');
@@ -301,24 +318,28 @@ describe('App routes', () => {
 
     expect(html).toContain('Certificación de Juguetería Creativa Profesional');
     expect(htmlWithSlash).toContain('Certificación de Juguetería Creativa Profesional');
-    expect(html).toContain('QUIERO PAGAR 197 USD');
-    expect(html).toContain('QUIERO PAGAR EN 3 CUOTAS');
-    expect(html).toContain('QUIERO PAGAR EN 5 CUOTAS');
+    expect(html).toContain('UNA CUOTA');
+    expect(html).toContain('397 USD');
+    expect(html).toContain('QUIERO PAGAR 397 USD');
+    for (const copy of legacyOfferCopy()) {
+      expect(html).not.toContain(copy);
+    }
     expect(html).toContain(`href="${TEMPORARY_OFFER_CHECKOUT_URL}"`);
   });
 
-  it('wires all three temporary offer payment buttons to checkout', () => {
+  it('wires the temporary offer payment button to checkout', () => {
     const pageSource = readFileSync(
       join(process.cwd(), 'src/site/pages/CreativeToysOfferTemporaryPage.tsx'),
       'utf8',
     );
 
-    expect(countOccurrences(pageSource, 'variant="payment"')).toBe(3);
+    expect(countOccurrences(pageSource, 'variant="payment"')).toBe(1);
     expect(pageSource).toContain('onClick={handleCheckoutClick}');
     expect(pageSource).toContain('shouldTrackTemporaryOfferCheckout(location.pathname)');
-    expect(pageSource).toContain('QUIERO PAGAR 197 USD');
-    expect(pageSource).toContain('QUIERO PAGAR EN 3 CUOTAS');
-    expect(pageSource).toContain('QUIERO PAGAR EN 5 CUOTAS');
+    expect(pageSource).toContain('QUIERO PAGAR 397 USD');
+    for (const copy of legacyOfferCopy()) {
+      expect(pageSource).not.toContain(copy);
+    }
     expect(pageSource).toContain('certificacion-jcp.webp');
     expect(pageSource).not.toContain('programa-01.webp');
     expect(pageSource).toContain('href={TEMPORARY_OFFER_CHECKOUT_URL}');
@@ -383,7 +404,7 @@ describe('App routes', () => {
       event_source_url: 'https://pameflorescrea.com/x9m/oferta?fbclid=test',
       offer_slug: 'certificacion-jugueteria-creativa',
       checkout_url: TEMPORARY_OFFER_CHECKOUT_URL,
-      value: 197,
+      value: 397,
       currency: 'USD',
     });
     expect(Object.values(payload)).not.toContain('Purchase');
@@ -404,7 +425,7 @@ describe('App routes', () => {
     expect(stickySource).toContain('INSCRIBIRME AHORA');
     expect(stickySource).not.toContain('UNA CUOTA');
     expect(stickySource).not.toContain('Una cuota');
-    expect(stickySource).not.toContain('197 USD');
+    expect(stickySource).not.toContain('397 USD');
   });
 
   it('delays the mobile sticky CTA until after the scroll threshold', () => {
