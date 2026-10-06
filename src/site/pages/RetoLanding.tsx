@@ -90,17 +90,17 @@ export function RetoLanding() {
               <img alt="Pame Flores Crea" className="h-14 w-14 rounded-md border-2 border-dashed border-[#ffd45d] bg-white object-contain p-1 shadow-lg" src={RETO_ASSETS.logo} width="56" height="56" />
               <div><p className="text-sm font-black uppercase">Pame Flores Crea</p><p className="text-xs font-semibold text-white/74">Juguetes creativos</p></div>
             </div>
-            <p className="mt-4 inline-flex w-fit items-center gap-2 rounded-md border-2 border-dashed border-[#ffd45d]/70 bg-[#ffd45d]/16 px-3 py-2 text-[11px] font-black uppercase leading-4 text-[#fff0ad] shadow-sm sm:mt-8 sm:text-xs">
+            <p className="mt-3 inline-flex w-fit items-center gap-2 rounded-md border-2 border-dashed border-[#ffd45d]/70 bg-[#ffd45d]/16 px-3 py-2 text-[11px] font-black uppercase leading-4 text-[#fff0ad] shadow-sm sm:mt-8 sm:text-xs">
               <Sparkles aria-hidden="true" className="h-4 w-4 shrink-0" /> RETO VIRTUAL GRATUITO DE 4 CLASES
             </p>
-            <p className="mt-3 text-sm font-black text-[#7ef8f0] sm:mt-5 sm:text-base">20, 21, 22 y 25 de octubre</p>
-            <h1 className="mt-2 min-w-0 text-[clamp(2.2rem,6vw,3.5rem)] font-black leading-[1.02] tracking-tight sm:mt-3">
+            <p className="mt-2 text-sm font-black text-[#7ef8f0] sm:mt-5 sm:text-base">20, 21, 22 y 25 de octubre</p>
+            <h1 className="mt-1 min-w-0 text-[clamp(2.2rem,6vw,3.5rem)] font-black leading-[1.02] tracking-tight sm:mt-3">
               CONQUISTA LA<span className="block max-w-[9.5em] text-[#ffd45d]">JUGUETERÍA RENTABLE</span>
             </h1>
-            <p className="mt-3 max-w-2xl text-lg font-black leading-6 sm:mt-5 sm:text-2xl sm:leading-8">Aprende la ruta para aumentar tus ingresos hasta $500 dólares mensuales creando libros sensoriales y juguetes educativos.</p>
-            <p className="mt-3 max-w-2xl text-base font-bold leading-6 text-white/86 sm:mt-4 sm:text-lg sm:leading-7">Aunque empieces desde cero, tengas poco tiempo y quieras seguir estando presente para tu familia.</p>
-            <p className="mt-3 max-w-2xl text-base font-bold leading-6 text-white/86 sm:mt-4 sm:text-lg sm:leading-7">Dale dirección a tu creatividad y transforma tu experiencia en un proyecto rentable antes que acabe el 2026.</p>
-            <div className="mt-5 min-w-0 rounded-lg border-2 border-dashed border-white/26 bg-[#2b1163]/95 p-4 shadow-[0_20px_54px_rgba(36,16,78,0.35)] sm:mt-7 sm:max-w-xl sm:p-5">
+            <p className="mt-2 max-w-2xl text-lg font-black leading-6 sm:mt-5 sm:text-2xl sm:leading-8">Aprende la ruta para aumentar tus ingresos hasta $500 dólares mensuales creando libros sensoriales y juguetes educativos.</p>
+            <p className="mt-3 hidden max-w-2xl text-base font-bold leading-6 text-white/86 sm:mt-4 sm:text-lg sm:leading-7 md:block">Aunque empieces desde cero, tengas poco tiempo y quieras seguir estando presente para tu familia.</p>
+            <p className="mt-3 hidden max-w-2xl text-base font-bold leading-6 text-white/86 sm:mt-4 sm:text-lg sm:leading-7 md:block">Dale dirección a tu creatividad y transforma tu experiencia en un proyecto rentable antes que acabe el 2026.</p>
+            <div className="mt-4 min-w-0 rounded-lg border-2 border-dashed border-white/26 bg-[#2b1163]/95 p-4 shadow-[0_20px_54px_rgba(36,16,78,0.35)] sm:mt-7 sm:max-w-xl sm:p-5">
               <h2 className="mb-3 text-xl font-black sm:mb-4">Regístrate gratis aquí abajo</h2>
               <CreativeToysForm id="reto-hero-form" campaign={retoCampaign} />
               <EventDetails />
@@ -115,21 +115,32 @@ export function RetoLanding() {
         </div>
       </section>
 
-      <CreativeToysSection tone="light" title="¿Te gustaría generar más ingresos, pero sin tener que elegir entre tu familia y tus propios sueños?">
-        <div className="grid max-w-5xl gap-6 text-base font-semibold leading-8 text-[#5b4a77] sm:text-lg lg:grid-cols-[1.08fr_0.92fr] lg:gap-12">
-          <div className="space-y-4">
-            <p className="text-lg font-black leading-8 text-[#4b1596] sm:text-xl">Tal vez llevas tiempo pensando en hacer algo para ti.</p>
-            <p>Algo que te permita generar ingresos, aprovechar tu creatividad y sentir que estás construyendo un proyecto propio... pero que también pueda adaptarse a tu vida y a tu familia.</p>
-            <p>Quizás incluso ya haces manualidades, trabajas con niños o alguna vez has creado un libro sensorial, pero todavía no sabes cómo convertir todo eso en un proyecto realmente rentable.</p>
+      <section className="bg-[#f8f1ff] text-[#24104e]">
+        <div className="mx-auto w-full max-w-6xl px-5 py-14 sm:px-8 lg:px-10 lg:py-20">
+          <div className="max-w-3xl">
+            <div className="mb-8 max-w-2xl space-y-3 text-base font-semibold leading-7 text-[#5b4a77] md:hidden">
+              <p className="font-bold text-[#4b1596]">Aunque empieces desde cero, tengas poco tiempo y quieras seguir estando presente para tu familia.</p>
+              <p>Dale dirección a tu creatividad y transforma tu experiencia en un proyecto rentable antes que acabe el 2026.</p>
+            </div>
+            <h2 className="text-3xl font-black leading-tight sm:text-4xl">¿Te gustaría generar más ingresos, pero sin tener que elegir entre tu familia y tus propios sueños?</h2>
           </div>
-          <div className="space-y-4 border-l-2 border-dashed border-[#e0008a] pl-5 sm:pl-7">
-            <p>Eso es justamente lo que quiero ayudarte a descubrir en este reto.</p>
-            <p>Porque tu creatividad puede convertirse en mucho más que algo que haces en tus ratos libres.</p>
-            <p className="font-black text-[#4b1596]">Puede convertirse en una fuente de ingresos y en un proyecto del que te sientas orgullosa.</p>
+          <div className="mt-8">
+            <div className="grid max-w-5xl gap-6 text-base font-semibold leading-8 text-[#5b4a77] sm:text-lg lg:grid-cols-[1.08fr_0.92fr] lg:gap-12">
+              <div className="space-y-4">
+                <p className="text-lg font-black leading-8 text-[#4b1596] sm:text-xl">Tal vez llevas tiempo pensando en hacer algo para ti.</p>
+                <p>Algo que te permita generar ingresos, aprovechar tu creatividad y sentir que estás construyendo un proyecto propio... pero que también pueda adaptarse a tu vida y a tu familia.</p>
+                <p>Quizás incluso ya haces manualidades, trabajas con niños o alguna vez has creado un libro sensorial, pero todavía no sabes cómo convertir todo eso en un proyecto realmente rentable.</p>
+              </div>
+              <div className="space-y-4 border-l-2 border-dashed border-[#e0008a] pl-5 sm:pl-7">
+                <p>Eso es justamente lo que quiero ayudarte a descubrir en este reto.</p>
+                <p>Porque tu creatividad puede convertirse en mucho más que algo que haces en tus ratos libres.</p>
+                <p className="font-black text-[#4b1596]">Puede convertirse en una fuente de ingresos y en un proyecto del que te sientas orgullosa.</p>
+              </div>
+            </div>
+            <div className="mt-8"><FormScrollButton>QUIERO ASISTIR A LAS CLASES</FormScrollButton></div>
           </div>
         </div>
-        <div className="mt-8"><FormScrollButton>QUIERO ASISTIR A LAS CLASES</FormScrollButton></div>
-      </CreativeToysSection>
+      </section>
 
       <section className="bg-[#3a1685] text-white">
         <div className="mx-auto max-w-6xl px-5 py-10 sm:px-8 sm:py-14 lg:px-10">
