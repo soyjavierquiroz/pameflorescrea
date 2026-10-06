@@ -695,13 +695,17 @@ describe('creative toys registration helpers', () => {
       join(process.cwd(), 'src/site/pages/CreativeToysWeekConfirmation.tsx'),
       'utf8',
     );
+    const trackingHookSource = readFileSync(
+      join(process.cwd(), 'src/site/registration/useCampaignConfirmationTracking.ts'),
+      'utf8',
+    );
 
     expect(formSource).not.toContain('analytics.trackEvent');
     expect(formSource).not.toContain('CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME');
     expect(formSource).not.toContain('window.localStorage.setItem');
     expect(formSource).not.toContain('Lead');
-    expect(confirmationSource).toContain('analytics');
-    expect(confirmationSource).toContain('CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME');
+    expect(confirmationSource).toContain('useCampaignConfirmationTracking');
+    expect(trackingHookSource).toContain('analytics.trackEvent(COMPLETE_REGISTRATION_EVENT_NAME');
     expect(confirmationSource).not.toContain('Purchase');
     expect(confirmationSource).not.toContain('InitiateCheckout');
   });
@@ -712,13 +716,11 @@ describe('creative toys registration helpers', () => {
       'utf8',
     );
 
-    expect(confirmationSource.indexOf('const trackingPromise = analytics.trackEvent')).toBeGreaterThan(
-      -1,
-    );
+    expect(confirmationSource.indexOf('useCampaignConfirmationTracking(creativeToysCampaign')).toBeGreaterThan(-1);
     expect(
       confirmationSource.indexOf('return scheduleCreativeToysWhatsAppRedirect'),
     ).toBeGreaterThan(-1);
-    expect(confirmationSource.indexOf('const trackingPromise = analytics.trackEvent')).toBeLessThan(
+    expect(confirmationSource.indexOf('useCampaignConfirmationTracking(creativeToysCampaign')).toBeLessThan(
       confirmationSource.indexOf('return scheduleCreativeToysWhatsAppRedirect'),
     );
   });

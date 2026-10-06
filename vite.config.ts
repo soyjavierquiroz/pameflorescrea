@@ -80,6 +80,9 @@ function staticAdsEntryPlugin(mode: string) {
       const classTwoDescription = 'Redirigiendo a la Clase 2 de Pame Flores Crea.';
       const classThreeTitle = 'Clase 3 | Pame Flores Crea';
       const classThreeDescription = 'Redirigiendo a la Clase 3 de Pame Flores Crea.';
+      const retoTitle = 'Conquista la Juguetería Rentable | Pame Flores Crea';
+      const retoDescription =
+        'Reto virtual gratuito de 4 clases para aprender la ruta para aumentar tus ingresos creando libros sensoriales y juguetes educativos.';
       writeFileSync(
         sourcePath,
         injectRouteMetadata(baseHtml, landingTitle, landingDescription, landingAssetCheck),
@@ -92,6 +95,11 @@ function staticAdsEntryPlugin(mode: string) {
         {
           path: 'confirmacion/500-extra',
           html: injectRouteMetadata(baseHtml, confirmationTitle, confirmationDescription),
+        },
+        { path: 'reto', html: injectRouteMetadata(baseHtml, retoTitle, retoDescription) },
+        {
+          path: 'confirmacion/reto',
+          html: injectRouteMetadata(baseHtml, retoTitle, retoDescription),
         },
         {
           path: 'oferta',
@@ -153,6 +161,14 @@ function staticAdsEntryPlugin(mode: string) {
           {
             path: `${adsPrefix}/confirmacion/500-extra`,
             html: injectRouteMetadata(baseHtml, confirmationTitle, confirmationDescription),
+          },
+          {
+            path: `${adsPrefix}/reto`,
+            html: injectRouteMetadata(baseHtml, retoTitle, retoDescription),
+          },
+          {
+            path: `${adsPrefix}/confirmacion/reto`,
+            html: injectRouteMetadata(baseHtml, retoTitle, retoDescription),
           },
           {
             path: `${adsPrefix}/oferta`,

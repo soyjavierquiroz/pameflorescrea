@@ -4,6 +4,8 @@ import { getAdsRoutePrefix } from './core/routing/adsRoute';
 import { CreativeToysOfferTemporaryPage } from './site/pages/CreativeToysOfferTemporaryPage';
 import { CreativeToysWeekConfirmation } from './site/pages/CreativeToysWeekConfirmation';
 import { CreativeToysWeekLanding } from './site/pages/CreativeToysWeekLanding';
+import { RetoLanding } from './site/pages/RetoLanding';
+import { RetoConfirmation } from './site/pages/RetoConfirmation';
 import { ClassOneRedirectPage, CLASS_ONE_TITLE } from './site/pages/ClassOneRedirectPage';
 import { ClassTwoRedirectPage, CLASS_TWO_TITLE } from './site/pages/ClassTwoRedirectPage';
 import { ClassThreeRedirectPage, CLASS_THREE_TITLE } from './site/pages/ClassThreeRedirectPage';
@@ -12,6 +14,7 @@ import { AdsTrackingBootstrap } from './site/tracking/AdsTrackingBootstrap';
 const siteId = 'PAME_FLORES_CREA';
 const siteTitle = 'Pame Flores Crea - Sitio en preparacion';
 const temporaryOfferTitle = 'Certificación de Juguetería Creativa Profesional | Pame Flores Crea';
+const retoTitle = 'Conquista la Juguetería Rentable | Pame Flores Crea';
 const adsRoutePrefix = getAdsRoutePrefix();
 
 function PreparationPage() {
@@ -42,6 +45,19 @@ function RoutedApp() {
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', 'theme-expert');
+    if (
+      location.pathname === '/reto' ||
+      location.pathname === '/reto/' ||
+      location.pathname === `${adsRoutePrefix}/reto` ||
+      location.pathname === `${adsRoutePrefix}/reto/` ||
+      location.pathname === '/confirmacion/reto' ||
+      location.pathname === '/confirmacion/reto/' ||
+      location.pathname === `${adsRoutePrefix}/confirmacion/reto` ||
+      location.pathname === `${adsRoutePrefix}/confirmacion/reto/`
+    ) {
+      document.title = retoTitle;
+      return;
+    }
     if (
       location.pathname === '/oferta' ||
       location.pathname === '/oferta/' ||
@@ -93,6 +109,10 @@ function RoutedApp() {
       <Route path="/500-extra/" element={<CreativeToysWeekLanding />} />
       <Route path={`${adsRoutePrefix}/500-extra`} element={<CreativeToysWeekLanding />} />
       <Route path={`${adsRoutePrefix}/500-extra/`} element={<CreativeToysWeekLanding />} />
+      <Route path="/reto" element={<RetoLanding />} />
+      <Route path="/reto/" element={<RetoLanding />} />
+      <Route path={`${adsRoutePrefix}/reto`} element={<RetoLanding />} />
+      <Route path={`${adsRoutePrefix}/reto/`} element={<RetoLanding />} />
       <Route path="/clase1" element={<ClassOneRedirectPage />} />
       <Route path="/clase1/" element={<ClassOneRedirectPage />} />
       <Route path={`${adsRoutePrefix}/clase1`} element={<ClassOneRedirectPage />} />
@@ -114,6 +134,10 @@ function RoutedApp() {
         path={`${adsRoutePrefix}/confirmacion/500-extra`}
         element={<CreativeToysWeekConfirmation />}
       />
+      <Route path="/confirmacion/reto" element={<RetoConfirmation />} />
+      <Route path="/confirmacion/reto/" element={<RetoConfirmation />} />
+      <Route path={`${adsRoutePrefix}/confirmacion/reto`} element={<RetoConfirmation />} />
+      <Route path={`${adsRoutePrefix}/confirmacion/reto/`} element={<RetoConfirmation />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

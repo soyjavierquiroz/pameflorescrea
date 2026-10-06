@@ -1,17 +1,39 @@
-import type { AnalyticsEventResult, AttributionEventFields } from '../../core/services/analytics';
-import { buildAttributionEventFields } from '../../core/services/analytics';
-import { isAdsRoutePath, withAdsRoutePrefix } from '../../core/routing/adsRoute';
-import type { ResolvedAttribution, TrafficChannel } from '../../core/attribution';
-import type { VisitorPayload } from '../../core/visitor/visitorPayload';
+import type { AnalyticsEventResult } from '../../core/services/analytics';
+import { isAdsRoutePath, withoutTrailingSlash } from '../../core/routing/adsRoute';
+import { creativeToysCampaign } from './campaigns';
+import {
+  buildCampaignRegistrationPayload,
+  buildPendingConversion,
+  buildRegistrationSnapshot,
+  COMPLETE_REGISTRATION_EVENT_NAME,
+  createCampaignEventId,
+  getCampaignCaptureEndpoint,
+  getCampaignConfirmationPath,
+  getCampaignLandingPath,
+  isCampaignCaptureOk,
+  markCampaignConversionFailed,
+  readCampaignPendingConversion,
+  readCampaignSnapshot,
+  shouldTrackCampaignConversion,
+  storeCampaignPendingConversion,
+  validateCampaignForm,
+  writeCampaignSnapshot,
+  type BuildRegistrationInput,
+  type CampaignFormErrors,
+  type CampaignFormValues,
+  type CampaignRegistrationPayload,
+  type PendingConversion,
+  type RegistrationSnapshot,
+} from './campaignRegistration';
 
-export const CREATIVE_TOYS_REGISTRATION_KEY = 'pame_500_extra_registration_v1';
-export const CREATIVE_TOYS_PENDING_CONVERSION_KEY = 'pame_500_extra_pending_conversion_v1';
-export const CREATIVE_TOYS_LANDING_SLUG = '500-extra';
-export const CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME = 'CompleteRegistration';
-export const CREATIVE_TOYS_EVENT_NAME = 'SEMANA DEL EMPRENDIMIENTO CON JUGUETES CREATIVOS';
-export const CREATIVE_TOYS_SOURCE = 'pameflorescrea.com';
-export const CREATIVE_TOYS_ORGANIC_LANDING_PATH = '/500-extra';
-export const CREATIVE_TOYS_ORGANIC_CONFIRMATION_PATH = '/confirmacion/500-extra';
+export const CREATIVE_TOYS_REGISTRATION_KEY = creativeToysCampaign.registrationStorageKey;
+export const CREATIVE_TOYS_PENDING_CONVERSION_KEY = creativeToysCampaign.pendingConversionStorageKey;
+export const CREATIVE_TOYS_LANDING_SLUG = creativeToysCampaign.landingSlug;
+export const CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME = COMPLETE_REGISTRATION_EVENT_NAME;
+export const CREATIVE_TOYS_EVENT_NAME = creativeToysCampaign.eventName;
+export const CREATIVE_TOYS_SOURCE = creativeToysCampaign.source;
+export const CREATIVE_TOYS_ORGANIC_LANDING_PATH = creativeToysCampaign.organicLandingPath;
+export const CREATIVE_TOYS_ORGANIC_CONFIRMATION_PATH = creativeToysCampaign.organicConfirmationPath;
 export const CREATIVE_TOYS_WHATSAPP_REDIRECT_DELAY_MS = 5000;
 
 export const CREATIVE_TOYS_ASSETS = {
@@ -42,15 +64,12 @@ export const CREATIVE_TOYS_ASSETS = {
   ],
 } as const;
 
-export interface CreativeToysFormValues {
-  name: string;
-  email: string;
-}
-
-export interface CreativeToysFormErrors {
-  name?: string;
-  email?: string;
-}
+export type CreativeToysFormValues = CampaignFormValues;
+export type CreativeToysFormErrors = CampaignFormErrors;
+export type CreativeToysRegistrationSnapshot = RegistrationSnapshot;
+export type CreativeToysPendingConversion = PendingConversion;
+export type CreativeToysRegistrationPayload = CampaignRegistrationPayload;
+export type BuildCreativeToysRegistrationPayloadInput = BuildRegistrationInput;
 
 export interface CreativeToysTrackingConfig {
   capiWebhookUrl?: string | null;
@@ -58,66 +77,10 @@ export interface CreativeToysTrackingConfig {
   tiktokPixelId?: string | null;
 }
 
-export interface CreativeToysRegistrationSnapshot {
-  lead_name: string;
-  lead_email: string;
-  registered_at: string;
-  source_path: string;
-}
-
-export interface CreativeToysPendingConversion {
-  event_name: typeof CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME;
-  event_id: string;
-  lead_email: string;
-  lead_name: string;
-  source_path: string;
-  confirmation_path: string;
-  traffic_channel: 'ads';
-  capture_ok_at: string;
-  sent: boolean;
-  sent_at?: string;
-  last_attempt_at?: string;
-  attempts?: number;
-  tracking_result?: CreativeToysTrackingResultSummary;
-}
-
 export interface CreativeToysTrackingResultSummary {
   metaBrowserSent: boolean;
   capiSent: boolean;
   event_id: string;
-}
-
-export interface BuildCreativeToysRegistrationPayloadInput {
-  name: string;
-  email: string;
-  attribution: ResolvedAttribution;
-  visitorPayload: VisitorPayload;
-  pageUrl: string;
-  currentPath: string;
-  userAgent: string;
-  submittedAt: string;
-}
-
-export interface CreativeToysRegistrationPayload
-  extends VisitorPayload,
-    AttributionEventFields {
-  name: string;
-  first_name: string;
-  email: string;
-  traffic_channel: TrafficChannel;
-  capture_list_slug: typeof CREATIVE_TOYS_LANDING_SLUG;
-  list: typeof CREATIVE_TOYS_LANDING_SLUG;
-  landing_slug: typeof CREATIVE_TOYS_LANDING_SLUG;
-  event_name: typeof CREATIVE_TOYS_EVENT_NAME;
-  source: typeof CREATIVE_TOYS_SOURCE;
-  page_url: string;
-  current_path: string;
-  landing_path: string;
-  landing_path_target: string;
-  confirmation_path: string;
-  submitted_at: string;
-  attribution: AttributionEventFields;
-  user_agent: string;
 }
 
 export interface BuildCreativeToysPendingConversionInput {
@@ -130,102 +93,9 @@ export interface BuildCreativeToysPendingConversionInput {
   registeredAt: string;
 }
 
-type PendingConversionStorage = Pick<Storage, 'getItem' | 'setItem'>;
-
-const inMemoryStorage = new Map<string, string>();
-
-function normalizeText(value: string): string {
-  return value.trim().replace(/\s+/g, ' ');
-}
-
 function readPublicEnvValue(key: string): string {
   const env = import.meta.env as Record<string, string | undefined>;
-
   return env[key]?.trim() ?? '';
-}
-
-function readStorageItem(storage: Pick<Storage, 'getItem'> | null, key: string): string | null {
-  if (!storage) {
-    return null;
-  }
-
-  try {
-    return storage.getItem(key);
-  } catch {
-    return null;
-  }
-}
-
-function writeStorageItem(
-  storage: Pick<Storage, 'setItem'> | null,
-  key: string,
-  value: string,
-): boolean {
-  if (!storage) {
-    return false;
-  }
-
-  try {
-    storage.setItem(key, value);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function getBrowserStorage(kind: 'localStorage' | 'sessionStorage'): PendingConversionStorage | null {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-
-  try {
-    return window[kind];
-  } catch {
-    return null;
-  }
-}
-
-function parseCreativeToysPendingConversion(
-  storedValue: string | null,
-): CreativeToysPendingConversion | null {
-  if (!storedValue) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(storedValue) as CreativeToysPendingConversion;
-  } catch {
-    return null;
-  }
-}
-
-function getPendingConversionTimestamp(pendingConversion: CreativeToysPendingConversion): string {
-  return (
-    pendingConversion.sent_at ??
-    pendingConversion.last_attempt_at ??
-    pendingConversion.capture_ok_at
-  );
-}
-
-function chooseNewestPendingConversion(
-  current: CreativeToysPendingConversion | null,
-  next: CreativeToysPendingConversion | null,
-): CreativeToysPendingConversion | null {
-  if (!next) {
-    return current;
-  }
-
-  if (!current) {
-    return next;
-  }
-
-  if (current.event_id === next.event_id && next.sent && !current.sent) {
-    return next;
-  }
-
-  return getPendingConversionTimestamp(next) >= getPendingConversionTimestamp(current)
-    ? next
-    : current;
 }
 
 export function isValidCreativeToysEmail(value: string): boolean {
@@ -233,46 +103,25 @@ export function isValidCreativeToysEmail(value: string): boolean {
 }
 
 export function validateCreativeToysForm(values: CreativeToysFormValues): CreativeToysFormErrors {
-  const name = normalizeText(values.name);
-  const email = values.email.trim();
-  const errors: CreativeToysFormErrors = {};
-
-  if (name.length < 2) {
-    errors.name = 'Escribe tu nombre para poder registrarte.';
-  }
-
-  if (!email) {
-    errors.email = 'Escribe tu correo para recibir el acceso.';
-  } else if (!isValidCreativeToysEmail(email)) {
-    errors.email = 'Revisa que tu correo tenga un formato válido.';
-  }
-
-  return errors;
+  return validateCampaignForm(values, creativeToysCampaign);
 }
 
 export function getCreativeToysLandingPath(pathname: string): string {
-  return isAdsRoutePath(pathname)
-    ? withAdsRoutePrefix(CREATIVE_TOYS_ORGANIC_LANDING_PATH)
-    : CREATIVE_TOYS_ORGANIC_LANDING_PATH;
+  return getCampaignLandingPath(creativeToysCampaign, pathname);
 }
 
 export function getCreativeToysConfirmationPath(pathname: string): string {
-  return isAdsRoutePath(pathname)
-    ? withAdsRoutePrefix(CREATIVE_TOYS_ORGANIC_CONFIRMATION_PATH)
-    : CREATIVE_TOYS_ORGANIC_CONFIRMATION_PATH;
+  return getCampaignConfirmationPath(creativeToysCampaign, pathname);
 }
 
 export function getCreativeToysCaptureEndpoint(): string {
-  const configuredEndpoint = import.meta.env.VITE_CAPTURE_WEBHOOK_URL?.trim();
-
-  return configuredEndpoint || '/capture.php';
+  return getCampaignCaptureEndpoint();
 }
 
 export function getCreativeToysWhatsAppUrl(pathname: string): string {
   const specificWhatsAppUrl = isAdsRoutePath(pathname)
     ? readPublicEnvValue('VITE_WHATSAPP_GROUP_URL_ADS')
     : readPublicEnvValue('VITE_WHATSAPP_GROUP_URL_ORGANIC');
-
   return specificWhatsAppUrl || readPublicEnvValue('VITE_WHATSAPP_GROUP_URL');
 }
 
@@ -289,7 +138,6 @@ export function scheduleCreativeToysWhatsAppRedirect(
   const redirectTimer = browserWindow.setTimeout(() => {
     browserWindow.location.assign(whatsappUrl);
   }, CREATIVE_TOYS_WHATSAPP_REDIRECT_DELAY_MS);
-
   return () => browserWindow.clearTimeout(redirectTimer);
 }
 
@@ -297,7 +145,7 @@ export function isCreativeToysCaptureOk(
   responseOk: boolean,
   responseBody?: { ok?: unknown } | null,
 ): boolean {
-  return responseOk && responseBody?.ok !== false;
+  return isCampaignCaptureOk(responseOk, responseBody);
 }
 
 export function getCreativeToysNavigationTargetAfterCapture(
@@ -313,107 +161,35 @@ export function buildCreativeToysRegistrationSnapshot(
   registeredAt: string,
   sourcePath: string,
 ): CreativeToysRegistrationSnapshot {
-  return {
-    lead_name: normalizeText(name),
-    lead_email: email.trim().toLowerCase(),
-    registered_at: registeredAt,
-    source_path: sourcePath,
-  };
+  return buildRegistrationSnapshot(name, email, registeredAt, sourcePath);
 }
 
 export function createCreativeToysConversionEventId(): string {
-  const suffix =
-    typeof globalThis.crypto !== 'undefined' && typeof globalThis.crypto.randomUUID === 'function'
-      ? globalThis.crypto.randomUUID()
-      : Math.random().toString(36).slice(2, 12);
-
-  return `pame_500_extra_${Date.now()}_${suffix}`;
+  return createCampaignEventId(creativeToysCampaign);
 }
 
-export function buildCreativeToysPendingConversion({
-  captureOk,
-  confirmationPath,
-  currentPath,
-  email,
-  eventId,
-  name,
-  registeredAt,
-}: BuildCreativeToysPendingConversionInput): CreativeToysPendingConversion | null {
-  if (!captureOk || !isAdsRoutePath(currentPath)) {
-    return null;
-  }
-
-  return {
-    event_name: CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME,
-    event_id: eventId?.trim() || createCreativeToysConversionEventId(),
-    lead_email: email.trim().toLowerCase(),
-    lead_name: normalizeText(name),
-    source_path: currentPath,
-    confirmation_path: confirmationPath,
-    traffic_channel: 'ads',
-    capture_ok_at: registeredAt,
-    sent: false,
-  };
+export function buildCreativeToysPendingConversion(
+  input: BuildCreativeToysPendingConversionInput,
+): CreativeToysPendingConversion | null {
+  return buildPendingConversion(creativeToysCampaign, input);
 }
 
 export function isCreativeToysConfirmationPathForPendingConversion(
   pathname: string,
   pendingConversion: CreativeToysPendingConversion,
 ): boolean {
-  return (
-    pathname === pendingConversion.confirmation_path ||
-    pathname.startsWith(withAdsRoutePrefix(CREATIVE_TOYS_ORGANIC_CONFIRMATION_PATH))
-  );
+  return withoutTrailingSlash(pathname) === creativeToysCampaign.adsConfirmationPath &&
+    withoutTrailingSlash(pendingConversion.confirmation_path) === creativeToysCampaign.adsConfirmationPath;
 }
 
-export function buildCreativeToysRegistrationPayload({
-  name,
-  email,
-  attribution,
-  visitorPayload,
-  pageUrl,
-  currentPath,
-  userAgent,
-  submittedAt,
-}: BuildCreativeToysRegistrationPayloadInput): CreativeToysRegistrationPayload {
-  const normalizedName = normalizeText(name);
-  const normalizedEmail = email.trim().toLowerCase();
-  const attributionFields = buildAttributionEventFields(attribution);
-  const confirmationPath = getCreativeToysConfirmationPath(currentPath);
-  const trafficChannel: TrafficChannel = isAdsRoutePath(currentPath) ? 'ads' : 'organic';
-
-  return {
-    ...attributionFields,
-    name: normalizedName,
-    first_name: normalizedName,
-    email: normalizedEmail,
-    traffic_channel: trafficChannel,
-    capture_list_slug: CREATIVE_TOYS_LANDING_SLUG,
-    list: CREATIVE_TOYS_LANDING_SLUG,
-    landing_slug: CREATIVE_TOYS_LANDING_SLUG,
-    event_name: CREATIVE_TOYS_EVENT_NAME,
-    source: CREATIVE_TOYS_SOURCE,
-    page_url: pageUrl,
-    current_path: currentPath,
-    landing_path: attribution.landingPath,
-    landing_path_target: getCreativeToysLandingPath(currentPath),
-    confirmation_path: confirmationPath,
-    submitted_at: submittedAt,
-    attribution: {
-      ...attributionFields,
-      traffic_channel: trafficChannel,
-    },
-    ...visitorPayload,
-    user_agent: userAgent,
-  };
+export function buildCreativeToysRegistrationPayload(
+  input: BuildCreativeToysRegistrationPayloadInput,
+): CreativeToysRegistrationPayload {
+  return buildCampaignRegistrationPayload(creativeToysCampaign, input);
 }
 
 export function hasCreativeToysAdsTrackingConfig(config: CreativeToysTrackingConfig): boolean {
-  return Boolean(
-    config.metaPixelId?.trim() ||
-      config.capiWebhookUrl?.trim() ||
-      config.tiktokPixelId?.trim(),
-  );
+  return Boolean(config.metaPixelId?.trim() || config.capiWebhookUrl?.trim() || config.tiktokPixelId?.trim());
 }
 
 export function hasCreativeToysMetaConversionConfig(config: CreativeToysTrackingConfig): boolean {
@@ -425,39 +201,13 @@ export function shouldTrackCreativeToysCompleteRegistration(
   pendingConversion: CreativeToysPendingConversion | null,
   trackingConfig: CreativeToysTrackingConfig,
 ): boolean {
-  if (!pendingConversion) {
-    return false;
-  }
-
-  return (
-    pendingConversion.event_name === CREATIVE_TOYS_COMPLETE_REGISTRATION_EVENT_NAME &&
-    Boolean(pendingConversion.event_id.trim()) &&
-    pendingConversion.sent !== true &&
-    pendingConversion.traffic_channel === 'ads' &&
-    isAdsRoutePath(pathname) &&
-    isAdsRoutePath(pendingConversion.source_path) &&
-    isCreativeToysConfirmationPathForPendingConversion(pathname, pendingConversion) &&
-    hasCreativeToysMetaConversionConfig(trackingConfig)
-  );
+  return shouldTrackCampaignConversion(creativeToysCampaign, pathname, pendingConversion, trackingConfig);
 }
 
 export function storeCreativeToysPendingConversion(
   pendingConversion: CreativeToysPendingConversion,
 ): CreativeToysPendingConversion {
-  const serializedPendingConversion = JSON.stringify(pendingConversion);
-
-  writeStorageItem(
-    getBrowserStorage('localStorage'),
-    CREATIVE_TOYS_PENDING_CONVERSION_KEY,
-    serializedPendingConversion,
-  );
-  writeStorageItem(
-    getBrowserStorage('sessionStorage'),
-    CREATIVE_TOYS_PENDING_CONVERSION_KEY,
-    serializedPendingConversion,
-  );
-  inMemoryStorage.set(CREATIVE_TOYS_PENDING_CONVERSION_KEY, serializedPendingConversion);
-
+  storeCampaignPendingConversion(creativeToysCampaign, pendingConversion);
   return pendingConversion;
 }
 
@@ -465,50 +215,22 @@ export function readCreativeToysPendingConversion(
   storage?: Pick<Storage, 'getItem'>,
 ): CreativeToysPendingConversion | null {
   if (storage) {
-    return parseCreativeToysPendingConversion(
-      readStorageItem(storage, CREATIVE_TOYS_PENDING_CONVERSION_KEY),
-    );
+    try {
+      const raw = storage.getItem(CREATIVE_TOYS_PENDING_CONVERSION_KEY);
+      return raw ? JSON.parse(raw) as CreativeToysPendingConversion : null;
+    } catch {
+      return null;
+    }
   }
-
-  return [
-    parseCreativeToysPendingConversion(
-      readStorageItem(getBrowserStorage('localStorage'), CREATIVE_TOYS_PENDING_CONVERSION_KEY),
-    ),
-    parseCreativeToysPendingConversion(
-      readStorageItem(getBrowserStorage('sessionStorage'), CREATIVE_TOYS_PENDING_CONVERSION_KEY),
-    ),
-    parseCreativeToysPendingConversion(
-      inMemoryStorage.get(CREATIVE_TOYS_PENDING_CONVERSION_KEY) ?? null,
-    ),
-  ].reduce<CreativeToysPendingConversion | null>(chooseNewestPendingConversion, null);
+  return readCampaignPendingConversion(creativeToysCampaign);
 }
 
-export function writeCreativeToysRegistrationSnapshot(
-  snapshot: CreativeToysRegistrationSnapshot,
-): void {
-  const serializedSnapshot = JSON.stringify(snapshot);
-
-  writeStorageItem(getBrowserStorage('localStorage'), CREATIVE_TOYS_REGISTRATION_KEY, serializedSnapshot);
-  writeStorageItem(getBrowserStorage('sessionStorage'), CREATIVE_TOYS_REGISTRATION_KEY, serializedSnapshot);
-  inMemoryStorage.set(CREATIVE_TOYS_REGISTRATION_KEY, serializedSnapshot);
+export function writeCreativeToysRegistrationSnapshot(snapshot: CreativeToysRegistrationSnapshot): void {
+  writeCampaignSnapshot(creativeToysCampaign, snapshot);
 }
 
 export function readCreativeToysRegistrationSnapshot(): CreativeToysRegistrationSnapshot | null {
-  const storedSnapshot =
-    readStorageItem(getBrowserStorage('localStorage'), CREATIVE_TOYS_REGISTRATION_KEY) ??
-    readStorageItem(getBrowserStorage('sessionStorage'), CREATIVE_TOYS_REGISTRATION_KEY) ??
-    inMemoryStorage.get(CREATIVE_TOYS_REGISTRATION_KEY) ??
-    null;
-
-  if (!storedSnapshot) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(storedSnapshot) as CreativeToysRegistrationSnapshot;
-  } catch {
-    return null;
-  }
+  return readCampaignSnapshot(creativeToysCampaign);
 }
 
 export function summarizeCreativeToysTrackingResult(
@@ -533,23 +255,21 @@ export function markCreativeToysPendingConversionSent(
   sentAt: string,
   trackingResult?: CreativeToysTrackingResultSummary,
 ): CreativeToysPendingConversion {
-  const sentConversion = {
+  const sentConversion: CreativeToysPendingConversion = {
     ...pendingConversion,
     sent: true,
     sent_at: sentAt,
     tracking_result: trackingResult,
   };
-
   if (storage) {
-    writeStorageItem(
-      storage,
-      CREATIVE_TOYS_PENDING_CONVERSION_KEY,
-      JSON.stringify(sentConversion),
-    );
+    try {
+      storage.setItem(CREATIVE_TOYS_PENDING_CONVERSION_KEY, JSON.stringify(sentConversion));
+    } catch {
+      // Browser storage may be unavailable.
+    }
   } else {
-    storeCreativeToysPendingConversion(sentConversion);
+    storeCampaignPendingConversion(creativeToysCampaign, sentConversion);
   }
-
   return sentConversion;
 }
 
@@ -557,14 +277,5 @@ export function markCreativeToysPendingConversionAttemptFailed(
   pendingConversion: CreativeToysPendingConversion,
   attemptedAt: string,
 ): CreativeToysPendingConversion {
-  const failedConversion = {
-    ...pendingConversion,
-    attempts: (pendingConversion.attempts ?? 0) + 1,
-    last_attempt_at: attemptedAt,
-    sent: false,
-  };
-
-  storeCreativeToysPendingConversion(failedConversion);
-
-  return failedConversion;
+  return markCampaignConversionFailed(creativeToysCampaign, pendingConversion, attemptedAt);
 }
