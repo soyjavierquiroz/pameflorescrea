@@ -1,4 +1,6 @@
 import { renderToString } from 'react-dom/server';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import App from '../../App';
@@ -17,6 +19,8 @@ import {
   writeCampaignSnapshot,
 } from './campaignRegistration';
 import { creativeToysCampaign, retoCampaign } from './campaigns';
+import { getCreativeToysWhatsAppUrl } from './creativeToysRegistration';
+import { getCampaignWhatsAppUrl, scheduleWhatsAppRedirect, WHATSAPP_REDIRECT_DELAY_MS } from './whatsappGroup';
 
 function renderRoute(pathname: string): string {
   return renderToString(
@@ -34,7 +38,11 @@ function storageMock() {
   };
 }
 
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
+  vi.useRealTimers();
+});
 
 describe('campaign pages and form', () => {
   it.each(['/reto', '/reto/', '/x9m/reto', '/x9m/reto/'])('renders RETO at %s', (path) => {
@@ -53,7 +61,86 @@ describe('campaign pages and form', () => {
     const html = renderRoute(path);
     expect(html).toContain('Registro confirmado');
     expect(html).toContain('CONQUISTA LA JUGUETERÍA RENTABLE');
-    expect(html).not.toContain('Te llevaremos automáticamente al grupo');
+  });
+
+  it.each([
+    ['/confirmacion/reto', '/confirmacion/500-extra', 'organic'],
+    ['/confirmacion/reto/', '/confirmacion/500-extra', 'organic'],
+    ['/x9m/confirmacion/reto', '/x9m/confirmacion/500-extra', 'ads'],
+    ['/x9m/confirmacion/reto/', '/x9m/confirmacion/500-extra', 'ads'],
+  ])('shares the %s WhatsApp destination with 500-extra', (retoPath, legacyPath, group) => {
+    vi.stubEnv('VITE_WHATSAPP_GROUP_URL_ORGANIC', 'https://wa.local/organic');
+    vi.stubEnv('VITE_WHATSAPP_GROUP_URL_ADS', 'https://wa.local/ads');
+    vi.stubEnv('VITE_WHATSAPP_GROUP_URL', 'https://wa.local/fallback');
+
+    const url = `https://wa.local/${group}`;
+    expect(getCampaignWhatsAppUrl(retoPath)).toBe(url);
+    expect(getCreativeToysWhatsAppUrl(legacyPath)).toBe(url);
+    const retoHtml = renderRoute(retoPath);
+    if (group === 'organic') {
+      expect(retoHtml).toContain(`href="${url}"`);
+    } else {
+      expect(retoHtml).toContain('disabled=""');
+      expect(retoHtml).not.toContain('href="https://wa.local/');
+    }
+    expect(renderRoute(legacyPath)).toContain(`href="${url}"`);
+    expect(retoHtml).toContain('UNIRME AL GRUPO DE WHATSAPP');
+    expect(retoHtml).toContain('Te llevaremos automáticamente al grupo de WhatsApp en 5 segundos.');
+    expect(retoHtml).not.toContain(`href="https://wa.local/${group === 'ads' ? 'organic' : 'ads'}"`);
+  });
+
+  it('keeps the confirmation usable when no WhatsApp group is configured', () => {
+    vi.stubEnv('VITE_WHATSAPP_GROUP_URL_ORGANIC', '');
+    vi.stubEnv('VITE_WHATSAPP_GROUP_URL_ADS', '');
+    vi.stubEnv('VITE_WHATSAPP_GROUP_URL', '');
+
+    for (const path of ['/confirmacion/reto', '/x9m/confirmacion/reto']) {
+      const html = renderRoute(path);
+      expect(html).toContain('Registro confirmado');
+      expect(html).toContain('El enlace al grupo estará disponible pronto.');
+      expect(html).not.toContain('UNIRME AL GRUPO DE WHATSAPP');
+      expect(html).not.toContain('Te llevaremos automáticamente al grupo');
+    }
+  });
+
+  it('reads only the RETO snapshot on its confirmation routes', () => {
+    const localStorage = storageMock();
+    const sessionStorage = storageMock();
+    vi.stubGlobal('window', { localStorage, sessionStorage });
+
+    renderRoute('/confirmacion/reto');
+    renderRoute('/x9m/confirmacion/reto');
+
+    for (const storage of [localStorage, sessionStorage]) {
+      expect(storage.getItem).toHaveBeenCalledWith(retoCampaign.registrationStorageKey);
+      expect(storage.getItem).not.toHaveBeenCalledWith(creativeToysCampaign.registrationStorageKey);
+      expect(storage.getItem).not.toHaveBeenCalledWith(creativeToysCampaign.pendingConversionStorageKey);
+    }
+  });
+
+  it('waits five seconds after tracking readiness before redirecting to WhatsApp', () => {
+    vi.useFakeTimers();
+    const assign = vi.fn();
+    const browserWindow = { setTimeout, clearTimeout, location: { assign } };
+    const cleanup = scheduleWhatsAppRedirect(browserWindow, 'https://wa.local/ads');
+
+    expect(WHATSAPP_REDIRECT_DELAY_MS).toBe(5000);
+    vi.advanceTimersByTime(4999);
+    expect(assign).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1);
+    expect(assign).toHaveBeenCalledOnce();
+    cleanup();
+  });
+
+  it('uses the RETO tracking hook before its WhatsApp redirect and stores no group URL in the page', () => {
+    const source = readFileSync(join(process.cwd(), 'src/site/pages/RetoConfirmation.tsx'), 'utf8');
+    expect(source).toContain('useCampaignConfirmationTracking(retoCampaign, location.pathname)');
+    expect(source).toContain('getCampaignWhatsAppUrl(location.pathname)');
+    expect(source).toContain('if (!shouldAutoRedirect || !redirectReady)');
+    expect(source).toContain('!isAdsRoutePath(location.pathname) || redirectReady');
+    expect(source.indexOf('useCampaignConfirmationTracking(retoCampaign')).toBeLessThan(source.indexOf('return scheduleWhatsAppRedirect'));
+    expect(source).not.toContain('VITE_WHATSAPP_GROUP_URL');
+    expect(source).not.toContain('https://');
   });
 
   it('preserves the original two-field form and offer route', () => {

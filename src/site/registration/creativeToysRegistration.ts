@@ -1,6 +1,12 @@
 import type { AnalyticsEventResult } from '../../core/services/analytics';
-import { isAdsRoutePath, withoutTrailingSlash } from '../../core/routing/adsRoute';
+import { withoutTrailingSlash } from '../../core/routing/adsRoute';
 import { creativeToysCampaign } from './campaigns';
+import {
+  getCampaignWhatsAppUrl,
+  scheduleWhatsAppRedirect,
+  shouldAutoRedirectToWhatsApp,
+  WHATSAPP_REDIRECT_DELAY_MS,
+} from './whatsappGroup';
 import {
   buildCampaignRegistrationPayload,
   buildPendingConversion,
@@ -34,7 +40,7 @@ export const CREATIVE_TOYS_EVENT_NAME = creativeToysCampaign.eventName;
 export const CREATIVE_TOYS_SOURCE = creativeToysCampaign.source;
 export const CREATIVE_TOYS_ORGANIC_LANDING_PATH = creativeToysCampaign.organicLandingPath;
 export const CREATIVE_TOYS_ORGANIC_CONFIRMATION_PATH = creativeToysCampaign.organicConfirmationPath;
-export const CREATIVE_TOYS_WHATSAPP_REDIRECT_DELAY_MS = 5000;
+export const CREATIVE_TOYS_WHATSAPP_REDIRECT_DELAY_MS = WHATSAPP_REDIRECT_DELAY_MS;
 
 export const CREATIVE_TOYS_ASSETS = {
   hero: '/assets/pame-flores-crea/500-extra/hero-pame-creativa.webp?v=20260617-hero2',
@@ -93,11 +99,6 @@ export interface BuildCreativeToysPendingConversionInput {
   registeredAt: string;
 }
 
-function readPublicEnvValue(key: string): string {
-  const env = import.meta.env as Record<string, string | undefined>;
-  return env[key]?.trim() ?? '';
-}
-
 export function isValidCreativeToysEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
@@ -119,14 +120,11 @@ export function getCreativeToysCaptureEndpoint(): string {
 }
 
 export function getCreativeToysWhatsAppUrl(pathname: string): string {
-  const specificWhatsAppUrl = isAdsRoutePath(pathname)
-    ? readPublicEnvValue('VITE_WHATSAPP_GROUP_URL_ADS')
-    : readPublicEnvValue('VITE_WHATSAPP_GROUP_URL_ORGANIC');
-  return specificWhatsAppUrl || readPublicEnvValue('VITE_WHATSAPP_GROUP_URL');
+  return getCampaignWhatsAppUrl(pathname);
 }
 
 export function shouldAutoRedirectToCreativeToysWhatsApp(whatsappUrl: string): boolean {
-  return whatsappUrl.trim().length > 0;
+  return shouldAutoRedirectToWhatsApp(whatsappUrl);
 }
 
 export function scheduleCreativeToysWhatsAppRedirect(
@@ -135,10 +133,7 @@ export function scheduleCreativeToysWhatsAppRedirect(
   },
   whatsappUrl: string,
 ): () => void {
-  const redirectTimer = browserWindow.setTimeout(() => {
-    browserWindow.location.assign(whatsappUrl);
-  }, CREATIVE_TOYS_WHATSAPP_REDIRECT_DELAY_MS);
-  return () => browserWindow.clearTimeout(redirectTimer);
+  return scheduleWhatsAppRedirect(browserWindow, whatsappUrl);
 }
 
 export function isCreativeToysCaptureOk(

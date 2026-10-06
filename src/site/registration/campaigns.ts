@@ -26,7 +26,6 @@ export interface CampaignConfig {
     buttonText: string;
     footerText?: string;
   };
-  confirmationWhatsappUrl?: string;
 }
 
 export const creativeToysCampaign: CampaignConfig = {
@@ -78,5 +77,4 @@ export const retoCampaign: CampaignConfig = {
     emailPlaceholder: 'CORREO ELECTRÓNICO *',
     buttonText: '¡QUIERO MI LUGAR GRATIS!',
   },
-  confirmationWhatsappUrl: '',
 };

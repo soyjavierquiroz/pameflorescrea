@@ -1,16 +1,30 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CheckCircle2, MessageCircle } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
+import { isAdsRoutePath } from '../../core/routing/adsRoute';
 import { readCampaignSnapshot, type RegistrationSnapshot } from '../registration/campaignRegistration';
 import { retoCampaign } from '../registration/campaigns';
 import { useCampaignConfirmationTracking } from '../registration/useCampaignConfirmationTracking';
+import { getCampaignWhatsAppUrl, scheduleWhatsAppRedirect, shouldAutoRedirectToWhatsApp } from '../registration/whatsappGroup';
 import { RETO_ASSETS } from './retoAssets';
 
 export function RetoConfirmation() {
   const location = useLocation();
+  const whatsappGroupUrl = getCampaignWhatsAppUrl(location.pathname);
   const [snapshot] = useState<RegistrationSnapshot | null>(() => readCampaignSnapshot(retoCampaign));
-  useCampaignConfirmationTracking(retoCampaign, location.pathname);
+  const redirectReady = useCampaignConfirmationTracking(retoCampaign, location.pathname);
   const firstName = useMemo(() => snapshot?.lead_name.split(' ')[0] ?? '', [snapshot]);
+  const shouldAutoRedirect = shouldAutoRedirectToWhatsApp(whatsappGroupUrl);
+  const canLeaveForWhatsApp = !isAdsRoutePath(location.pathname) || redirectReady;
+  const whatsappCtaClassName = 'mt-5 inline-flex min-h-[54px] items-center gap-2 rounded-md bg-[#e0008a] px-5 py-3 text-sm font-black uppercase text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#ffd45d]';
+
+  useEffect(() => {
+    if (!shouldAutoRedirect || !redirectReady) {
+      return undefined;
+    }
+
+    return scheduleWhatsAppRedirect(window, whatsappGroupUrl);
+  }, [redirectReady, shouldAutoRedirect, whatsappGroupUrl]);
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[linear-gradient(135deg,#24104e_0%,#4b1596_54%,#c349a4_100%)] text-white">
@@ -29,12 +43,21 @@ export function RetoConfirmation() {
             Tu lugar en CONQUISTA LA JUGUETERÍA RENTABLE está reservado. Nos vemos el 20, 21, 22 y 25 de octubre a las 7 PM Ecuador / Colombia / Perú.
           </p>
           <div className="mt-8 rounded-lg border-2 border-dashed border-white/30 bg-[#2b1163] p-5">
-            {retoCampaign.confirmationWhatsappUrl ? (
-              <a className="inline-flex min-h-[54px] items-center gap-2 rounded-md bg-[#e0008a] px-5 py-3 text-sm font-black uppercase text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#ffd45d]" href={retoCampaign.confirmationWhatsappUrl}>
-                <MessageCircle aria-hidden="true" className="h-5 w-5" /> Unirme al grupo de WhatsApp
-              </a>
+            {whatsappGroupUrl ? (
+              <>
+                <p className="text-base font-bold leading-7">Te llevaremos automáticamente al grupo de WhatsApp en 5 segundos.</p>
+                {canLeaveForWhatsApp ? (
+                  <a className={whatsappCtaClassName} href={whatsappGroupUrl} target="_self">
+                    <MessageCircle aria-hidden="true" className="h-5 w-5" /> UNIRME AL GRUPO DE WHATSAPP
+                  </a>
+                ) : (
+                  <button className={`${whatsappCtaClassName} cursor-wait opacity-70`} disabled type="button">
+                    <MessageCircle aria-hidden="true" className="h-5 w-5" /> UNIRME AL GRUPO DE WHATSAPP
+                  </button>
+                )}
+              </>
             ) : (
-              <p className="text-base font-bold leading-7">Pronto recibirás más información sobre las clases y cómo acceder a ellas.</p>
+              <p className="text-base font-bold leading-7">El enlace al grupo estará disponible pronto.</p>
             )}
           </div>
         </div>
