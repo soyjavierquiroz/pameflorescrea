@@ -19,10 +19,12 @@ export interface CampaignConfig {
   includeCampaignId: boolean;
   form: {
     ariaLabel: string;
+    labelMode: 'visible' | 'sr-only';
     nameLabel: string;
     namePlaceholder: string;
     emailLabel: string;
     emailPlaceholder: string;
+    whatsappPlaceholder?: string;
     buttonText: string;
     footerText?: string;
   };
@@ -45,6 +47,7 @@ export const creativeToysCampaign: CampaignConfig = {
   includeCampaignId: false,
   form: {
     ariaLabel: 'Registro gratis Semana del Emprendimiento con Juguetes Creativos',
+    labelMode: 'sr-only',
     nameLabel: 'Nombre',
     namePlaceholder: 'Tu nombre',
     emailLabel: 'Correo',
@@ -71,10 +74,12 @@ export const retoCampaign: CampaignConfig = {
   includeCampaignId: true,
   form: {
     ariaLabel: 'Registro gratis Conquista la Juguetería Rentable',
+    labelMode: 'sr-only',
     nameLabel: 'NOMBRE *',
     namePlaceholder: 'NOMBRE *',
     emailLabel: 'CORREO ELECTRÓNICO *',
     emailPlaceholder: 'CORREO ELECTRÓNICO *',
+    whatsappPlaceholder: 'WHATSAPP',
     buttonText: '¡QUIERO MI LUGAR GRATIS!',
   },
 };

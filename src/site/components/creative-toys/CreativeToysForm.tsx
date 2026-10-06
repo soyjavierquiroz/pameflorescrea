@@ -28,6 +28,9 @@ interface CreativeToysFormProps {
 }
 
 export function CreativeToysForm({ id, campaign = creativeToysCampaign }: CreativeToysFormProps) {
+  const labelClassName = campaign.form.labelMode === 'sr-only'
+    ? 'sr-only'
+    : 'mb-2 block text-sm font-black text-white';
   const location = useLocation();
   const navigate = useNavigate();
   const attribution = useMemo(() => resolveCurrentAttribution(location), [location]);
@@ -127,7 +130,7 @@ export function CreativeToysForm({ id, campaign = creativeToysCampaign }: Creati
       onSubmit={handleSubmit}
     >
       <div>
-        <label className={campaign.whatsapp === 'hidden' ? 'sr-only' : 'mb-2 block text-sm font-black text-white'} htmlFor={`${id}-name`}>
+        <label className={labelClassName} htmlFor={`${id}-name`}>
           {campaign.form.nameLabel}
         </label>
         <input
@@ -148,7 +151,7 @@ export function CreativeToysForm({ id, campaign = creativeToysCampaign }: Creati
       </div>
 
       <div>
-        <label className={campaign.whatsapp === 'hidden' ? 'sr-only' : 'mb-2 block text-sm font-black text-white'} htmlFor={`${id}-email`}>
+        <label className={labelClassName} htmlFor={`${id}-email`}>
           {campaign.form.emailLabel}
         </label>
         <input
@@ -183,8 +186,8 @@ export function CreativeToysForm({ id, campaign = creativeToysCampaign }: Creati
           }}
           error={errors.whatsapp}
           disabled={isSubmitting}
-          placeholder="Tu número de WhatsApp"
-          labelClassName="mb-2 block text-sm font-black text-white"
+          placeholder={campaign.form.whatsappPlaceholder ?? 'Tu número de WhatsApp'}
+          labelClassName={labelClassName}
           errorTextClassName="mt-2 text-sm font-semibold text-[#ffd45d]"
           requiredMarkClassName="ml-1 text-white"
           phoneInputClassName="h-[52px] w-full rounded-md border border-[#d9c9ee] bg-white text-[#24104e] focus-within:border-[#23d7df] focus-within:ring-2 focus-within:ring-[#23d7df]/30 [&_.PhoneInputCountry]:border-r [&_.PhoneInputCountry]:border-[#d9c9ee] [&_.PhoneInputInput]:bg-white [&_.PhoneInputInput]:text-[#24104e]"
