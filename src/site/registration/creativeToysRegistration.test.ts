@@ -143,6 +143,8 @@ describe('creative toys registration helpers', () => {
       click_ids: { fbclid: 'paid-click' },
       should_track_ads: false,
     });
+    expect(payload).not.toHaveProperty('whatsapp');
+    expect(payload).not.toHaveProperty('phone');
   });
 
   it('builds ads payload and confirmation path under /x9m', () => {

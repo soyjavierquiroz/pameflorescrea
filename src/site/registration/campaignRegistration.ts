@@ -51,6 +51,7 @@ export interface CampaignRegistrationPayload extends VisitorPayload, Attribution
   first_name: string;
   email: string;
   whatsapp?: string;
+  phone?: string;
   campaign_id?: string;
   traffic_channel: TrafficChannel;
   capture_list_slug: string;
@@ -143,6 +144,7 @@ export function buildCampaignRegistrationPayload(
     first_name: name,
     email,
     ...(campaign.whatsapp !== 'hidden' && whatsapp ? { whatsapp } : {}),
+    ...(campaign.whatsapp !== 'hidden' && whatsapp && isValidWhatsapp(whatsapp) ? { phone: whatsapp } : {}),
     ...(campaign.includeCampaignId ? { campaign_id: campaign.campaignId } : {}),
     traffic_channel: trafficChannel,
     capture_list_slug: campaign.captureListSlug,

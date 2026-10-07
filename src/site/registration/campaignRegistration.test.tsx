@@ -180,18 +180,33 @@ describe('campaign registration isolation', () => {
         submittedAt: '2026-10-05T00:00:00.000Z',
       });
       expect(payload).toMatchObject({
-        name: 'Pame Flores', email: 'pame@example.com', whatsapp: '+593991234567',
+        name: 'Pame Flores', email: 'pame@example.com', whatsapp: '+593991234567', phone: '+593991234567',
         campaign_id: 'reto', landing_slug: 'reto', capture_list_slug: 'reto', list: 'reto',
         event_name: 'CONQUISTA LA JUGUETERÍA RENTABLE',
         traffic_channel: path.startsWith('/x9m') ? 'ads' : 'organic',
         confirmation_path: path.startsWith('/x9m') ? '/x9m/confirmacion/reto' : '/confirmacion/reto',
         utms: { utm_source: 'example' }, click_ids: { fbclid: 'test' },
       });
-      expect(payload).not.toHaveProperty('phone');
+      expect(payload.phone).toBe(payload.whatsapp);
+      expect(payload.phone).toMatch(/^\+[1-9]\d{1,14}$/);
       expect(payload).not.toHaveProperty('mobile');
       expect(payload.visitor).toHaveProperty('country_calling_code');
     }
     expect(getCampaignConfirmationPath(retoCampaign, '/x9m/reto/')).toBe('/x9m/confirmacion/reto');
+  });
+
+  it('does not add phone without a valid, visible WhatsApp number', () => {
+    const baseInput = {
+      name: 'Pame Flores', email: 'pame@example.com',
+      attribution: resolveAttribution({ url: '/reto', adsRoutePrefix: '/x9m' }),
+      visitorPayload: buildVisitorPayload(null), pageUrl: 'https://example.test/reto',
+      currentPath: '/reto', userAgent: 'test', submittedAt: '2026-10-05T00:00:00.000Z',
+    };
+    expect(buildCampaignRegistrationPayload(retoCampaign, { ...baseInput, whatsapp: '' })).not.toHaveProperty('phone');
+    expect(buildCampaignRegistrationPayload(retoCampaign, { ...baseInput, whatsapp: '+123' })).not.toHaveProperty('phone');
+    const hidden = buildCampaignRegistrationPayload(creativeToysCampaign, { ...baseInput, whatsapp: '+593991234567' });
+    expect(hidden).not.toHaveProperty('whatsapp');
+    expect(hidden).not.toHaveProperty('phone');
   });
 
   it('stores snapshots and pending conversions under independent keys', () => {
