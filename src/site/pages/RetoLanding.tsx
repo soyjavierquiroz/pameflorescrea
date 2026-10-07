@@ -98,8 +98,10 @@ export function RetoLanding() {
               <span className="block whitespace-nowrap md:inline md:whitespace-normal">CONQUISTA LA</span><span className="block max-w-[9.5em] text-[#ffd45d]"><span className="block md:inline">JUGUETERÍA</span>{' '}<span className="block md:inline">RENTABLE</span></span>
             </h1>
             <p className="mt-2 max-w-2xl text-[17px] font-black leading-[1.22] md:mt-5 md:text-2xl md:leading-8">Aprende la ruta para aumentar tus ingresos hasta $500 dólares mensuales creando libros sensoriales y juguetes educativos.</p>
-            <p className="mt-3 hidden max-w-2xl text-base font-bold leading-6 text-white/86 sm:mt-4 sm:text-lg sm:leading-7 md:block">Aunque empieces desde cero, tengas poco tiempo y quieras seguir estando presente para tu familia.</p>
-            <p className="mt-3 hidden max-w-2xl text-base font-bold leading-6 text-white/86 sm:mt-4 sm:text-lg sm:leading-7 md:block">Dale dirección a tu creatividad y transforma tu experiencia en un proyecto rentable antes que acabe el 2026.</p>
+            <div className="mt-2 max-w-2xl space-y-1 text-[clamp(22px,6vw,28px)] font-bold leading-[1.1] text-white md:mt-4 md:space-y-2 md:text-[clamp(25px,2vw,28px)]" style={{ fontFamily: '"Caveat", cursive' }}>
+              <p>Aunque empieces desde cero, tengas poco tiempo y quieras seguir estando presente para tu familia.</p>
+              <p>Dale dirección a tu creatividad y transforma tu experiencia en un proyecto rentable antes que acabe el 2026.</p>
+            </div>
             <div className="mt-3 min-w-0 rounded-lg border-2 border-dashed border-white/26 bg-[#2b1163]/95 p-4 shadow-[0_20px_54px_rgba(36,16,78,0.35)] sm:max-w-xl sm:p-5 md:mt-7">
               <h2 className="mb-3 text-xl font-black sm:mb-4">Regístrate gratis aquí abajo</h2>
               <CreativeToysForm id="reto-hero-form" campaign={retoCampaign} />
@@ -118,10 +120,6 @@ export function RetoLanding() {
       <section className="bg-[#f8f1ff] text-[#24104e]">
         <div className="mx-auto w-full max-w-6xl px-5 py-14 sm:px-8 lg:px-10 lg:py-20">
           <div className="max-w-3xl">
-            <div className="mb-8 max-w-2xl space-y-3 text-base font-semibold leading-7 text-[#5b4a77] md:hidden">
-              <p className="font-bold text-[#4b1596]">Aunque empieces desde cero, tengas poco tiempo y quieras seguir estando presente para tu familia.</p>
-              <p>Dale dirección a tu creatividad y transforma tu experiencia en un proyecto rentable antes que acabe el 2026.</p>
-            </div>
             <h2 className="text-3xl font-black leading-tight sm:text-4xl">¿Te gustaría generar más ingresos, pero sin tener que elegir entre tu familia y tus propios sueños?</h2>
           </div>
           <div className="mt-8">
