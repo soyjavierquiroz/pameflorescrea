@@ -8,6 +8,7 @@ import {
 } from '../../core/services/analytics';
 import type { VisitorPayload } from '../../core/visitor/visitorPayload';
 import type { CampaignConfig } from './campaigns';
+import { resolveCampaignCrmAttribution, type CrmAttribution } from './campaignCrmAttribution';
 
 export const COMPLETE_REGISTRATION_EVENT_NAME = 'CompleteRegistration';
 
@@ -46,7 +47,7 @@ export interface PendingConversion {
   tracking_result?: { metaBrowserSent: boolean; capiSent: boolean; event_id: string };
 }
 
-export interface CampaignRegistrationPayload extends VisitorPayload, AttributionEventFields {
+export interface CampaignRegistrationPayload extends VisitorPayload, AttributionEventFields, CrmAttribution {
   name: string;
   first_name: string;
   email: string;
@@ -76,6 +77,7 @@ export interface BuildRegistrationInput extends CampaignFormValues {
   currentPath: string;
   userAgent: string;
   submittedAt: string;
+  referrer?: string;
 }
 
 type ReadStorage = Pick<Storage, 'getItem'>;
@@ -154,13 +156,14 @@ export function buildCampaignRegistrationPayload(
     source: campaign.source,
     page_url: input.pageUrl,
     current_path: input.currentPath,
-    landing_path: input.attribution.landingPath,
+    landing_path: new URL(input.currentPath, 'https://pameflorescrea.com').pathname.slice(0, 512),
     landing_path_target: getCampaignLandingPath(campaign, input.currentPath),
     confirmation_path: getCampaignConfirmationPath(campaign, input.currentPath),
     submitted_at: input.submittedAt,
     attribution: { ...attributionFields, traffic_channel: trafficChannel },
     ...input.visitorPayload,
     user_agent: input.userAgent,
+    ...resolveCampaignCrmAttribution(campaign.campaignId, input.pageUrl, input.referrer ?? (typeof document === 'undefined' ? '' : document.referrer)),
   };
 }
 

@@ -1,4 +1,4 @@
-import { type ChangeEvent, type FormEvent, useMemo, useState } from 'react';
+import { type ChangeEvent, type FormEvent, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { resolveCurrentAttribution } from '../../../core/attribution';
 import { useVisitor } from '../../../core/visitor/VisitorContext';
@@ -20,6 +20,7 @@ import {
   acquireRegistrationSubmitLock,
   releaseRegistrationSubmitLock,
 } from '../../registration/registrationSubmitLock';
+import { resolveCampaignCrmAttribution } from '../../registration/campaignCrmAttribution';
 import { CreativeToysButton } from './CreativeToysButton';
 
 interface CreativeToysFormProps {
@@ -34,6 +35,9 @@ export function CreativeToysForm({ id, campaign = creativeToysCampaign }: Creati
   const location = useLocation();
   const navigate = useNavigate();
   const attribution = useMemo(() => resolveCurrentAttribution(location), [location]);
+  useEffect(() => {
+    resolveCampaignCrmAttribution(campaign.campaignId, `${location.pathname}${location.search}`, document.referrer);
+  }, [campaign.campaignId, location.pathname, location.search]);
   const { visitorData } = useVisitor();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');

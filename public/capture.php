@@ -616,6 +616,9 @@ foreach ($standardFieldMap as $field => $value) {
     }
 }
 
+require_once __DIR__ . '/capture-crm.php';
+$payload = capture_apply_crm($payload);
+
 $attributionFields = [
     'traffic_channel',
     'capture_route',

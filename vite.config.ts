@@ -221,7 +221,10 @@ function staticAdsEntryPlugin(mode: string) {
         writeFileSync(targetPath, entry.html);
       }
 
-      rmSync(join(process.cwd(), 'dist', 'capture.php'), { force: true });
+      // Server-side relay files are released together, separately from frontend rsync.
+      for (const file of ['capture.php', 'capture-crm.php']) {
+        rmSync(join(process.cwd(), 'dist', file), { force: true });
+      }
     },
   };
 }
