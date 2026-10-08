@@ -70,7 +70,7 @@ export const retoCampaign: CampaignConfig = {
   registrationStorageKey: 'pame_reto_registration_v1',
   pendingConversionStorageKey: 'pame_reto_pending_conversion_v1',
   eventIdPrefix: 'pame_reto_',
-  whatsapp: 'required',
+  whatsapp: 'hidden',
   includeCampaignId: true,
   form: {
     ariaLabel: 'Registro gratis Conquista la Juguetería Rentable',

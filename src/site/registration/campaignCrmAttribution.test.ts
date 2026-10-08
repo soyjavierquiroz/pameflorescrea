@@ -154,7 +154,7 @@ describe('campaign CRM attribution', () => {
     });
     expect(payload.traffic_channel).toBe(channel);
     expect(attribution.shouldTrackAds).toBe(track);
-    expect(payload.phone).toBe(payload.whatsapp);
+    for (const key of ['whatsapp', 'phone', 'mobile']) expect(payload).not.toHaveProperty(key);
     if (!track) {
       expect(payload).toMatchObject({ utm_medium: 'paid_social', fbclid: 'TEST', referrer_source: 'facebook' });
       expect(buildPendingConversion(retoCampaign, { captureOk: true, currentPath: '/reto', confirmationPath: '/confirmacion/reto', name: 'Pame', email: 'pame@example.com', registeredAt: 'now' })).toBeNull();

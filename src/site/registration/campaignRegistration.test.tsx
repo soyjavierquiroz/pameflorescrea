@@ -17,6 +17,7 @@ import {
   storeCampaignPendingConversion,
   validateCampaignForm,
   writeCampaignSnapshot,
+  submitCampaignRegistration,
 } from './campaignRegistration';
 import { creativeToysCampaign, retoCampaign } from './campaigns';
 import { getCreativeToysWhatsAppUrl } from './creativeToysRegistration';
@@ -51,7 +52,13 @@ describe('campaign pages and form', () => {
     expect(html).toContain('JUGUETERÍA RENTABLE');
     expect(html).toContain('NOMBRE *');
     expect(html).toContain('CORREO ELECTRÓNICO *');
-    expect(html).toContain('WhatsApp');
+    for (const id of ['reto-hero-form', 'reto-final-form']) {
+      const form = html.match(new RegExp(`<form[^>]*id="${id}"[\\s\\S]*?</form>`))![0];
+      expect(form).toContain('NOMBRE *');
+      expect(form).toContain('CORREO ELECTRÓNICO *');
+      expect(form.match(/<input\b/g)).toHaveLength(2);
+      expect(form).not.toMatch(/whatsapp|PhoneInput|type="tel"|<select/i);
+    }
     expect(html).toContain('¡QUIERO MI LUGAR GRATIS!');
     expect(html).toContain('reto-hero-form');
     expect(html).toContain('reto-final-form');
@@ -155,18 +162,21 @@ describe('campaign pages and form', () => {
     expect(renderRoute('/x9m/oferta')).toContain('397 USD');
   });
 
-  it('requires a valid international WhatsApp for RETO and supports optional mode', () => {
+  it('validates RETO and 500-extra using only name and email, ignoring hidden WhatsApp', () => {
+    for (const campaign of [retoCampaign, creativeToysCampaign]) {
+      for (const whatsapp of [undefined, '', '+123', '+593991234567']) {
+        expect(validateCampaignForm({ name: 'Pame', email: 'pame@example.com', whatsapp }, campaign)).toEqual({});
+      }
+      expect(validateCampaignForm({ name: '', email: 'invalid' }, campaign)).toMatchObject({ name: expect.any(String), email: expect.any(String) });
+    }
     const values = { name: 'Pame', email: 'pame@example.com', whatsapp: '' };
-    expect(validateCampaignForm(values, retoCampaign).whatsapp).toBeTruthy();
-    expect(validateCampaignForm({ ...values, whatsapp: '+123' }, retoCampaign).whatsapp).toBeTruthy();
-    expect(validateCampaignForm({ ...values, whatsapp: '+593991234567' }, retoCampaign).whatsapp).toBeUndefined();
-    expect(validateCampaignForm(values, { ...retoCampaign, whatsapp: 'optional' }).whatsapp).toBeUndefined();
-    expect(validateCampaignForm(values, creativeToysCampaign).whatsapp).toBeUndefined();
+    expect(validateCampaignForm(values, { ...retoCampaign, whatsapp: 'required' }).whatsapp).toBeTruthy();
+    expect(validateCampaignForm(values, { ...retoCampaign, whatsapp: 'optional' })).toEqual({});
   });
 });
 
 describe('campaign registration isolation', () => {
-  it('builds an isolated RETO payload with WhatsApp and channel paths', () => {
+  it('builds an isolated RETO payload without phone and preserves channel paths', () => {
     for (const path of ['/reto', '/x9m/reto']) {
       const payload = buildCampaignRegistrationPayload(retoCampaign, {
         name: '  Pame  Flores ',
@@ -180,33 +190,55 @@ describe('campaign registration isolation', () => {
         submittedAt: '2026-10-05T00:00:00.000Z',
       });
       expect(payload).toMatchObject({
-        name: 'Pame Flores', email: 'pame@example.com', whatsapp: '+593991234567', phone: '+593991234567',
+        name: 'Pame Flores', email: 'pame@example.com',
         campaign_id: 'reto', landing_slug: 'reto', capture_list_slug: 'reto', list: 'reto',
         event_name: 'CONQUISTA LA JUGUETERÍA RENTABLE',
         traffic_channel: path.startsWith('/x9m') ? 'ads' : 'organic',
         confirmation_path: path.startsWith('/x9m') ? '/x9m/confirmacion/reto' : '/confirmacion/reto',
         utms: { utm_source: 'example' }, click_ids: { fbclid: 'test' },
       });
-      expect(payload.phone).toBe(payload.whatsapp);
-      expect(payload.phone).toMatch(/^\+[1-9]\d{1,14}$/);
+      expect(payload).not.toHaveProperty('whatsapp');
+      expect(payload).not.toHaveProperty('phone');
       expect(payload).not.toHaveProperty('mobile');
       expect(payload.visitor).toHaveProperty('country_calling_code');
     }
     expect(getCampaignConfirmationPath(retoCampaign, '/x9m/reto/')).toBe('/x9m/confirmacion/reto');
   });
 
-  it('does not add phone without a valid, visible WhatsApp number', () => {
-    const baseInput = {
-      name: 'Pame Flores', email: 'pame@example.com',
-      attribution: resolveAttribution({ url: '/reto', adsRoutePrefix: '/x9m' }),
-      visitorPayload: buildVisitorPayload(null), pageUrl: 'https://example.test/reto',
-      currentPath: '/reto', userAgent: 'test', submittedAt: '2026-10-05T00:00:00.000Z',
-    };
-    expect(buildCampaignRegistrationPayload(retoCampaign, { ...baseInput, whatsapp: '' })).not.toHaveProperty('phone');
-    expect(buildCampaignRegistrationPayload(retoCampaign, { ...baseInput, whatsapp: '+123' })).not.toHaveProperty('phone');
-    const hidden = buildCampaignRegistrationPayload(creativeToysCampaign, { ...baseInput, whatsapp: '+593991234567' });
-    expect(hidden).not.toHaveProperty('whatsapp');
-    expect(hidden).not.toHaveProperty('phone');
+  it.each([
+    [retoCampaign, '/reto'], [retoCampaign, '/x9m/reto'],
+    [creativeToysCampaign, '/500-extra'], [creativeToysCampaign, '/x9m/500-extra'],
+  ])('submits %s at %s without any phone properties and preserves CRM attribution', async (campaign, path) => {
+    const query = '?utm_source=email&utm_medium=newsletter&utm_campaign=campaign&utm_content=banner&utm_term=craft&fbclid=F&gclid=G&ttclid=T';
+    const url = `https://pameflorescrea.com${path}${query}`;
+    const fields = { utm_source: 'email', utm_medium: 'newsletter', utm_campaign: 'campaign', utm_content: 'banner', utm_term: 'craft' };
+    const payload = buildCampaignRegistrationPayload(campaign, {
+      name: 'Pame', email: 'pame@example.com',
+      attribution: resolveAttribution({ url, adsRoutePrefix: '/x9m' }),
+      visitorPayload: buildVisitorPayload(null), pageUrl: url,
+      currentPath: path, userAgent: 'test', submittedAt: '2026-10-08T00:00:00.000Z',
+      referrer: 'https://www.youtube.com/watch?v=test',
+    });
+    expect(validateCampaignForm({ name: payload.name, email: payload.email }, campaign)).toEqual({});
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, clone: () => ({ json: async () => ({ ok: true }) }) });
+    vi.stubGlobal('fetch', fetchMock);
+    await submitCampaignRegistration(payload);
+    const sent = JSON.parse(fetchMock.mock.calls[0][1].body);
+    for (const key of ['whatsapp', 'phone', 'mobile']) expect(sent).not.toHaveProperty(key);
+    expect(sent).toMatchObject({
+      ...fields, fbclid: 'F', gclid: 'G', ttclid: 'T', landing_path: path,
+      referrer_source: 'youtube', referrer_domain: 'youtube.com', referrer_origin: 'https://www.youtube.com',
+      utms: fields, click_ids: { fbclid: 'F', gclid: 'G', ttclid: 'T' },
+      attribution: { traffic_channel: path.startsWith('/x9m') ? 'ads' : 'organic', utms: fields, click_ids: { fbclid: 'F', gclid: 'G', ttclid: 'T' } },
+    });
+    for (const whatsapp of ['', '+123', '+593991234567']) {
+      const ignored = buildCampaignRegistrationPayload(campaign, {
+        name: 'Pame', email: 'pame@example.com', whatsapp,
+        attribution: resolveAttribution({ url }), visitorPayload: buildVisitorPayload(null),
+        pageUrl: url, currentPath: path, userAgent: 'test', submittedAt: 'now',
+      });
+      for (const key of ['whatsapp', 'phone', 'mobile']) expect(ignored).not.toHaveProperty(key);
+    }
   });
 
   it('stores snapshots and pending conversions under independent keys', () => {
