@@ -103,7 +103,7 @@ export function RetoLanding() {
               <Sparkles aria-hidden="true" className="h-3 w-3 shrink-0 md:h-4 md:w-4" /> RETO VIRTUAL GRATUITO DE 4 CLASES
             </p>
             <p className="mt-2 text-xs font-semibold text-[#7ef8f0] md:mt-5 md:text-base md:font-black">20, 21, 22 y 25 de octubre</p>
-            <h1 className="mt-3 min-w-0 text-[clamp(2.5rem,11.25vw,2.875rem)] font-black leading-[0.98] tracking-[-0.07em] md:mt-3 md:text-[clamp(2.2rem,6vw,3.5rem)] md:leading-[1.02] md:tracking-tight">
+            <h1 className="mt-3 min-w-0 text-[clamp(2rem,8.9vw,2.3125rem)] font-black leading-[0.98] tracking-[-0.07em] md:mt-3 md:text-[clamp(2.2rem,6vw,3.5rem)] md:leading-[1.02] md:tracking-tight">
               <span className="block whitespace-nowrap md:inline md:whitespace-normal">CONQUISTA LA</span><span className="block max-w-[9.5em] text-[#ffd45d]"><span className="block md:inline">JUGUETERÍA</span>{' '}<span className="block md:inline">RENTABLE</span></span>
             </h1>
             <p className="mt-4 max-w-2xl text-[clamp(16px,4.45vw,19px)] font-bold leading-[1.35] md:font-black text-white md:mt-5 md:text-[28px] md:leading-[1.3]">
