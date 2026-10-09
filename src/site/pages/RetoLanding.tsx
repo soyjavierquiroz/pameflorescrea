@@ -81,6 +81,15 @@ function DecorativeLayer({ hideMobileTopIcons = false }: { hideMobileTopIcons?: 
 export function RetoLanding() {
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#2b1163] text-white">
+      <style>{`
+        @font-face {
+          font-family: 'Montserrat Reto Support';
+          font-style: normal;
+          font-weight: 400;
+          font-display: swap;
+          src: url('https://fonts.gstatic.com/s/montserrat/v31/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCtr6Ew-.ttf') format('truetype');
+        }
+      `}</style>
       <section className="relative isolate overflow-hidden bg-[linear-gradient(135deg,#24104e_0%,#4b1596_44%,#c349a4_100%)]">
         <DecorativeLayer hideMobileTopIcons />
         <div className="absolute inset-x-0 top-0 h-2 bg-[#ffd45d]" aria-hidden="true" />
@@ -90,28 +99,28 @@ export function RetoLanding() {
               <img alt="Pame Flores Crea" className="h-14 w-14 rounded-md border-2 border-dashed border-[#ffd45d] bg-white object-contain p-1 shadow-lg" src={RETO_ASSETS.logo} width="56" height="56" />
               <div><p className="text-sm font-black uppercase">Pame Flores Crea</p><p className="text-xs font-semibold text-white/74">Juguetes creativos</p></div>
             </div>
-            <p className="mt-0 inline-flex w-fit items-center gap-2 rounded-md border-2 border-dashed border-[#ffd45d]/70 bg-[#ffd45d]/16 px-3 py-1.5 text-[11px] font-black uppercase leading-4 text-[#fff0ad] shadow-sm sm:text-xs md:mt-8 md:py-2">
-              <Sparkles aria-hidden="true" className="h-4 w-4 shrink-0" /> RETO VIRTUAL GRATUITO DE 4 CLASES
+            <p className="mt-0 inline-flex w-fit items-center gap-1.5 rounded-md border border-dashed border-[#ffd45d]/70 bg-[#ffd45d]/16 px-2 py-1 text-[10px] font-semibold uppercase leading-3 text-[#fff0ad] md:mt-8 md:gap-2 md:border-2 md:px-3 md:py-2 md:text-xs md:font-black md:leading-4 md:shadow-sm">
+              <Sparkles aria-hidden="true" className="h-3 w-3 shrink-0 md:h-4 md:w-4" /> RETO VIRTUAL GRATUITO DE 4 CLASES
             </p>
-            <p className="mt-2 text-sm font-black text-[#7ef8f0] md:mt-5 md:text-base">20, 21, 22 y 25 de octubre</p>
-            <h1 className="mt-1 min-w-0 text-[clamp(2.625rem,11.75vw,3rem)] font-black leading-[0.98] tracking-[-0.07em] md:mt-3 md:text-[clamp(2.2rem,6vw,3.5rem)] md:leading-[1.02] md:tracking-tight">
+            <p className="mt-2 text-xs font-semibold text-[#7ef8f0] md:mt-5 md:text-base md:font-black">20, 21, 22 y 25 de octubre</p>
+            <h1 className="mt-3 min-w-0 text-[clamp(2.5rem,11.25vw,2.875rem)] font-black leading-[0.98] tracking-[-0.07em] md:mt-3 md:text-[clamp(2.2rem,6vw,3.5rem)] md:leading-[1.02] md:tracking-tight">
               <span className="block whitespace-nowrap md:inline md:whitespace-normal">CONQUISTA LA</span><span className="block max-w-[9.5em] text-[#ffd45d]"><span className="block md:inline">JUGUETERÍA</span>{' '}<span className="block md:inline">RENTABLE</span></span>
             </h1>
-            <p className="mt-3 max-w-2xl text-[clamp(20px,5.5vw,24px)] font-black leading-[1.3] text-white md:mt-5 md:text-[28px] md:leading-[1.3]">
+            <p className="mt-4 max-w-2xl text-[clamp(16px,4.45vw,19px)] font-bold leading-[1.35] md:font-black text-white md:mt-5 md:text-[28px] md:leading-[1.3]">
               Aprende la ruta para{' '}
               <span className="text-[#ffd45d]">aumentar tus ingresos</span>{' '}
               hasta $500 dólares mensuales{' '}
               <span className="text-[#ffd45d]">creando libros sensoriales</span>{' '}
               y juguetes educativos.
             </p>
-            <p className="mt-3 max-w-2xl text-[clamp(26px,7vw,30px)] font-bold leading-[1.15] text-white md:mt-4 md:text-[30px]" style={{ fontFamily: '"Caveat", cursive' }}>
+            <p className="mx-auto mt-5 w-full max-w-[17rem] text-center text-[22px] font-bold leading-[1.2] text-white sm:max-w-sm md:mx-0 md:mt-5 md:max-w-md md:text-left md:text-[26px]" style={{ fontFamily: '"Caveat", cursive' }}>
               Aunque empieces desde cero, tengas poco tiempo y quieras seguir estando presente para tu familia.
             </p>
-            <p className="mt-3 max-w-2xl text-base font-semibold leading-6 text-white md:text-lg md:leading-7">
+            <p className="mt-4 max-w-2xl text-[13px] font-normal leading-5 text-white md:mt-4 md:text-base md:leading-6" style={{ fontFamily: '"Montserrat Reto Support", Montserrat, sans-serif' }}>
               Dale dirección a tu creatividad y transforma tu experiencia en un proyecto rentable antes que acabe el 2026
             </p>
-            <div className="mt-3 min-w-0 rounded-lg border-2 border-dashed border-white/26 bg-[#2b1163]/95 p-4 shadow-[0_20px_54px_rgba(36,16,78,0.35)] sm:max-w-xl sm:p-5 md:mt-7">
-              <h2 className="mb-3 text-xl font-black sm:mb-4">Regístrate gratis aquí abajo</h2>
+            <div className="mt-5 min-w-0 rounded-lg border-2 border-dashed border-white/26 bg-[#2b1163]/95 p-4 shadow-[0_20px_54px_rgba(36,16,78,0.35)] sm:max-w-xl sm:p-5 md:mt-7">
+              <h2 className="mb-4 text-lg font-bold md:text-xl md:font-black">Regístrate gratis aquí abajo</h2>
               <CreativeToysForm id="reto-hero-form" campaign={retoCampaign} />
               <EventDetails />
             </div>
