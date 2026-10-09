@@ -104,7 +104,7 @@ export function RetoLanding() {
             </p>
             <p className="mt-2 text-xs font-semibold text-[#7ef8f0] md:mt-5 md:text-base md:font-black">20, 21, 22 y 25 de octubre</p>
             <h1 className="mt-3 min-w-0 text-[clamp(2rem,8.9vw,2.3125rem)] font-black leading-[0.98] tracking-[-0.07em] md:mt-3 md:text-[clamp(2.2rem,6vw,3.5rem)] md:leading-[1.02] md:tracking-tight">
-              <span className="block whitespace-nowrap md:inline md:whitespace-normal">CONQUISTA LA</span><span className="block max-w-[9.5em] text-[#ffd45d]"><span className="block md:inline">JUGUETERÍA</span>{' '}<span className="block md:inline">RENTABLE</span></span>
+              <span className="block whitespace-nowrap md:inline md:whitespace-normal">CONQUISTA LA</span><span className="block whitespace-nowrap text-[clamp(1.5rem,7.6vw,2.0625rem)] tracking-[-0.07em] text-[#ffd45d] md:max-w-[9.5em] md:whitespace-normal md:text-[length:inherit] md:tracking-[inherit]"><span>JUGUETERÍA</span>{' '}<span>RENTABLE</span></span>
             </h1>
             <p className="mt-4 max-w-2xl text-[clamp(16px,4.45vw,19px)] font-bold leading-[1.35] md:font-black text-white md:mt-5 md:text-[28px] md:leading-[1.3]">
               Aprende la ruta para{' '}
