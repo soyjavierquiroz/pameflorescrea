@@ -77,15 +77,17 @@ describe('campaign pages and form', () => {
     ['/x9m/confirmacion/reto/', '/x9m/confirmacion/500-extra', 'ads'],
   ])('shares the %s WhatsApp destination with 500-extra', (retoPath, legacyPath, group) => {
     vi.stubEnv('VITE_WHATSAPP_GROUP_URL_ORGANIC', 'https://wa.local/organic');
-    vi.stubEnv('VITE_WHATSAPP_GROUP_URL_ADS', 'https://wa.local/ads');
+    const adsUrl = 'https://chat.whatsapp.com/GIWbwwAHyx1KIwkOYQFUZj';
+    vi.stubEnv('VITE_WHATSAPP_GROUP_URL_ADS', adsUrl);
     vi.stubEnv('VITE_WHATSAPP_GROUP_URL', 'https://wa.local/fallback');
 
-    const url = `https://wa.local/${group}`;
+    const url = group === 'ads' ? adsUrl : 'https://wa.local/organic';
     expect(getCampaignWhatsAppUrl(retoPath)).toBe(url);
     expect(getCreativeToysWhatsAppUrl(legacyPath)).toBe(url);
     const retoHtml = renderRoute(retoPath);
     if (group === 'organic') {
       expect(retoHtml).toContain(`href="${url}"`);
+      expect(retoHtml).not.toContain(adsUrl);
     } else {
       expect(retoHtml).toContain('disabled=""');
       expect(retoHtml).not.toContain('href="https://wa.local/');
@@ -129,13 +131,15 @@ describe('campaign pages and form', () => {
     vi.useFakeTimers();
     const assign = vi.fn();
     const browserWindow = { setTimeout, clearTimeout, location: { assign } };
-    const cleanup = scheduleWhatsAppRedirect(browserWindow, 'https://wa.local/ads');
+    const adsUrl = 'https://chat.whatsapp.com/GIWbwwAHyx1KIwkOYQFUZj';
+    const cleanup = scheduleWhatsAppRedirect(browserWindow, adsUrl);
 
     expect(WHATSAPP_REDIRECT_DELAY_MS).toBe(5000);
     vi.advanceTimersByTime(4999);
     expect(assign).not.toHaveBeenCalled();
     vi.advanceTimersByTime(1);
     expect(assign).toHaveBeenCalledOnce();
+    expect(assign).toHaveBeenCalledWith(adsUrl);
     cleanup();
   });
 
