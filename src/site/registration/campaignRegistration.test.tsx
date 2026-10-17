@@ -77,7 +77,7 @@ describe('campaign pages and form', () => {
     ['/x9m/confirmacion/reto/', '/x9m/confirmacion/500-extra', 'ads'],
   ])('shares the %s WhatsApp destination with 500-extra', (retoPath, legacyPath, group) => {
     vi.stubEnv('VITE_WHATSAPP_GROUP_URL_ORGANIC', 'https://wa.local/organic');
-    const adsUrl = 'https://chat.whatsapp.com/GIWbwwAHyx1KIwkOYQFUZj';
+    const adsUrl = 'https://chat.whatsapp.com/Dlsi07smFiF1tmZYxHDtFC';
     vi.stubEnv('VITE_WHATSAPP_GROUP_URL_ADS', adsUrl);
     vi.stubEnv('VITE_WHATSAPP_GROUP_URL', 'https://wa.local/fallback');
 
@@ -131,7 +131,7 @@ describe('campaign pages and form', () => {
     vi.useFakeTimers();
     const assign = vi.fn();
     const browserWindow = { setTimeout, clearTimeout, location: { assign } };
-    const adsUrl = 'https://chat.whatsapp.com/GIWbwwAHyx1KIwkOYQFUZj';
+    const adsUrl = 'https://chat.whatsapp.com/Dlsi07smFiF1tmZYxHDtFC';
     const cleanup = scheduleWhatsAppRedirect(browserWindow, adsUrl);
 
     expect(WHATSAPP_REDIRECT_DELAY_MS).toBe(5000);
