@@ -136,14 +136,27 @@ describe('App routes', () => {
     expect(renderRoute('/x9m/clase1')).toContain('Redirigiendo a la Clase 1');
   });
 
-  it('uses the exact class one fallback video URL', () => {
-    expect(renderRoute('/clase1')).toContain(`href="${CLASS_ONE_YOUTUBE_URL}"`);
-  });
+  it.each(['/clase1', '/clase1/', '/x9m/clase1', '/x9m/clase1/'])(
+    'uses the exact new class one CTA destination at %s',
+    (route) => {
+      const expectedUrl = 'https://www.youtube.com/live/of9uug82CjE?si=dSHM3yRnrIFfm1cS';
+      expect(CLASS_ONE_YOUTUBE_URL).toBe(expectedUrl);
+      expect(renderRoute(route)).toContain(`href="${expectedUrl}"`);
+    },
+  );
 
-  it('keeps class one redirect behavior pointing to the original video', () => {
+  it('keeps class one redirect delays and shares the CTA destination', () => {
     expect(CLASS_ONE_ORGANIC_REDIRECT_DELAY_MS).toBe(1500);
     expect(CLASS_ONE_ADS_REDIRECT_DELAY_MS).toBe(2500);
-    expect(renderRoute('/clase1')).toContain(`href="${CLASS_ONE_YOUTUBE_URL}"`);
+    const classOneSource = readFileSync(
+      join(process.cwd(), 'src/site/pages/ClassOneRedirectPage.tsx'), 'utf8',
+    );
+    const redirectSource = readFileSync(
+      join(process.cwd(), 'src/site/pages/ClassRedirectPage.tsx'), 'utf8',
+    );
+    expect(classOneSource).toContain('youtubeUrl={CLASS_ONE_YOUTUBE_URL}');
+    expect(redirectSource).toContain('window.location.assign(youtubeUrl)');
+    expect(redirectSource).toContain('href={youtubeUrl}');
   });
 
   it('renders the class two redirect page at /clase2', () => {
@@ -160,6 +173,7 @@ describe('App routes', () => {
   });
 
   it('uses the exact class two fallback video URL', () => {
+    expect(CLASS_TWO_YOUTUBE_URL).toBe('https://www.youtube.com/live/qL1HjGtSUac?si=_8FTe8Kz4-MHWWBs');
     expect(renderRoute('/clase2')).toContain(`href="${CLASS_TWO_YOUTUBE_URL}"`);
     expect(renderRoute('/x9m/clase2')).toContain(`href="${CLASS_TWO_YOUTUBE_URL}"`);
   });
@@ -178,6 +192,7 @@ describe('App routes', () => {
   });
 
   it('uses the exact class three fallback video URL', () => {
+    expect(CLASS_THREE_YOUTUBE_URL).toBe('https://www.youtube.com/live/TgCRNytNSPA');
     expect(renderRoute('/clase3')).toContain(`href="${CLASS_THREE_YOUTUBE_URL}"`);
     expect(renderRoute('/x9m/clase3')).toContain(`href="${CLASS_THREE_YOUTUBE_URL}"`);
   });

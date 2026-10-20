@@ -1,7 +1,7 @@
 import { ClassRedirectPage } from './ClassRedirectPage';
 
 export const CLASS_ONE_YOUTUBE_URL =
-  'https://www.youtube.com/live/TOs7QG_RjE8?si=C-qfhM8KUrOu7y57';
+  'https://www.youtube.com/live/of9uug82CjE?si=dSHM3yRnrIFfm1cS';
 export const CLASS_ONE_ORGANIC_REDIRECT_DELAY_MS = 1500;
 export const CLASS_ONE_ADS_REDIRECT_DELAY_MS = 2500;
 
