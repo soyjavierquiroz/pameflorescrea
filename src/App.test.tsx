@@ -172,10 +172,27 @@ describe('App routes', () => {
     expect(renderRoute('/x9m/clase2')).toContain('Redirigiendo a la Clase 2');
   });
 
-  it('uses the exact class two fallback video URL', () => {
-    expect(CLASS_TWO_YOUTUBE_URL).toBe('https://www.youtube.com/live/qL1HjGtSUac?si=_8FTe8Kz4-MHWWBs');
-    expect(renderRoute('/clase2')).toContain(`href="${CLASS_TWO_YOUTUBE_URL}"`);
-    expect(renderRoute('/x9m/clase2')).toContain(`href="${CLASS_TWO_YOUTUBE_URL}"`);
+  it.each(['/clase2', '/clase2/', '/x9m/clase2', '/x9m/clase2/'])(
+    'uses the exact class two CTA destination at %s',
+    (route) => {
+      const expectedUrl = 'https://www.youtube.com/live/xbNe7vNK5jI?si=OE8ZRXPyNu3xjk0R';
+      expect(CLASS_TWO_YOUTUBE_URL).toBe(expectedUrl);
+      expect(renderRoute(route)).toContain(`href="${expectedUrl}"`);
+    },
+  );
+
+  it('keeps class two redirect delays and shares the CTA destination', () => {
+    expect(CLASS_TWO_ORGANIC_REDIRECT_DELAY_MS).toBe(1500);
+    expect(CLASS_TWO_ADS_REDIRECT_DELAY_MS).toBe(2500);
+    const classTwoSource = readFileSync(
+      join(process.cwd(), 'src/site/pages/ClassTwoRedirectPage.tsx'), 'utf8',
+    );
+    const redirectSource = readFileSync(
+      join(process.cwd(), 'src/site/pages/ClassRedirectPage.tsx'), 'utf8',
+    );
+    expect(classTwoSource).toContain('youtubeUrl={CLASS_TWO_YOUTUBE_URL}');
+    expect(redirectSource).toContain('window.location.assign(youtubeUrl)');
+    expect(redirectSource).toContain('href={youtubeUrl}');
   });
 
   it('renders the class three redirect page at /clase3', () => {
