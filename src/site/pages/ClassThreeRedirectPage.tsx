@@ -1,6 +1,6 @@
 import { ClassRedirectPage } from './ClassRedirectPage';
 
-export const CLASS_THREE_YOUTUBE_URL = 'https://www.youtube.com/live/TgCRNytNSPA';
+export const CLASS_THREE_YOUTUBE_URL = 'https://www.youtube.com/live/GoySxwzTqfQ?si=vBASLmBgEqkqNJKv';
 export const CLASS_THREE_ORGANIC_REDIRECT_DELAY_MS = 1500;
 export const CLASS_THREE_ADS_REDIRECT_DELAY_MS = 2500;
 
